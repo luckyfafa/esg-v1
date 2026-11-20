@@ -42,6 +42,13 @@ class Settings(BaseSettings):
     hkex_download_dir: Path = _TMP / "hkex_reports"
     lead_dir: Path = _TMP / "leads"
 
+    # 留资查看与转发
+    # admin_token：访问 /admin/leads 的口令，未设置时该页面直接 403
+    admin_token: str = ""
+    # lead_webhook_url：收到留资时 POST 到该地址（飞书/钉钉/企业微信群机器人、
+    # Zapier、n8n 等均可）。/tmp 会被清空，webhook 是线索不丢失的可靠方式。
+    lead_webhook_url: str = ""
+
     # HTTP
     user_agent: str = "ESG-Report-Bot/0.1 contact@example.com"
 

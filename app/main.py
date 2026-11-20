@@ -15,7 +15,7 @@ from typing import Optional
 
 from fastapi import FastAPI, File, Form, HTTPException, Query, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
 from .collectors import (
@@ -638,7 +638,95 @@ async def save_lead(
         _json.dumps(lead, ensure_ascii=False, indent=2), encoding="utf-8"
     )
     logging.info("Lead saved: %s (%s)", company, email)
+
+    # webhook 转发：/tmp 会在重新部署时清空，转发到飞书/钉钉/n8n 才是线索不丢的可靠方式
+    if settings.lead_webhook_url:
+        _notify_lead_webhook(settings.lead_webhook_url, lead)
+
     return {"status": "ok", "message": "留资成功，24 小时内会有专人联系"}
+
+
+def _notify_lead_webhook(url: str, lead: dict) -> None:
+    """把留资 goroutine 之外地推到 webhook。失败只记日志，不影响用户提交。"""
+    text = (
+        "【ESG 新留资】\n"
+        f"公司：{lead['company']}\n"
+        f"联系人：{lead['contact'] or '—'}\n"
+        f"联系方式：{lead['email']}\n"
+        f"港股代码：{lead['stock_code'] or '—'}\n"
+        f"行业：{lead['industry'] or '—'}\n"
+        f"来源：{lead['source']}\n"
+        f"备注：{lead['note'] or '—'}\n"
+        f"时间：{lead['created_at']}"
+    )
+    try:
+        import httpx as _httpx
+
+        with _httpx.Client(timeout=8.0, follow_redirects=True) as c:
+            # 飞书/钉钉/企业微信机器人普遍接受 {"text": ...}；其他端可按需改成原始 JSON
+            c.post(url, json={"text": text, "msgtype": "text", "lead": lead})
+    except Exception as e:  # noqa: BLE001
+        logging.warning("留资 webhook 推送失败: %s", e)
+
+
+@app.get("/admin/leads", tags=["leads"])
+def admin_leads(token: str = Query("", description="管理口令（ADMIN_TOKEN）")):
+    """查看已收集的留资线索（HTML 表格）。
+
+    需在环境变量里设置 ADMIN_TOKEN；未设置时直接拒绝，避免公开泄露客户信息。
+    """
+    from .config import settings
+
+    if not settings.admin_token:
+        raise HTTPException(status_code=403, detail="未配置 ADMIN_TOKEN，管理页已禁用")
+    if token != settings.admin_token:
+        raise HTTPException(status_code=403, detail="口令错误")
+
+    rows: list[dict] = []
+    for f in sorted(settings.lead_dir.glob("lead_*.json"), reverse=True):
+        try:
+            rows.append(_json.loads(f.read_text(encoding="utf-8")))
+        except Exception:  # noqa: BLE001
+            continue
+
+    def esc(v: object) -> str:
+        return (
+            str(v if v is not None else "")
+            .replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+        )
+
+    body = "".join(
+        "<tr>"
+        f"<td>{esc(r.get('created_at'))}</td>"
+        f"<td><b>{esc(r.get('company'))}</b></td>"
+        f"<td>{esc(r.get('contact'))}</td>"
+        f"<td>{esc(r.get('email'))}</td>"
+        f"<td>{esc(r.get('stock_code'))}</td>"
+        f"<td>{esc(r.get('industry'))}</td>"
+        f"<td>{esc(r.get('source'))}</td>"
+        f"<td>{esc(r.get('note'))}</td>"
+        "</tr>"
+        for r in rows
+    ) or "<tr><td colspan='8'>暂无留资</td></tr>"
+
+    html = f"""<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+<title>留资线索（{len(rows)}）</title>
+<style>
+body{{font-family:"Microsoft YaHei",sans-serif;margin:24px;color:#161A17;background:#FBFBF7}}
+h1{{font-size:18px}}
+table{{border-collapse:collapse;width:100%;font-size:12.5px;background:#fff}}
+th,td{{border:1px solid #E2E3D8;padding:7px 9px;text-align:left;vertical-align:top}}
+th{{background:#F7F7F1;color:#6B726C;font-weight:600}}
+.note{{color:#6B726C;font-size:12px;margin-bottom:12px}}
+</style></head><body>
+<h1>留资线索 · 共 {len(rows)} 条</h1>
+<p class="note">数据存于容器 /tmp，重新部署会清空。请配置 LEAD_WEBHOOK_URL 做持久化转发。</p>
+<table><thead><tr>
+<th>时间</th><th>公司</th><th>联系人</th><th>联系方式</th>
+<th>港股代码</th><th>行业</th><th>来源</th><th>备注</th>
+</tr></thead><tbody>{body}</tbody></table>
+</body></html>"""
+    return HTMLResponse(content=html)
 
 
 @app.get("/api/diagnose/listed", tags=["diagnose"])
