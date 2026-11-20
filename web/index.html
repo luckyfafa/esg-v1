@@ -892,7 +892,13 @@ $("#l-run").addEventListener("click", async () => {
     $("#l-out").classList.remove("hide");
     loadPreview(ticker, name || d.company || code, code, year);
   } catch (e) {
-    toast(t('toast.query_fail') + e.message, true);
+    const isNet = /fetch|network|load failed/i.test(String(e && e.message));
+    const msg = isNet
+      ? (currentLang === 'zh'
+        ? "连接中断：服务可能正在冷启动（约 40 秒）或刚重新部署，请稍等后重试"
+        : "Connection lost: the service may be cold-starting (~40s) or redeploying. Please retry shortly.")
+      : t('toast.query_fail') + e.message;
+    toast(msg, true);
   } finally {
     btn.disabled = false; btn.textContent = t('listed.btn');
   }

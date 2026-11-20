@@ -100,59 +100,61 @@ def _collect_aggregate(
     except ValueError:
         pass
 
-    # Yahoo 部分：失败时降级
-    company = None
-    yahoo_esg = None
-    try:
-        company = yfinance_collector.fetch_company_info(ticker)
+    # 7 个数据源互不依赖，并行拉取；云端串行约 50 秒，并行后接近最慢单源耗时
+    from concurrent.futures import ThreadPoolExecutor
+
+    def _safe(label: str, fn, default):
+        try:
+            return fn()
+        except Exception as e:  # noqa: BLE001
+            _fail(label, e)
+            return default
+
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        f_company = pool.submit(
+            _safe, "Yahoo", lambda: yfinance_collector.fetch_company_info(ticker), None
+        )
+        f_yahoo = pool.submit(
+            _safe, "Yahoo ESG", lambda: yfinance_collector.fetch_esg_scores(ticker, year), None
+        )
+        f_nzdpu = pool.submit(
+            _safe, "NZDPU", lambda: nzdpu_collector.fetch_emissions(company_name, year), None
+        )
+        f_hkex = pool.submit(
+            _safe,
+            "HKEX",
+            lambda: hkex_collector.search_esg_reports(stock_code, from_date, to_date),
+            [],
+        )
+        f_hkgov = pool.submit(
+            _safe, "HK Gov", lambda: hkgov_collector.fetch_ghg_emissions(year), None
+        )
+        f_sbti = pool.submit(
+            _safe, "SBTi", lambda: sbti_collector.fetch_target(company_name, year), None
+        )
+        f_sina = pool.submit(
+            _safe, "Sina ESG", lambda: sina_esg_collector.fetch_ratings(stock_code, company_name), None
+        )
+        f_worldbank = pool.submit(
+            _safe,
+            "World Bank",
+            lambda: worldbank_collector.fetch_country_emissions("China", year),
+            None,
+        )
+
+        company = f_company.result()
+        yahoo_esg = f_yahoo.result()
+        nzdpu_emis = f_nzdpu.result()
+        hkex_reports = f_hkex.result() or []
+        hk_benchmark = f_hkgov.result()
+        sbti_target = f_sbti.result()
+        sina_esg = f_sina.result()
+        country_emission = f_worldbank.result()
+
+    if company is not None:
         company.hkex_code = stock_code
-    except Exception as e:
-        logging.warning(f"yfinance company info 失败: {e}")
-    try:
-        yahoo_esg = yfinance_collector.fetch_esg_scores(ticker, year)
-    except Exception as e:
-        logging.warning(f"yfinance ESG 失败: {e}")
-    if company is None:
+    else:
         company = CompanyInfo(ticker=ticker, name=company_name, hkex_code=stock_code)
-
-    # 下面三个源原本没有容错，任一抛出会让整次聚合失败（云上常见：海外 IP 访问港府数据超时）
-    nzdpu_emis = None
-    try:
-        nzdpu_emis = nzdpu_collector.fetch_emissions(company_name, year)
-    except Exception as e:
-        _fail("NZDPU", e)
-
-    hkex_reports = []
-    try:
-        hkex_reports = hkex_collector.search_esg_reports(stock_code, from_date, to_date)
-    except Exception as e:
-        _fail("HKEX", e)
-
-    hk_benchmark = None
-    try:
-        hk_benchmark = hkgov_collector.fetch_ghg_emissions(year)
-    except Exception as e:
-        _fail("HK Gov", e)
-
-    # 新增 ESG 数据源：均做容错，失败返回 None
-    sbti_target = None
-    try:
-        sbti_target = sbti_collector.fetch_target(company_name, year)
-    except Exception as e:
-        _fail("SBTi", e)
-
-    sina_esg = None
-    try:
-        sina_esg = sina_esg_collector.fetch_ratings(stock_code, company_name)
-    except Exception as e:
-        _fail("Sina ESG", e)
-
-    country_emission = None
-    try:
-        # 港股公司默认取中国排放基准
-        country_emission = worldbank_collector.fetch_country_emissions("China", year)
-    except Exception as e:
-        _fail("World Bank", e)
 
     return ESGAggregate(
         company=company,
@@ -166,10 +168,36 @@ def _collect_aggregate(
     )
 
 
+_AGG_TTL = 600.0
+_agg_cache: dict[str, tuple[float, ESGAggregate]] = {}
+
+
+def _aggregate_cached(
+    ticker: str,
+    company_name: str,
+    stock_code: str,
+    year: int,
+    from_date: str,
+    to_date: str,
+    errors: Optional[list[str]] = None,
+) -> ESGAggregate:
+    """短期内存缓存：诊断与报告试读会连续请求同一家公司，避免重复拉 7 个数据源。"""
+    import time
+
+    key = f"{ticker}|{stock_code}|{year}"
+    hit = _agg_cache.get(key)
+    if hit and time.time() - hit[0] < _AGG_TTL:
+        return hit[1]
+    agg = _collect_aggregate(
+        ticker, company_name, stock_code, year, from_date, to_date, errors
+    )
+    _agg_cache[key] = (time.time(), agg)
+    return agg
+
+
 @app.get("/health")
 def health():
     return {"status": "ok"}
-
 
 # ----- Yahoo Finance -----
 @app.get("/yahoo/company/{ticker}", response_model=CompanyInfo, tags=["yfinance"])
@@ -982,7 +1010,7 @@ def diagnose_listed_company(
     errors: list[str] = []
     try:
         to_date = min(date(year, 12, 31), date.today()).isoformat()
-        aggregate = _collect_aggregate(
+        aggregate = _aggregate_cached(
             ticker, company_name, stock_code, year, f"{year - 1}-01-01", to_date,
             errors=errors,
         )
@@ -1075,7 +1103,7 @@ def report_preview(
         y = date.today().year - 1
     name = company_name.strip() or f"{code}.HK"
 
-    aggregate = _collect_aggregate(ticker, name, code, y, f"{y - 1}-01-01", f"{y}-12-31")
+    aggregate = _aggregate_cached(ticker, name, code, y, f"{y - 1}-01-01", f"{y}-12-31")
     kpis = ESGKPIs(
         company_name=name,
         stock_code=code,
