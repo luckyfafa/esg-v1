@@ -1035,6 +1035,7 @@ function renderReportDoc(el, d, ctaHtml) {
 
 async function loadPreview(ticker, name, code, year, pdfUrl) {
   const box = $("#l-preview");
+  lastMd = "";
   box.classList.remove("hide");
   box.innerHTML = `<div class="card flat"><div class="muted">${pdfUrl ? (currentLang === 'zh' ? '正在下载 PDF 并抽取附录数据，约 30–60 秒…' : 'Downloading PDF and extracting appendix data, 30–60s…') : t('preview.loading')}</div></div>`;
   try {
@@ -1042,6 +1043,7 @@ async function loadPreview(ticker, name, code, year, pdfUrl) {
     const res = await fetch(url);
     if (!res.ok) throw new Error(res.statusText);
     const d = await res.json();
+    lastMd = d.preview_markdown || (d.sections || []).map(s => s.markdown).join("\n\n");
     if (d.preview_markdown) {
       $("#r-md").innerHTML = mdToHtml(d.preview_markdown) +
         `<div class="notice" style="margin-top:14px">🔒 ${t('preview.locked_title')}：${(d.locked_sections || []).join(" / ")}</div>`;
