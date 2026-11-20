@@ -161,6 +161,7 @@
   .rd-chapter .md h2,.rd-chapter h2{font-size:19px;margin:0;padding:0;border:0}
   .rd-figure{margin:0 0 18px;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:#F3F5EF}
   .rd-figure img{display:block;width:100%;height:180px;object-fit:cover}
+  .rd-figure svg{display:block;width:100%;height:180px}
   .rd-figure figcaption{font-size:11.5px;color:var(--muted);padding:8px 12px}
   .rd-locked{padding:26px 44px 30px;border-top:1px dashed var(--line);background:#FAFAF5}
   .rd-locked-item{display:flex;align-items:center;gap:10px;padding:9px 0;font-size:13.5px;color:var(--muted);border-bottom:1px solid #EEEFE7}
@@ -930,22 +931,46 @@ $("#l-run").addEventListener("click", async () => {
 });
 
 /* ---------- 上市公司报告试读 ---------- */
-/* ---------- 报告文档渲染（封面 + 章节配图 + 锁定章节） ---------- */
-const RD_IMAGES = [
-  { keys: ["概况", "报告说明", "概览", "评分"], prompt: "modern corporate headquarters skyline, glass towers, clean daylight, architectural photography", caption: "企业 ESG 报告" },
-  { keys: ["温室", "环境", "排放", "碳", "能耗"], prompt: "wind turbines and solar panels in green landscape, clean energy, aerial view, soft morning light", caption: "环境绩效 · 清洁能源与减排" },
-  { keys: ["员工", "社会", "人力", "安全"], prompt: "diverse professional team collaborating in bright modern office, natural light, documentary photography", caption: "社会绩效 · 员工与社区" },
-  { keys: ["治理", "董事会", "合规", "反腐"], prompt: "modern boardroom with long table and documents, soft daylight, corporate governance, minimal", caption: "公司治理 · 决策与监督" },
-  { keys: ["数据质量", "方法", "核证", "证据"], prompt: "stack of sustainability reports and data charts on a wooden desk, close up, soft light", caption: "数据质量 · 方法与证据" },
-  { keys: ["实质", "议题", "利益相关"], prompt: "stakeholder workshop with sticky notes on glass wall, sustainability strategy session, natural light", caption: "实质性议题 · 利益相关方" },
-  { keys: ["差距", "路线", "改进", "行动"], prompt: "person walking up modern staircase toward bright light, conceptual progress, minimal architecture", caption: "差距分析 · 改进路线" },
-  { keys: ["评级", "提升", "目标"], prompt: "rising bar chart on glass screen with green arrow, business analytics, modern office", caption: "评级提升 · 目标路径" }
+/* ---------- 报告文档渲染（封面 + 内置 SVG 章节插画 + 锁定章节） ---------- */
+/* 插画全部为内联 SVG：不依赖外部图片服务，离线/弱网也能正常显示 */
+const RD_THEMES = [
+  {
+    keys: ["概况", "报告说明", "概览", "评分"], caption: "企业 ESG 报告",
+    svg: `<svg viewBox="0 0 800 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="200" fill="#EDF4EF"/><g fill="#C9DCD2"><rect x="110" y="78" width="66" height="122"/><rect x="192" y="46" width="86" height="154"/><rect x="294" y="96" width="58" height="104"/><rect x="368" y="62" width="96" height="138"/><rect x="480" y="104" width="66" height="96"/><rect x="562" y="80" width="82" height="120"/></g><g fill="#1F6B4C" opacity=".38"><rect x="212" y="66" width="12" height="12"/><rect x="236" y="66" width="12" height="12"/><rect x="212" y="92" width="12" height="12"/><rect x="236" y="92" width="12" height="12"/><rect x="390" y="84" width="12" height="12"/><rect x="414" y="84" width="12" height="12"/></g></svg>`
+  },
+  {
+    keys: ["温室", "环境", "排放", "碳", "能耗"], caption: "环境绩效 · 清洁能源与减排",
+    svg: `<svg viewBox="0 0 800 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="200" fill="#F1F7F2"/><circle cx="648" cy="54" r="30" fill="#E9DCA9"/><path d="M0 200 Q200 120 400 168 T800 140 V200Z" fill="#DDEADE"/><g stroke="#1F6B4C" stroke-width="6" stroke-linecap="round" fill="none"><path d="M300 176 V96"/><path d="M300 96 L352 66"/><path d="M300 96 L248 66"/><path d="M300 96 L300 40"/></g><circle cx="300" cy="96" r="7" fill="#0F5132"/></svg>`
+  },
+  {
+    keys: ["员工", "社会", "人力", "安全"], caption: "社会绩效 · 员工与社区",
+    svg: `<svg viewBox="0 0 800 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="200" fill="#F4F7F3"/><g fill="#CFE0D5"><circle cx="300" cy="84" r="26"/><path d="M258 176c0-24 19-44 42-44s42 20 42 44z"/><circle cx="500" cy="84" r="26"/><path d="M458 176c0-24 19-44 42-44s42 20 42 44z"/></g><g fill="#9FC4AE"><circle cx="400" cy="72" r="30"/><path d="M352 176c0-27 21-50 48-50s48 23 48 50z"/></g></svg>`
+  },
+  {
+    keys: ["治理", "董事会", "合规", "反腐"], caption: "公司治理 · 决策与监督",
+    svg: `<svg viewBox="0 0 800 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="200" fill="#F3F7F4"/><g fill="#9FC4AE"><circle cx="250" cy="78" r="18"/><circle cx="340" cy="70" r="18"/><circle cx="460" cy="70" r="18"/><circle cx="550" cy="78" r="18"/></g><rect x="180" y="104" width="440" height="52" rx="26" fill="#D3E3D8"/><rect x="300" y="122" width="200" height="8" rx="4" fill="#1F6B4C" opacity=".3"/></svg>`
+  },
+  {
+    keys: ["数据质量", "方法", "核证", "数据附"], caption: "数据质量 · 方法与证据",
+    svg: `<svg viewBox="0 0 800 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="200" fill="#F4F8F5"/><rect x="230" y="46" width="150" height="120" rx="8" fill="#DDEADE"/><g fill="#1F6B4C" opacity=".26"><rect x="250" y="66" width="110" height="8" rx="4"/><rect x="250" y="86" width="90" height="8" rx="4"/><rect x="250" y="106" width="100" height="8" rx="4"/></g><g fill="#1F6B4C" opacity=".55"><rect x="430" y="120" width="34" height="46" rx="4"/><rect x="478" y="96" width="34" height="70" rx="4"/><rect x="526" y="68" width="34" height="98" rx="4"/></g></svg>`
+  },
+  {
+    keys: ["实质", "议题", "利益相关"], caption: "实质性议题 · 利益相关方",
+    svg: `<svg viewBox="0 0 800 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="200" fill="#F3F7F4"/><g stroke="#DCE7DF" stroke-width="2"><path d="M300 30V180M400 30V180M500 30V180M250 60H550M250 110H550M250 160H550"/></g><g fill="#1F6B4C"><circle cx="345" cy="62" r="12" opacity=".32"/><circle cx="455" cy="108" r="18" opacity=".52"/><circle cx="512" cy="152" r="9" opacity=".28"/><circle cx="302" cy="132" r="14" opacity=".38"/></g></svg>`
+  },
+  {
+    keys: ["差距", "路线", "改进", "行动"], caption: "差距分析 · 改进路线",
+    svg: `<svg viewBox="0 0 800 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="200" fill="#F4F8F5"/><g fill="#D3E3D8"><rect x="230" y="150" width="90" height="30"/><rect x="320" y="120" width="90" height="60"/><rect x="410" y="90" width="90" height="90"/><rect x="500" y="60" width="90" height="120"/></g><path d="M250 150 L340 120 L430 90 L520 60" stroke="#1F6B4C" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M520 60 l-18 2 11 15z" fill="#1F6B4C"/></svg>`
+  },
+  {
+    keys: ["评级", "提升", "目标", "路径"], caption: "评级提升 · 目标路径",
+    svg: `<svg viewBox="0 0 800 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="200" fill="#F2F7F3"/><g fill="#CFE0D5"><rect x="290" y="130" width="42" height="50" rx="4"/><rect x="352" y="108" width="42" height="72" rx="4"/><rect x="414" y="86" width="42" height="94" rx="4"/><rect x="476" y="56" width="42" height="124" rx="4"/></g><path d="M300 140 L370 116 L432 92 L500 56" stroke="#0F5132" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M500 56 l-18 0 12 16z" fill="#0F5132"/></svg>`
+  }
 ];
 
 function rdFigure(title) {
-  const hit = RD_IMAGES.find(x => x.keys.some(k => String(title).includes(k))) || RD_IMAGES[0];
-  const src = `https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=${encodeURIComponent(hit.prompt)}&image_size=landscape_4_3`;
-  return `<figure class="rd-figure"><img loading="lazy" src="${src}" alt="${esc(hit.caption)}"><figcaption>${esc(hit.caption)}</figcaption></figure>`;
+  const hit = RD_THEMES.find(x => x.keys.some(k => String(title).includes(k))) || RD_THEMES[0];
+  return `<figure class="rd-figure">${hit.svg}<figcaption>${esc(hit.caption)}</figcaption></figure>`;
 }
 
 function renderReportDoc(el, d, ctaHtml) {
