@@ -273,7 +273,7 @@ def generate_report(
         sources.append(f"新浪财经ESG评级（{len(aggregate.sina_esg.ratings)} 家机构）")
     if aggregate.country_emission:
         sources.append("World Bank 国家排放基准")
-    if kpis:
+    if kpis and kpis.source_pdf:
         sources.append(f"LLM 抽取自 {kpis.source_pdf}")
 
     sections: list[ReportSection] = []

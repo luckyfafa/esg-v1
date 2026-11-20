@@ -147,8 +147,16 @@ class YFinanceCollector(BaseCollector):
 
     name = "yahoo"
 
+    @staticmethod
+    def _symbol(ticker: str) -> str:
+        """Yahoo 的港股代码是 4 位（0700.HK），本项目上游统一用 5 位（00700.HK）。"""
+        import re as _re
+
+        m = _re.fullmatch(r"0*(\d+)\.HK", ticker.strip().upper())
+        return f"{int(m.group(1)):04d}.HK" if m else ticker
+
     def fetch_company_info(self, ticker: str) -> CompanyInfo:
-        t = yf.Ticker(ticker)
+        t = yf.Ticker(self._symbol(ticker))
         info = t.info or {}
         return CompanyInfo(
             ticker=ticker,
@@ -163,7 +171,7 @@ class YFinanceCollector(BaseCollector):
         if cached:
             return ESGScore(**cached)
 
-        t = yf.Ticker(ticker)
+        t = yf.Ticker(self._symbol(ticker))
         sus = t.sustainability
         flat: dict = {}
         if isinstance(sus, pd.DataFrame) and not sus.empty:

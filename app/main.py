@@ -748,6 +748,8 @@ button:hover{background:#1F6B4C}
 .btn2{background:#fff;color:#0F5132;border:1px solid #C9DCD2}
 .warn{background:#FAF4F0;border-left:3px solid #A8542A;padding:10px 12px;
   border-radius:7px;font-size:12.5px;color:#6B4432;margin-bottom:16px}
+.info{background:#F2F6F4;border-left:3px solid #0F5132;padding:10px 12px;
+  border-radius:7px;font-size:12.5px;color:#28453A;margin-bottom:16px}
 pre{white-space:pre-wrap;word-break:break-word;background:#fff;border:1px solid #E2E3D8;
   border-radius:10px;padding:20px;font-size:13px;line-height:1.75;
   font-family:"Microsoft YaHei",Consolas,monospace}
@@ -782,6 +784,12 @@ def _admin_report_form(token: str, message: str = "") -> str:
   <div style="margin-top:12px"><label>PDF 直链（可选；HKEX 自动检索失败时填写）</label>
     <input type="text" name="pdf_url"
            placeholder="https://www1.hkexnews.hk/listedco/listconews/sehk/2025/xxxx/xxxx.pdf"></div>
+  <div style="margin-top:12px;font-size:12.5px;color:#3A403B">
+    <label style="display:flex;gap:8px;align-items:center;color:#3A403B">
+      <input type="checkbox" name="public_only" value="1" style="width:auto">
+      只看公开数据（跳过港交所 PDF 检索与抽取，约 10 秒出报告）
+    </label>
+  </div>
   <div style="margin-top:16px"><button type="submit">生成报告</button></div>
 </form>
 <p class="note"><a href="/admin/leads?token={_html.escape(token)}">← 返回留资线索</a></p>
@@ -796,6 +804,7 @@ def admin_report(
     year: int = Query(0, description="报告年度，0 表示取上一年"),
     llm: int = Query(0, description="1=生成 LLM 叙述"),
     pdf_url: str = Query("", description="可选：直接指定 ESG 报告 PDF 链接"),
+    public_only: int = Query(0, description="1=只跑公开数据，跳过 PDF 检索与抽取"),
 ):
     """管理端：一键生成某只港股的完整 ESG 报告（HTML 预览 + 下载 Markdown）。"""
     import html as _html
@@ -815,22 +824,30 @@ def admin_report(
     steps: list[str] = []
     problems: list[str] = []
 
-    # 1) 检索港交所 ESG 报告
+    # 1) 检索港交所 ESG 报告（公开数据模式下整段跳过）
     latest = None
-    try:
-        metas = hkex_collector.search_esg_reports(code, from_date, to_date)
-    except Exception as e:  # noqa: BLE001
-        metas = []
-        problems.append(f"HKEX 检索失败：{type(e).__name__}: {e}")
-    if metas:
-        latest = max(metas, key=lambda m: m.release_date)
-        steps.append(f"检索到 {len(metas)} 份 ESG 报告，取最新：{latest.release_date} {latest.report_title}")
+    if public_only:
+        steps.append("公开数据模式：已跳过 PDF 下载与正文抽取（仅查报告元数据）")
     else:
-        problems.append("未检索到该公司的 ESG 报告，报告将只包含公开数据部分")
+        try:
+            metas = hkex_collector.search_esg_reports(code, from_date, to_date)
+        except Exception as e:  # noqa: BLE001
+            metas = []
+            problems.append(f"HKEX 检索失败：{type(e).__name__}: {e}")
+        if metas:
+            latest = max(metas, key=lambda m: m.release_date)
+            steps.append(
+                f"检索到 {len(metas)} 份 ESG 报告，取最新："
+                f"{latest.release_date} {latest.report_title}"
+            )
+        else:
+            problems.append("未检索到该公司的 ESG 报告，报告将只包含公开数据部分")
 
     # 2) 下载 PDF：优先用显式传入的链接，其次用 HKEX 检索结果
     pdf_path = None
-    if pdf_url.strip():
+    if public_only:
+        pass
+    elif pdf_url.strip():
         try:
             import httpx as _httpx
 
@@ -897,6 +914,16 @@ def admin_report(
         )
 
     step_html = "".join(f"<div>· {_html.escape(s)}</div>" for s in steps)
+    info_html = (
+        '<div class="info"><b>公开数据版</b>'
+        "<div>· 本报告仅含公开数据：公司信息、Yahoo 评级、SBTi 目标、"
+        "多机构评级、国家排放基准</div>"
+        "<div>· 不含港交所报告正文中的排放、能耗、员工等数字</div>"
+        "<div>· 如需完整版，请在首页填写该公司的 ESG 报告 PDF 直链后重新生成</div>"
+        "</div>"
+        if public_only
+        else ""
+    )
     warn_html = (
         '<div class="warn"><b>需要注意</b>'
         + "".join(f"<div>· {_html.escape(p)}</div>" for p in problems)
@@ -912,6 +939,7 @@ def admin_report(
 <p class="note">{_html.escape(report.company_name)} · {report.stock_code} · {report.report_year} ·
 生成于 {report.generated_at}</p>
 <div class="card" style="font-size:12.5px;color:#3A403B">{step_html}</div>
+{info_html}
 {warn_html}
 <div style="margin-bottom:12px">
   <button onclick="dlMd()">下载 Markdown</button>
