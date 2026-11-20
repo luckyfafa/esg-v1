@@ -55,6 +55,38 @@ ESG_KEYWORDS = (
     "non-financial", "sustainability report",
 )
 
+# 中文关键词：港股披露的中文版报告 / 附录几乎全中文，
+# 只用英文关键词过滤会把整份中文报告的排放表丢弃（曾导致抽取完整度仅 24%）。
+ESG_KEYWORDS_CN = (
+    "溫室氣體", "温室气体", "範圍一", "范围一", "範圍二", "范围二",
+    "範圍三", "范围三", "碳排放", "排放量", "排放強度", "排放强度",
+    "能源消耗", "總耗電量", "耗電量", "用電量", "耗電", "用電",
+    "耗水量", "總耗水量", "用水量", "水資源", "水资源",
+    "廢棄物", "废弃物", "無害廢棄物", "有害廢棄物", "廢紙", "回收",
+    "可再生能源", "再生能源", "清潔能源", "清洁能源",
+    "員工流失", "流失率", "工傷", "工伤", "培訓", "培训",
+    "女性員工", "女性董事", "女性管理", "供應商", "供应商",
+    "董事會", "董事会", "獨立非執行董事", "独立非执行董事",
+    "可持續發展", "可持续发展", "關鍵績效", "关键绩效",
+    "環境、社會及管治", "环境、社会及管治",
+    "氣候變化", "气候变化", "綠色金融", "绿色金融", "持份者",
+)
+
+# 计量单位：命中说明该页是数据表，加权
+ESG_UNITS = (
+    "tco2e", "co2e", "kwh", "mwh", "m3", "千立方米",
+    "噸二氧化碳當量", "吨二氧化碳当量", "公噸", "公吨",
+    "兆瓦時", "兆瓦时", "千瓦時", "千瓦时", "立方米",
+)
+
+# 附录 / KPI 汇总表特征词：命中即视为「数据附件页」，优先送入 LLM
+APPENDIX_KEYWORDS = (
+    "關鍵績效", "关键绩效", "績效指標", "绩效指标", "表現數據", "表现数据",
+    "環境數據", "环境数据", "社會數據", "社会数据", "環境績效", "环境绩效",
+    "esg數據", "esg 數據", "esg数据", "esg 资料", "esg資料",
+    "附錄", "附录", "匯總", "汇总", "kpi",
+)
+
 # 每页字符上限（防止某些页全是表格数字爆炸）
 PAGE_CHAR_LIMIT = 6000
 # 总 context 字符上限（DeepSeek 上下文 64K，留出 prompt 空间）
@@ -78,9 +110,13 @@ def page_relevance_score(page: str) -> int:
     """页面相关度打分：关键词命中数 + 单位命中 + 数字密度（KPI 表格特征）。"""
     low = page.lower()
     score = sum(1 for k in ESG_KEYWORDS if k in low)
-    for unit in ("tco2e", "co2e", "kwh", "mwh", "m3", "千立方米", "scope 3"):
+    score += sum(1 for k in ESG_KEYWORDS_CN if k in page)
+    for unit in ESG_UNITS:
         if unit in low:
             score += 2
+    # 附录 / KPI 汇总页通常是排放、能耗等数据的唯一来源，必须优先
+    if any(k in low or k in page for k in APPENDIX_KEYWORDS):
+        score += 4
     if page:
         digit_ratio = sum(ch.isdigit() for ch in page) / len(page)
         if digit_ratio > 0.12:  # 数字密集，通常是 KPI 汇总表
@@ -93,7 +129,9 @@ def filter_relevant_pages(pages: Iterable[str]) -> list[tuple[int, int, str]]:
     scored: list[tuple[int, int, str]] = []
     for idx, page in enumerate(pages):
         low = page.lower()
-        if any(k in low for k in ESG_KEYWORDS):
+        if any(k in low for k in ESG_KEYWORDS) or any(
+            k in page for k in ESG_KEYWORDS_CN
+        ):
             scored.append((idx, page_relevance_score(page), page[:PAGE_CHAR_LIMIT]))
     return scored
 
@@ -102,14 +140,21 @@ DIMENSION_KEYWORDS = {
     "env": (
         "scope 1", "scope 2", "scope 3", "ghg", "emission", "carbon",
         "energy", "renewable", "water", "waste", "tco2e", "climate", "intensity",
+        "溫室氣體", "温室气体", "範圍一", "范围一", "範圍二", "范围二",
+        "範圍三", "范围三", "碳排放", "排放量", "能源消耗", "耗水", "用水",
+        "廢棄物", "废弃物", "可再生能源", "氣候變化", "气候变化",
     ),
     "social": (
         "employee", "turnover", "training", "diversity", "female", "gender",
         "injury", "fatality", "safety", "community", "labour", "labor",
+        "員工", "员工", "流失", "培訓", "培训", "女性", "工傷", "工伤",
+        "安全", "社區", "社区", "供應商", "供应商", "勞工", "劳工",
     ),
     "gov": (
         "board of director", "independent director", "governance", "committee",
         "remuneration", "audit committee", "risk committee",
+        "董事會", "董事会", "獨立非執行董事", "独立非执行董事", "治理",
+        "委員會", "委员会", "薪酬", "審核", "审核",
     ),
 }
 
@@ -118,7 +163,7 @@ def page_dimension(page: str) -> str:
     """判断页面主要覆盖的 ESG 维度（env / social / gov / other）。"""
     low = page.lower()
     for dim, kws in DIMENSION_KEYWORDS.items():
-        if any(k in low for k in kws):
+        if any(k in low or k in page for k in kws):
             return dim
     return "other"
 
@@ -289,18 +334,15 @@ def extract_kpis_from_pdf(
 
     logger.info(f"提取 PDF 文本: {pdf_path}")
     pages = extract_pages(pdf_path)
+    if sum(len(p) for p in pages) < 500:
+        raise RuntimeError(
+            "PDF 未提取到文本（多为扫描件 / 图片版），请改用文本版报告或人工填写"
+        )
     relevant = filter_relevant_pages(pages)
     logger.info(f"总页 {len(pages)}，ESG 相关页 {len(relevant)}")
     context = build_context(relevant)
     if not context.strip():
-        logger.warning("PDF 未提取到任何 ESG 相关文本，返回空 KPI")
-        return ESGKPIs(
-            company_name=company_name,
-            stock_code=stock_code,
-            report_year=report_year,
-            source_pdf=str(pdf_path),
-            notes=["no ESG-related text extracted"],
-        )
+        raise RuntimeError("PDF 中未找到 ESG / 排放相关章节，无法抽取数据")
 
     client = _get_client()  # 提前校验 key 是否配置，未配置时快速失败
     user_prompt = USER_PROMPT_TEMPLATE.format(

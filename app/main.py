@@ -1113,10 +1113,11 @@ def report_preview(
     stock_code: str = Query("", description="港交所代码，如 00700"),
     year: int = Query(0, description="报告年度，0 或非法值取上一年"),
     token: str = Query("", description="管理口令；填对则返回完整报告"),
+    pdf_url: str = Query("", description="ESG 报告 PDF 直链，填了会从附录抽取排放等 KPI"),
 ):
     """上市公司报告「试读版」：只返回前两章，其余章节只给标题。
 
-    公开数据生成，不下载 PDF、不调 LLM，约 3–5 秒；完整版走留资。
+    默认用公开数据生成，约 3–5 秒；若传入 pdf_url，则下载该 PDF 并抽取正文数据。
     """
     from .reporter import split_markdown_sections
 
@@ -1127,13 +1128,39 @@ def report_preview(
     name = company_name.strip() or f"{code}.HK"
 
     aggregate = _aggregate_cached(ticker, name, code, y, f"{y - 1}-01-01", f"{y}-12-31")
-    kpis = ESGKPIs(
-        company_name=name,
-        stock_code=code,
-        report_year=y,
-        source_pdf="",
-        notes=["preview mode: public data only"],
-    )
+
+    kpis = None
+    pdf_error = ""
+    if pdf_url.strip():
+        try:
+            import httpx as _httpx
+
+            with _httpx.Client(
+                headers={"User-Agent": settings.user_agent},
+                follow_redirects=True,
+                timeout=120.0,
+            ) as c:
+                resp = c.get(pdf_url.strip())
+                resp.raise_for_status()
+            pdf_dir = settings.hkex_download_dir
+            pdf_dir.mkdir(parents=True, exist_ok=True)
+            pdf_path = pdf_dir / f"{code}_{y}_web.pdf"
+            pdf_path.write_bytes(resp.content)
+            kpis = extract_kpis_from_pdf(
+                pdf_path=pdf_path, company_name=name, stock_code=code, report_year=y
+            )
+        except Exception as e:  # noqa: BLE001
+            pdf_error = f"{type(e).__name__}: {e}"
+            logging.warning("preview PDF 抽取失败: %s", e)
+
+    if kpis is None:
+        kpis = ESGKPIs(
+            company_name=name,
+            stock_code=code,
+            report_year=y,
+            source_pdf="",
+            notes=["preview mode: public data only"],
+        )
     report = generate_report(aggregate=aggregate, kpis=kpis, use_llm_narrative=False)
 
     sections = split_markdown_sections(report.markdown)
@@ -1153,6 +1180,8 @@ def report_preview(
         "locked_sections": locked_sections,
         "free_sections": free_count,
         "total_sections": len(sections),
+        "pdf_extracted": bool(pdf_url.strip()) and not pdf_error,
+        "pdf_error": pdf_error,
         "disclaimer": "试读版基于公开数据，未包含披露正文数字；完整版需人工复核。",
     }
 

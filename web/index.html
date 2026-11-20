@@ -261,6 +261,12 @@
           <button class="btn" id="l-run" data-i18n="listed.btn">快速诊断</button>
         </div>
       </div>
+      <div class="row" style="margin-top:12px">
+        <div style="flex:1">
+          <label data-i18n="listed.l.pdf">ESG 报告 PDF 链接（可选，填了会从附录抽取排放等数据）</label>
+          <input type="text" id="l-pdf" placeholder="https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0409/2026040901286_c.pdf">
+        </div>
+      </div>
       <p class="muted" style="margin-top:8px">示例：00700 腾讯 / 09988 阿里巴巴 / 06060 中通快递</p>
     </div>
 
@@ -536,6 +542,7 @@ const I18N = {
     "listed.l.code": "港股代码",
     "listed.l.name": "公司名称（用于 SBTi 查询，英文更准）",
     "listed.l.year": "年度",
+    "listed.l.pdf": "ESG 报告 PDF 链接（可选，填了会从附录抽取排放等数据）",
     "listed.btn": "快速诊断",
     "listed.table.h1": "机构", "listed.table.h2": "评级", "listed.table.h3": "日期",
     "listed.none": "暂无多机构评级数据",
@@ -657,6 +664,7 @@ const I18N = {
     "listed.l.code": "HK ticker",
     "listed.l.name": "Company name (English for SBTi lookup)",
     "listed.l.year": "Year",
+    "listed.l.pdf": "ESG report PDF link (optional; fills emission data from the appendix)",
     "listed.btn": "Quick Diagnose",
     "listed.table.h1": "Agency", "listed.table.h2": "Rating", "listed.table.h3": "Date",
     "listed.none": "No multi-agency ratings available",
@@ -920,7 +928,7 @@ $("#l-run").addEventListener("click", async () => {
         <button class="btn" onclick="openLead('listed-diagnose', {company:'${esc(d.company || name)}', stock_code:'${esc(code)}'})">${ctaBtn}</button>
       </div>` + errBlock;
     $("#l-out").classList.remove("hide");
-    loadPreview(ticker, name || d.company || code, code, year);
+    loadPreview(ticker, name || d.company || code, code, year, (($("#l-pdf") || {}).value || "").trim());
   } catch (e) {
     const isNet = /fetch|network|load failed/i.test(String(e && e.message));
     const msg = isNet
@@ -1025,12 +1033,12 @@ function renderReportDoc(el, d, ctaHtml) {
   el.innerHTML = html;
 }
 
-async function loadPreview(ticker, name, code, year) {
+async function loadPreview(ticker, name, code, year, pdfUrl) {
   const box = $("#l-preview");
   box.classList.remove("hide");
-  box.innerHTML = `<div class="card flat"><div class="muted">${t('preview.loading')}</div></div>`;
+  box.innerHTML = `<div class="card flat"><div class="muted">${pdfUrl ? (currentLang === 'zh' ? '正在下载 PDF 并抽取附录数据，约 30–60 秒…' : 'Downloading PDF and extracting appendix data, 30–60s…') : t('preview.loading')}</div></div>`;
   try {
-    const url = `/api/report/preview?ticker=${encodeURIComponent(ticker)}&company_name=${encodeURIComponent(name)}&stock_code=${encodeURIComponent(code)}&year=${year}${TOKEN_QS}`;
+    const url = `/api/report/preview?ticker=${encodeURIComponent(ticker)}&company_name=${encodeURIComponent(name)}&stock_code=${encodeURIComponent(code)}&year=${year}${TOKEN_QS}${pdfUrl ? "&pdf_url=" + encodeURIComponent(pdfUrl) : ""}`;
     const res = await fetch(url);
     if (!res.ok) throw new Error(res.statusText);
     const d = await res.json();
@@ -1047,6 +1055,18 @@ async function loadPreview(ticker, name, code, year) {
       <div id="l-doc"></div>`;
     const cta = `<div style="margin-top:16px"><button class="btn" onclick="openLead('listed-preview', {company:'${esc(d.company_name || name)}', stock_code:'${esc(code)}'})">${t('preview.cta')}</button></div>`;
     renderReportDoc($("#l-doc"), d, cta);
+    if (d.pdf_error) {
+      $("#l-doc").insertAdjacentHTML("afterbegin",
+        `<div class="notice">PDF 抽取失败：${esc(d.pdf_error)}<br>可换一个 PDF 链接重试，或点击下方按钮由顾问人工处理。</div>`);
+    } else if (d.pdf_extracted) {
+      $("#l-doc").insertAdjacentHTML("afterbegin",
+        `<div class="card flat" style="margin-bottom:12px;font-size:12.5px;color:var(--green)">已从 PDF 附录抽取排放等数据（自动识别，需人工核对）</div>`);
+    } else {
+      $("#l-doc").insertAdjacentHTML("afterbegin",
+        `<div class="notice">${currentLang === 'zh'
+          ? '未填 ESG 报告 PDF 链接：本报告只有公开评级数据，排放 / 能耗 / 员工等数字为空。在「ESG 报告 PDF 链接」输入框粘贴港交所 PDF 地址后可自动补齐。'
+          : 'No ESG report PDF provided: only public ratings are included. Paste the HKEX PDF link above to auto-fill emissions, energy and workforce data.'}</div>`);
+    }
   } catch (e) {
     box.innerHTML = `<div class="notice">${t('preview.fail')}</div>`;
   }

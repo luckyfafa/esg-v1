@@ -14,6 +14,7 @@ from __future__ import annotations
 import json
 import logging
 from datetime import date
+from pathlib import Path
 from typing import Optional
 
 from openai import OpenAI
@@ -293,7 +294,7 @@ def generate_report(
     if aggregate.country_emission:
         sources.append("World Bank 国家排放基准")
     if kpis and kpis.source_pdf:
-        sources.append(f"LLM 抽取自 {kpis.source_pdf}")
+        sources.append(f"LLM 抽取自 {Path(kpis.source_pdf).name}")
 
     sections: list[ReportSection] = []
     benchmark = aggregate.hk_benchmark
@@ -627,7 +628,7 @@ def generate_peer_report(
     """
     sources = [
         f"行业标杆：{peer_company_name}（{peer_stock_code}）",
-        f"标杆 PDF：{peer_kpis.source_pdf}",
+        f"标杆 PDF：{Path(peer_kpis.source_pdf).name}",
     ]
     if hk_benchmark:
         sources.append("HK Gov Open Data")
