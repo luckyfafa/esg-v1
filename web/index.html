@@ -863,13 +863,19 @@ $("#l-run").addEventListener("click", async () => {
     const hint1 = t('listed.label.next');
     const hint2 = t('listed.cta_sub');
     const ctaBtn = t('listed.cta');
+    const errBlock = (d.source_errors && d.source_errors.length)
+      ? `<div class="muted" style="margin-top:10px;font-size:11.5px;line-height:1.7">
+           <b>${currentLang === 'zh' ? '部分数据源本次未取到' : 'Some sources unavailable this time'}</b>：
+           ${d.source_errors.map(e => `<div>· ${esc(e)}</div>`).join("")}
+         </div>`
+      : "";
     $("#l-note").innerHTML = `
       <div style="display:flex;gap:14px;align-items:center">
         <div style="flex:1">
           <b>${hint1}</b>。${hint2}
         </div>
         <button class="btn" onclick="openLead('listed-diagnose', {company:'${esc(d.company || name)}', stock_code:'${esc(code)}'})">${ctaBtn}</button>
-      </div>`;
+      </div>` + errBlock;
     $("#l-out").classList.remove("hide");
   } catch (e) {
     toast(t('toast.query_fail') + e.message, true);

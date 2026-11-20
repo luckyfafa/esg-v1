@@ -79,12 +79,19 @@ def _collect_aggregate(
     year: int,
     from_date: str,
     to_date: str,
+    errors: Optional[list[str]] = None,
 ) -> ESGAggregate:
     """共享的多源采集逻辑（供 /collect 与 /report 复用，消除重复代码）。
 
     单源失败不阻塞其他源：Yahoo 限流 / NZDPU 无 token / SBTi 接口异常时
-    对应字段返回 None。
+    对应字段返回 None。传入 errors 列表时，会把每个数据源的失败原因追加进去，
+    便于在获客诊断接口里向前端暴露「哪个源不可达」。
     """
+    def _fail(source: str, exc: Exception) -> None:
+        logging.warning("%s 采集失败: %s", source, exc)
+        if errors is not None:
+            errors.append(f"{source}: {type(exc).__name__}: {exc}")
+
     # HKEX 接口 toDate 超过今天会返回 result=None
     try:
         to_dt = date.fromisoformat(to_date)
@@ -108,29 +115,44 @@ def _collect_aggregate(
     if company is None:
         company = CompanyInfo(ticker=ticker, name=company_name, hkex_code=stock_code)
 
-    nzdpu_emis = nzdpu_collector.fetch_emissions(company_name, year)
-    hkex_reports = hkex_collector.search_esg_reports(stock_code, from_date, to_date)
-    hk_benchmark = hkgov_collector.fetch_ghg_emissions(year)
+    # 下面三个源原本没有容错，任一抛出会让整次聚合失败（云上常见：海外 IP 访问港府数据超时）
+    nzdpu_emis = None
+    try:
+        nzdpu_emis = nzdpu_collector.fetch_emissions(company_name, year)
+    except Exception as e:
+        _fail("NZDPU", e)
+
+    hkex_reports = []
+    try:
+        hkex_reports = hkex_collector.search_esg_reports(stock_code, from_date, to_date)
+    except Exception as e:
+        _fail("HKEX", e)
+
+    hk_benchmark = None
+    try:
+        hk_benchmark = hkgov_collector.fetch_ghg_emissions(year)
+    except Exception as e:
+        _fail("HK Gov", e)
 
     # 新增 ESG 数据源：均做容错，失败返回 None
     sbti_target = None
     try:
         sbti_target = sbti_collector.fetch_target(company_name, year)
     except Exception as e:
-        logging.warning(f"SBTi 失败: {e}")
+        _fail("SBTi", e)
 
     sina_esg = None
     try:
         sina_esg = sina_esg_collector.fetch_ratings(stock_code, company_name)
     except Exception as e:
-        logging.warning(f"新浪ESG 失败: {e}")
+        _fail("Sina ESG", e)
 
     country_emission = None
     try:
         # 港股公司默认取中国排放基准
         country_emission = worldbank_collector.fetch_country_emissions("China", year)
     except Exception as e:
-        logging.warning(f"World Bank 失败: {e}")
+        _fail("World Bank", e)
 
     return ESGAggregate(
         company=company,
@@ -633,13 +655,16 @@ def diagnose_listed_company(
     不下载 PDF、不调 LLM——1-3 秒完成。
     完整报告（对标差距 + 路线图 + LLM 叙述）需留资后人工生成。
     """
+    errors: list[str] = []
     try:
         to_date = min(date(year, 12, 31), date.today()).isoformat()
         aggregate = _collect_aggregate(
-            ticker, company_name, stock_code, year, f"{year - 1}-01-01", to_date
+            ticker, company_name, stock_code, year, f"{year - 1}-01-01", to_date,
+            errors=errors,
         )
     except Exception as e:
         logging.warning("diagnose_listed 聚合失败: %s", e)
+        errors.append(f"aggregate: {type(e).__name__}: {e}")
         aggregate = None
 
     summary = {
@@ -702,6 +727,8 @@ def diagnose_listed_company(
             }
 
     summary["next_step"] = "查看完整对标分析与改进路线图？留资即可获取"
+    if errors:
+        summary["source_errors"] = errors
     return summary
 
 

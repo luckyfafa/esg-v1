@@ -487,8 +487,9 @@ class SBTiCollector(BaseCollector):
             return cached if isinstance(cached, list) else []
         url = self._normalize_url(self.base_url)
         headers = {"User-Agent": settings.user_agent}
+        companies: list[dict] = []
         try:
-            with httpx.Client(headers=headers, follow_redirects=True, timeout=120.0) as c:
+            with httpx.Client(headers=headers, follow_redirects=True, timeout=45.0) as c:
                 r = c.get(url)
                 r.raise_for_status()
             # 写入临时 xlsx，pandas 读取
@@ -499,11 +500,18 @@ class SBTiCollector(BaseCollector):
             df.columns = [
                 re.sub(r"\s+", "_", str(c).strip().lower()) for c in df.columns
             ]
-            companies = df.where(pd.notna(df), None).to_dict(orient="records")
+            # 逐条把 NaN 转 None（不用 DataFrame.where(..., None)，pandas 3 行为不一致）
+            companies = [
+                {k: (None if (isinstance(v, float) and pd.isna(v)) else v)
+                 for k, v in rec.items()}
+                for rec in df.to_dict(orient="records")
+            ]
         except Exception as e:
             logger.warning(f"SBTi Excel 下载/解析失败: {e}")
             companies = []
-        self._write_cache(cache_key, companies)
+        # 只有拿到数据才写缓存，避免一次网络抖动把空结果缓存 7 天
+        if companies:
+            self._write_cache(cache_key, companies)
         return companies
 
     @staticmethod
