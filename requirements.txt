@@ -1,0 +1,25 @@
+# Web 框架
+fastapi>=0.110.0
+uvicorn[standard]>=0.27.0
+
+# HTTP 请求
+httpx>=0.27.0
+
+# 数据源
+yfinance>=0.2.40
+pandas>=2.2.0
+openpyxl>=3.1.0      # pandas 读取 SBTi xlsx
+lxml>=5.1.0          # yfinance 解析依赖
+tenacity>=8.2.0      # 重试
+
+# 配置与模型
+pydantic>=2.6.0
+pydantic-settings>=2.2.0
+python-dotenv>=1.0.0
+
+# PDF 解析
+pypdf>=4.8.0
+
+# LLM 抽取（OpenAI 兼容协议，可对接 DeepSeek/Ollama/Azure 等）
+openai>=1.40.0
+
