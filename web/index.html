@@ -145,6 +145,31 @@
   .toast.on{opacity:1;transform:translateX(-50%)}
   .toast.err{background:#7C2D26}
 
+  /* ---------- 报告文档排版 ---------- */
+  .report-doc{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow)}
+  .rd-cover{position:relative;padding:40px 44px 32px;background:linear-gradient(135deg,#0F5132,#1F6B4C);color:#fff;overflow:hidden}
+  .rd-cover::after{content:"";position:absolute;right:-70px;top:-70px;width:300px;height:300px;border-radius:50%;background:rgba(255,255,255,.08)}
+  .rd-eyebrow{font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;opacity:.8}
+  .rd-cover h1{font-size:28px;margin:10px 0 8px;letter-spacing:-.02em;color:#fff}
+  .rd-meta{font-size:13px;opacity:.88;line-height:1.7}
+  .rd-tags{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;position:relative;z-index:1}
+  .rd-tag{font-size:11.5px;padding:3px 10px;border-radius:99px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3)}
+  .rd-overview{padding:22px 44px;background:#F7F9F4;border-bottom:1px solid var(--line);font-size:12.5px;color:var(--ink-2)}
+  .rd-chapter{padding:32px 44px;border-top:1px solid var(--line)}
+  .rd-ch-head{display:flex;gap:14px;align-items:baseline;margin-bottom:16px}
+  .rd-ch-no{font-size:11.5px;font-weight:700;color:var(--green);letter-spacing:.14em}
+  .rd-chapter .md h2,.rd-chapter h2{font-size:19px;margin:0;padding:0;border:0}
+  .rd-figure{margin:0 0 18px;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:#F3F5EF}
+  .rd-figure img{display:block;width:100%;height:180px;object-fit:cover}
+  .rd-figure figcaption{font-size:11.5px;color:var(--muted);padding:8px 12px}
+  .rd-locked{padding:26px 44px 30px;border-top:1px dashed var(--line);background:#FAFAF5}
+  .rd-locked-item{display:flex;align-items:center;gap:10px;padding:9px 0;font-size:13.5px;color:var(--muted);border-bottom:1px solid #EEEFE7}
+  .rd-lock{width:26px;height:26px;border-radius:50%;background:#EAEDE3;display:flex;align-items:center;justify-content:center;font-size:12px;flex:none}
+  @media(max-width:720px){
+    .rd-cover,.rd-overview,.rd-chapter,.rd-locked{padding-left:20px;padding-right:20px}
+    .rd-cover h1{font-size:22px}
+  }
+
   footer{border-top:1px solid var(--line);margin-top:36px;padding-top:16px;color:var(--muted);font-size:11.5px}
 </style>
 </head>
@@ -905,6 +930,70 @@ $("#l-run").addEventListener("click", async () => {
 });
 
 /* ---------- 上市公司报告试读 ---------- */
+/* ---------- 报告文档渲染（封面 + 章节配图 + 锁定章节） ---------- */
+const RD_IMAGES = [
+  { keys: ["概况", "报告说明", "概览", "评分"], prompt: "modern corporate headquarters skyline, glass towers, clean daylight, architectural photography", caption: "企业 ESG 报告" },
+  { keys: ["温室", "环境", "排放", "碳", "能耗"], prompt: "wind turbines and solar panels in green landscape, clean energy, aerial view, soft morning light", caption: "环境绩效 · 清洁能源与减排" },
+  { keys: ["员工", "社会", "人力", "安全"], prompt: "diverse professional team collaborating in bright modern office, natural light, documentary photography", caption: "社会绩效 · 员工与社区" },
+  { keys: ["治理", "董事会", "合规", "反腐"], prompt: "modern boardroom with long table and documents, soft daylight, corporate governance, minimal", caption: "公司治理 · 决策与监督" },
+  { keys: ["数据质量", "方法", "核证", "证据"], prompt: "stack of sustainability reports and data charts on a wooden desk, close up, soft light", caption: "数据质量 · 方法与证据" },
+  { keys: ["实质", "议题", "利益相关"], prompt: "stakeholder workshop with sticky notes on glass wall, sustainability strategy session, natural light", caption: "实质性议题 · 利益相关方" },
+  { keys: ["差距", "路线", "改进", "行动"], prompt: "person walking up modern staircase toward bright light, conceptual progress, minimal architecture", caption: "差距分析 · 改进路线" },
+  { keys: ["评级", "提升", "目标"], prompt: "rising bar chart on glass screen with green arrow, business analytics, modern office", caption: "评级提升 · 目标路径" }
+];
+
+function rdFigure(title) {
+  const hit = RD_IMAGES.find(x => x.keys.some(k => String(title).includes(k))) || RD_IMAGES[0];
+  const src = `https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=${encodeURIComponent(hit.prompt)}&image_size=landscape_4_3`;
+  return `<figure class="rd-figure"><img loading="lazy" src="${src}" alt="${esc(hit.caption)}"><figcaption>${esc(hit.caption)}</figcaption></figure>`;
+}
+
+function renderReportDoc(el, d, ctaHtml) {
+  if (!el) return;
+  const secs = (d && d.sections) || (d && d.preview_markdown ? [{ title: "", body: d.preview_markdown }] : []);
+  if (!secs.length) {
+    el.innerHTML = `<div class="card flat"><div class="muted">${t('preview.fail')}</div></div>`;
+    return;
+  }
+  const locked = (d.locked_sections || []);
+  const q = d.data_quality != null ? (Math.round(d.data_quality * 1000) / 10) + "%" : "—";
+  const year = d.report_year || "";
+  const company = d.company_name || d.title || "";
+  const tag1 = currentLang === 'zh' ? '试读版' : 'Preview';
+  const tag2 = currentLang === 'zh' ? '公开数据' : 'Public data';
+
+  let html = `<article class="report-doc">
+    <div class="rd-cover">
+      <div class="rd-eyebrow">ESG REPORT ${esc(String(year))}</div>
+      <h1>${esc(company)}</h1>
+      <div class="rd-meta">${esc(d.stock_code || "")}${d.stock_code ? ' · ' : ''}${currentLang === 'zh' ? '数据完整度' : 'Data completeness'} ${q}${year ? ' · ' + esc(String(year)) + (currentLang === 'zh' ? ' 年度' : ' FY') : ''}</div>
+      <div class="rd-tags"><span class="rd-tag">${esc(tag1)}</span><span class="rd-tag">${esc(tag2)}</span></div>
+    </div>`;
+
+  const first = secs[0];
+  const overview = (first && (first.body || first.markdown)) || "";
+  if (overview) html += `<div class="rd-overview">${mdToHtml(overview)}</div>`;
+
+  secs.slice(1).forEach((s, i) => {
+    const title = String(s.title || "").replace(/^[一二三四五六七八九十百]+、\s*/, "");
+    html += `<section class="rd-chapter">
+      <div class="rd-ch-head"><span class="rd-ch-no">${String(i + 1).padStart(2, '0')}</span><h2>${esc(title)}</h2></div>
+      ${rdFigure(title)}
+      <div class="md">${mdToHtml(s.body || "")}</div>
+    </section>`;
+  });
+
+  if (locked.length) {
+    html += `<div class="rd-locked">
+      <div style="font-size:13px;font-weight:600;margin-bottom:6px">🔒 ${t('preview.locked_title')}</div>
+      ${locked.map(x => `<div class="rd-locked-item"><span class="rd-lock">🔒</span>${esc(x)}</div>`).join("")}
+      ${ctaHtml || ""}
+    </div>`;
+  }
+  html += `</article>`;
+  el.innerHTML = html;
+}
+
 async function loadPreview(ticker, name, code, year) {
   const box = $("#l-preview");
   box.classList.remove("hide");
@@ -914,25 +1003,19 @@ async function loadPreview(ticker, name, code, year) {
     const res = await fetch(url);
     if (!res.ok) throw new Error(res.statusText);
     const d = await res.json();
-    const locked = (d.locked_sections || []).map(s => `<li>${esc(s)}</li>`).join("");
     if (d.preview_markdown) {
       $("#r-md").innerHTML = mdToHtml(d.preview_markdown) +
         `<div class="notice" style="margin-top:14px">🔒 ${t('preview.locked_title')}：${(d.locked_sections || []).join(" / ")}</div>`;
     }
     box.innerHTML = `
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
         <h2 style="margin:0">${t('preview.title')}</h2>
         <span class="pill">${t('preview.badge')}</span>
         <span class="muted" style="font-size:12px">${d.free_sections}/${d.total_sections} ${currentLang === 'zh' ? '章可见' : 'sections visible'}</span>
       </div>
-      <div class="card" style="padding:22px">
-        <div class="md" style="max-height:none">${mdToHtml(d.preview_markdown || "")}</div>
-        <div style="margin-top:20px;padding-top:16px;border-top:1px dashed var(--line)">
-          <div style="font-size:13px;font-weight:600;margin-bottom:8px">🔒 ${t('preview.locked_title')}</div>
-          <ul style="font-size:12.5px;color:var(--muted);margin:0 0 14px 20px">${locked}</ul>
-          <button class="btn" onclick="openLead('listed-preview', {company:'${esc(d.company_name || name)}', stock_code:'${esc(code)}'})">${t('preview.cta')}</button>
-        </div>
-      </div>`;
+      <div id="l-doc"></div>`;
+    const cta = `<div style="margin-top:16px"><button class="btn" onclick="openLead('listed-preview', {company:'${esc(d.company_name || name)}', stock_code:'${esc(code)}'})">${t('preview.cta')}</button></div>`;
+    renderReportDoc($("#l-doc"), d, cta);
   } catch (e) {
     box.innerHTML = `<div class="notice">${t('preview.fail')}</div>`;
   }
@@ -991,13 +1074,19 @@ $("#p-run").addEventListener("click", async () => {
     }
 
     $("#p-path")?.classList.add("hide");
-    if (d.markdown) {
-      lastMd = d.markdown;
-      $("#p-md").innerHTML = mdToHtml(d.markdown);
-      $("#r-md").innerHTML = mdToHtml(d.markdown);
-    } else {
-      $("#p-md").innerHTML = "";
-    }
+    const docData = {
+      title: d.report_title || `${d.company || ""} ESG 报告 ${d.report_year || ""}`,
+      company_name: d.company || "",
+      stock_code: "",
+      report_year: d.report_year || "",
+      data_quality: d.data_quality,
+      sections: d.sections || [],
+      locked_sections: d.locked_sections || [],
+      preview_markdown: d.preview_markdown || ""
+    };
+    lastMd = d.preview_markdown || "";
+    renderReportDoc($("#p-md"), docData, "");
+    renderReportDoc($("#r-md"), docData, "");
 
     $("#p-note")?.remove();
     const cta = document.createElement("div");

@@ -199,6 +199,23 @@ def _aggregate_cached(
 def health():
     return {"status": "ok"}
 
+
+def _section_payload(markdown: str, free_count: int) -> tuple[list[dict], list[str]]:
+    """把报告 Markdown 拆成章节，前 free_count 段放正文，其余只留标题。"""
+    from .reporter import split_markdown_sections
+
+    parts = split_markdown_sections(markdown)
+    free: list[dict] = []
+    locked: list[str] = []
+    for i, part in enumerate(parts):
+        head, _, body = part.partition("\n")
+        title = head.lstrip("#").strip()
+        if i < free_count:
+            free.append({"title": title, "markdown": part, "body": body.strip()})
+        else:
+            locked.append(title)
+    return free, locked
+
 # ----- Yahoo Finance -----
 @app.get("/yahoo/company/{ticker}", response_model=CompanyInfo, tags=["yfinance"])
 def get_company_info(ticker: str):
@@ -1117,7 +1134,7 @@ def report_preview(
     # sections[0] 是标题与元信息，sections[1:] 才是正文章节；试读只放第一章
     free_count = min(2, len(sections))
     preview_md = "\n\n".join(sections[:free_count])
-    locked = [s.split("\n", 1)[0].lstrip("# ").strip() for s in sections[free_count:]]
+    free_sections, locked_sections = _section_payload(report.markdown, free_count)
 
     return {
         "title": report.title,
@@ -1126,7 +1143,8 @@ def report_preview(
         "report_year": report.report_year,
         "data_quality": report.overall_data_quality,
         "preview_markdown": preview_md,
-        "locked_sections": locked,
+        "sections": free_sections,
+        "locked_sections": locked_sections,
         "free_sections": free_count,
         "total_sections": len(sections),
         "disclaimer": "试读版基于公开数据，未包含披露正文数字；完整版需人工复核。",
@@ -1194,14 +1212,22 @@ async def diagnose_uploaded_excel(
             ],
         }
 
-        # 生成报告正文（不调 LLM），供「报告预览」和「下载 Markdown」使用
+        # 生成报告正文（不调 LLM），但只下发前两章，其余章节需付费/留资
         try:
             from .client_report import build_client_report
 
             report = build_client_report(analysis, use_llm_narrative=False)
-            summary["markdown"] = report.markdown
+            parts = _section_payload(report.markdown, 2)
+            free_sections, locked_sections = parts
             summary["report_title"] = report.title
             summary["data_quality"] = report.overall_data_quality
+            summary["sections"] = free_sections
+            summary["locked_sections"] = locked_sections
+            summary["free_sections"] = len(free_sections)
+            summary["total_sections"] = len(free_sections) + len(locked_sections)
+            summary["preview_markdown"] = "\n\n".join(
+                s["markdown"] for s in free_sections
+            )
         except Exception as e:  # noqa: BLE001
             logging.warning("diagnose_upload 生成报告失败: %s", e)
 
