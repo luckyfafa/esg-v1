@@ -245,6 +245,7 @@
         <table id="l-table"></table>
       </div>
       <div id="l-note" class="notice hide"></div>
+      <div id="l-preview" class="hide" style="margin-top:22px"></div>
     </div>
   </section>
 
@@ -517,6 +518,12 @@ const I18N = {
     "listed.label.next": "以上为公开数据快速摘要",
     "listed.cta": "获取完整报告",
     "listed.cta_sub": "完整对标分析与改进路线图？留资即可获取",
+    "preview.title": "报告试读",
+    "preview.badge": "试读版 · 仅公开数据",
+    "preview.loading": "正在生成试读版…",
+    "preview.locked_title": "以下章节需获取完整报告",
+    "preview.cta": "联系获取完整报告",
+    "preview.fail": "试读版暂不可用，可直接留资获取",
     "private.title": "非上市企业 ESG 诊断",
     "private.lead": "上传采集表模板填写完成的 Excel，系统按行业基线快速生成差距概览。",
     "private.l.industry": "覆盖行业（可选）",
@@ -632,6 +639,12 @@ const I18N = {
     "listed.label.next": "Above is a public-data quick snapshot.",
     "listed.cta": "Get Full Report",
     "listed.cta_sub": "Full benchmark analysis & improvement roadmap? Leave contact and we'll deliver.",
+    "preview.title": "Report preview",
+    "preview.badge": "Preview · public data only",
+    "preview.loading": "Generating preview…",
+    "preview.locked_title": "These sections require the full report",
+    "preview.cta": "Contact for the full report",
+    "preview.fail": "Preview unavailable — leave your contact for the full report",
     "private.title": "Private Company ESG Diagnosis",
     "private.lead": "Upload the filled template Excel. System returns gap overview against your industry baseline in seconds.",
     "private.l.industry": "Override industry (optional)",
@@ -877,12 +890,43 @@ $("#l-run").addEventListener("click", async () => {
         <button class="btn" onclick="openLead('listed-diagnose', {company:'${esc(d.company || name)}', stock_code:'${esc(code)}'})">${ctaBtn}</button>
       </div>` + errBlock;
     $("#l-out").classList.remove("hide");
+    loadPreview(ticker, name || d.company || code, code, year);
   } catch (e) {
     toast(t('toast.query_fail') + e.message, true);
   } finally {
     btn.disabled = false; btn.textContent = t('listed.btn');
   }
 });
+
+/* ---------- 上市公司报告试读 ---------- */
+async function loadPreview(ticker, name, code, year) {
+  const box = $("#l-preview");
+  box.classList.remove("hide");
+  box.innerHTML = `<div class="card flat"><div class="muted">${t('preview.loading')}</div></div>`;
+  try {
+    const url = `/api/report/preview?ticker=${encodeURIComponent(ticker)}&company_name=${encodeURIComponent(name)}&stock_code=${encodeURIComponent(code)}&year=${year}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(res.statusText);
+    const d = await res.json();
+    const locked = (d.locked_sections || []).map(s => `<li>${esc(s)}</li>`).join("");
+    box.innerHTML = `
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap">
+        <h2 style="margin:0">${t('preview.title')}</h2>
+        <span class="pill">${t('preview.badge')}</span>
+        <span class="muted" style="font-size:12px">${d.free_sections}/${d.total_sections} ${currentLang === 'zh' ? '章可见' : 'sections visible'}</span>
+      </div>
+      <div class="card" style="padding:22px">
+        <div class="md" style="max-height:none">${mdToHtml(d.preview_markdown || "")}</div>
+        <div style="margin-top:20px;padding-top:16px;border-top:1px dashed var(--line)">
+          <div style="font-size:13px;font-weight:600;margin-bottom:8px">🔒 ${t('preview.locked_title')}</div>
+          <ul style="font-size:12.5px;color:var(--muted);margin:0 0 14px 20px">${locked}</ul>
+          <button class="btn" onclick="openLead('listed-preview', {company:'${esc(d.company_name || name)}', stock_code:'${esc(code)}'})">${t('preview.cta')}</button>
+        </div>
+      </div>`;
+  } catch (e) {
+    box.innerHTML = `<div class="notice">${t('preview.fail')}</div>`;
+  }
+}
 
 /* ---------- 非上市企业 ---------- */
 let pickedFile = null;

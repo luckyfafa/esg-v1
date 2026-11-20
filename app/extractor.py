@@ -241,7 +241,7 @@ PDF 相关片段（已按 ESG 关键词过滤，可能不完整）：
 def _get_client() -> OpenAI:
     if not settings.llm_api_key:
         raise RuntimeError(
-            "LLM_API_KEY 未配置，请在 .env 中设置（OpenAI 兼容协议）"
+            "LLM_API_KEY 未配置（本地写在 .env，Render 写在 Settings → Environment）"
         )
     return OpenAI(
         api_key=settings.llm_api_key,

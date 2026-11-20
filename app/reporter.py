@@ -31,6 +31,25 @@ from .schemas import (
 logger = logging.getLogger(__name__)
 
 
+def split_markdown_sections(md: str) -> list[str]:
+    """按二级标题切分报告 Markdown。
+
+    第一段包含一级标题与元信息，其后每段以 `## ` 开头。用于试读版只放出前几章。
+    """
+    parts: list[str] = []
+    buf: list[str] = []
+    for line in md.splitlines():
+        if line.startswith("## ") and buf:
+            parts.append("\n".join(buf).strip())
+            buf = [line]
+        else:
+            buf.append(line)
+    if buf:
+        parts.append("\n".join(buf).strip())
+    return [p for p in parts if p]
+
+
+
 # =========================================================
 # 数据完整度评估
 # =========================================================

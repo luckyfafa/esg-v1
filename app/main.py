@@ -815,7 +815,9 @@ def admin_report(
         return HTMLResponse(_admin_report_form(token))
 
     code = stock_code.strip()
-    y = year or (date.today().year - 1)
+    y = year
+    if not y or y < 2000 or y > date.today().year + 1:
+        y = date.today().year - 1
     ticker = f"{code.lstrip('0').zfill(5)}.HK"
     name = company_name.strip() or code
     from_date = f"{y - 1}-01-01"
@@ -1052,6 +1054,55 @@ def diagnose_listed_company(
     if errors:
         summary["source_errors"] = errors
     return summary
+
+
+@app.get("/api/report/preview", tags=["diagnose"])
+def report_preview(
+    ticker: str = Query(..., description="Yahoo ticker，如 00700.HK"),
+    company_name: str = Query("", description="公司名称"),
+    stock_code: str = Query("", description="港交所代码，如 00700"),
+    year: int = Query(0, description="报告年度，0 或非法值取上一年"),
+):
+    """上市公司报告「试读版」：只返回前两章，其余章节只给标题。
+
+    公开数据生成，不下载 PDF、不调 LLM，约 3–5 秒；完整版走留资。
+    """
+    from .reporter import split_markdown_sections
+
+    code = (stock_code or ticker.split(".")[0]).strip()
+    y = year
+    if not y or y < 2000 or y > date.today().year + 1:
+        y = date.today().year - 1
+    name = company_name.strip() or f"{code}.HK"
+
+    aggregate = _collect_aggregate(ticker, name, code, y, f"{y - 1}-01-01", f"{y}-12-31")
+    kpis = ESGKPIs(
+        company_name=name,
+        stock_code=code,
+        report_year=y,
+        source_pdf="",
+        notes=["preview mode: public data only"],
+    )
+    report = generate_report(aggregate=aggregate, kpis=kpis, use_llm_narrative=False)
+
+    sections = split_markdown_sections(report.markdown)
+    # sections[0] 是标题与元信息，sections[1:] 才是正文章节；试读给「头部 + 前两章」
+    free_count = min(3, len(sections))
+    preview_md = "\n\n".join(sections[:free_count])
+    locked = [s.split("\n", 1)[0].lstrip("# ").strip() for s in sections[free_count:]]
+
+    return {
+        "title": report.title,
+        "company_name": report.company_name,
+        "stock_code": report.stock_code,
+        "report_year": report.report_year,
+        "data_quality": report.overall_data_quality,
+        "preview_markdown": preview_md,
+        "locked_sections": locked,
+        "free_sections": free_count,
+        "total_sections": len(sections),
+        "disclaimer": "试读版基于公开数据，未包含披露正文数字；完整版需人工复核。",
+    }
 
 
 @app.post("/api/diagnose/upload", tags=["diagnose"])
