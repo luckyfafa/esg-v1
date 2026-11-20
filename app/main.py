@@ -669,18 +669,20 @@ def _notify_lead_webhook(url: str, lead: dict) -> None:
         logging.warning("留资 webhook 推送失败: %s", e)
 
 
-@app.get("/admin/leads", tags=["leads"])
-def admin_leads(token: str = Query("", description="管理口令（ADMIN_TOKEN）")):
-    """查看已收集的留资线索（HTML 表格）。
-
-    需在环境变量里设置 ADMIN_TOKEN；未设置时直接拒绝，避免公开泄露客户信息。
-    """
-    from .config import settings
-
+def _require_admin(token: str) -> None:
+    """校验管理口令；未配置 ADMIN_TOKEN 时整体禁用。"""
     if not settings.admin_token:
         raise HTTPException(status_code=403, detail="未配置 ADMIN_TOKEN，管理页已禁用")
     if token != settings.admin_token:
         raise HTTPException(status_code=403, detail="口令错误")
+
+
+@app.get("/admin/leads", tags=["leads"])
+def admin_leads(token: str = Query("", description="管理口令（ADMIN_TOKEN）")):
+    """查看已收集的留资线索（HTML 表格）。"""
+    from .config import settings
+
+    _require_admin(token)
 
     rows: list[dict] = []
     for f in sorted(settings.lead_dir.glob("lead_*.json"), reverse=True):
@@ -727,6 +729,210 @@ th{{background:#F7F7F1;color:#6B726C;font-weight:600}}
 </tr></thead><tbody>{body}</tbody></table>
 </body></html>"""
     return HTMLResponse(content=html)
+
+
+_ADMIN_CSS = """
+body{font-family:"Microsoft YaHei",sans-serif;margin:0;background:#FBFBF7;color:#161A17}
+.wrap{max-width:1100px;margin:0 auto;padding:24px}
+h1{font-size:20px;margin:0 0 6px}
+.note{color:#6B726C;font-size:12px;margin:0 0 18px}
+.card{background:#fff;border:1px solid #E2E3D8;border-radius:10px;padding:18px;margin-bottom:18px}
+label{display:block;font-size:12px;color:#6B726C;margin-bottom:5px}
+input[type=text],input[type=number]{width:100%;padding:9px 11px;border:1px solid #E2E3D8;
+  border-radius:7px;font-size:13px;font-family:inherit}
+.row{display:flex;gap:12px;flex-wrap:wrap}
+.row>div{flex:1;min-width:160px}
+button{background:#0F5132;color:#fff;border:0;border-radius:7px;padding:10px 18px;
+  font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+button:hover{background:#1F6B4C}
+.btn2{background:#fff;color:#0F5132;border:1px solid #C9DCD2}
+.warn{background:#FAF4F0;border-left:3px solid #A8542A;padding:10px 12px;
+  border-radius:7px;font-size:12.5px;color:#6B4432;margin-bottom:16px}
+pre{white-space:pre-wrap;word-break:break-word;background:#fff;border:1px solid #E2E3D8;
+  border-radius:10px;padding:20px;font-size:13px;line-height:1.75;
+  font-family:"Microsoft YaHei",Consolas,monospace}
+a{color:#0F5132}
+"""
+
+
+def _admin_report_form(token: str, message: str = "") -> str:
+    import html as _html
+
+    msg = (
+        f'<div class="warn">{_html.escape(message)}</div>' if message else ""
+    )
+    return f"""<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+<title>生成完整报告</title><style>{_ADMIN_CSS}</style></head><body><div class="wrap">
+<h1>生成完整 ESG 报告</h1>
+<p class="note">输入港股代码即可：自动检索港交所 ESG 报告 → 下载 PDF → 抽取 KPI → 生成八章报告。
+首次生成约 1–3 分钟；勾选 LLM 叙述会更慢，且需要配置 LLM_API_KEY。</p>
+{msg}
+<form class="card" method="get" action="/admin/report">
+  <input type="hidden" name="token" value="{_html.escape(token)}">
+  <div class="row">
+    <div><label>港股代码</label>
+      <input type="text" name="stock_code" placeholder="如 06893" required></div>
+    <div><label>公司名称（可留空）</label>
+      <input type="text" name="company_name" placeholder="如 中国水务"></div>
+    <div><label>报告年度</label>
+      <input type="number" name="year" placeholder="留空取上一年"></div>
+    <div><label>LLM 叙述（1=开，0=关）</label>
+      <input type="number" name="llm" value="0" min="0" max="1"></div>
+  </div>
+  <div style="margin-top:12px"><label>PDF 直链（可选；HKEX 自动检索失败时填写）</label>
+    <input type="text" name="pdf_url"
+           placeholder="https://www1.hkexnews.hk/listedco/listconews/sehk/2025/xxxx/xxxx.pdf"></div>
+  <div style="margin-top:16px"><button type="submit">生成报告</button></div>
+</form>
+<p class="note"><a href="/admin/leads?token={_html.escape(token)}">← 返回留资线索</a></p>
+</div></body></html>"""
+
+
+@app.get("/admin/report", tags=["admin"])
+def admin_report(
+    token: str = Query("", description="管理口令（ADMIN_TOKEN）"),
+    stock_code: str = Query("", description="港股代码，如 06893"),
+    company_name: str = Query("", description="公司名称"),
+    year: int = Query(0, description="报告年度，0 表示取上一年"),
+    llm: int = Query(0, description="1=生成 LLM 叙述"),
+    pdf_url: str = Query("", description="可选：直接指定 ESG 报告 PDF 链接"),
+):
+    """管理端：一键生成某只港股的完整 ESG 报告（HTML 预览 + 下载 Markdown）。"""
+    import html as _html
+
+    _require_admin(token)
+
+    if not stock_code.strip():
+        return HTMLResponse(_admin_report_form(token))
+
+    code = stock_code.strip()
+    y = year or (date.today().year - 1)
+    ticker = f"{code.lstrip('0').zfill(5)}.HK"
+    name = company_name.strip() or code
+    from_date = f"{y - 1}-01-01"
+    to_date = min(date(y, 12, 31), date.today()).isoformat()
+
+    steps: list[str] = []
+    problems: list[str] = []
+
+    # 1) 检索港交所 ESG 报告
+    latest = None
+    try:
+        metas = hkex_collector.search_esg_reports(code, from_date, to_date)
+    except Exception as e:  # noqa: BLE001
+        metas = []
+        problems.append(f"HKEX 检索失败：{type(e).__name__}: {e}")
+    if metas:
+        latest = max(metas, key=lambda m: m.release_date)
+        steps.append(f"检索到 {len(metas)} 份 ESG 报告，取最新：{latest.release_date} {latest.report_title}")
+    else:
+        problems.append("未检索到该公司的 ESG 报告，报告将只包含公开数据部分")
+
+    # 2) 下载 PDF：优先用显式传入的链接，其次用 HKEX 检索结果
+    pdf_path = None
+    if pdf_url.strip():
+        try:
+            import httpx as _httpx
+
+            with _httpx.Client(
+                headers={"User-Agent": settings.user_agent},
+                follow_redirects=True,
+                timeout=120.0,
+            ) as c:
+                resp = c.get(pdf_url.strip())
+                resp.raise_for_status()
+            pdf_dir = settings.hkex_download_dir
+            pdf_dir.mkdir(parents=True, exist_ok=True)
+            pdf_path = pdf_dir / f"{code}_{y}_manual.pdf"
+            pdf_path.write_bytes(resp.content)
+            steps.append(f"已下载指定 PDF（{len(resp.content) // 1024} KB）")
+        except Exception as e:  # noqa: BLE001
+            problems.append(f"指定 PDF 下载失败：{type(e).__name__}: {e}")
+    elif latest is not None:
+        try:
+            pdf_path = hkex_collector.download_report(latest)
+            steps.append(f"PDF 已就绪：{pdf_path.name}")
+        except Exception as e:  # noqa: BLE001
+            problems.append(f"PDF 下载失败：{type(e).__name__}: {e}")
+
+    # 3) 抽取 KPI（失败则回退空 KPI，保证报告仍可产出）
+    kpis = None
+    if pdf_path is not None:
+        try:
+            kpis = extract_kpis_from_pdf(
+                pdf_path=pdf_path, company_name=name, stock_code=code, report_year=y
+            )
+            steps.append(
+                f"PDF 抽取完成，置信度 {kpis.extraction_confidence:.2f}，"
+                f"备注 {len(kpis.notes)} 条"
+            )
+        except Exception as e:  # noqa: BLE001
+            problems.append(f"PDF 抽取失败（已回退为空 KPI）：{type(e).__name__}: {e}")
+    if kpis is None:
+        kpis = ESGKPIs(
+            company_name=name,
+            stock_code=code,
+            report_year=y,
+            source_pdf=str(pdf_path) if pdf_path else "",
+            notes=["kpi extraction skipped or failed"],
+        )
+
+    # 4) 多源采集 + 生成报告
+    try:
+        aggregate = _collect_aggregate(ticker, name, code, y, from_date, to_date)
+        report = generate_report(
+            aggregate=aggregate, kpis=kpis, use_llm_narrative=bool(llm)
+        )
+        try:
+            save_report(report)
+        except Exception:  # noqa: BLE001
+            pass
+        steps.append(f"报告生成完成，数据质量 {report.overall_data_quality:.0%}，"
+                     f"章节 {len(report.sections)} 个")
+    except Exception as e:  # noqa: BLE001
+        logging.exception("admin_report 生成失败")
+        err = f"{type(e).__name__}: {e}"
+        return HTMLResponse(
+            _admin_report_form(token, f"报告生成失败：{err}"), status_code=500
+        )
+
+    step_html = "".join(f"<div>· {_html.escape(s)}</div>" for s in steps)
+    warn_html = (
+        '<div class="warn"><b>需要注意</b>'
+        + "".join(f"<div>· {_html.escape(p)}</div>" for p in problems)
+        + "</div>"
+        if problems
+        else ""
+    )
+    md = report.markdown
+
+    return HTMLResponse(f"""<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+<title>{_html.escape(report.title)}</title><style>{_ADMIN_CSS}</style></head><body><div class="wrap">
+<h1>{_html.escape(report.title)}</h1>
+<p class="note">{_html.escape(report.company_name)} · {report.stock_code} · {report.report_year} ·
+生成于 {report.generated_at}</p>
+<div class="card" style="font-size:12.5px;color:#3A403B">{step_html}</div>
+{warn_html}
+<div style="margin-bottom:12px">
+  <button onclick="dlMd()">下载 Markdown</button>
+  <a href="/admin/report?token={_html.escape(token)}" class="btn2"
+     style="display:inline-block;padding:10px 18px;border-radius:7px;text-decoration:none;
+            font-size:13px;margin-left:8px">再生成一份</a>
+  <a href="/admin/leads?token={_html.escape(token)}"
+     style="margin-left:14px;font-size:13px">留资线索 →</a>
+</div>
+<pre id="md">{_html.escape(md)}</pre>
+<script>
+function dlMd() {{
+  const t = document.getElementById('md').textContent;
+  const b = new Blob([t], {{type: 'text/markdown;charset=utf-8'}});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(b);
+  a.download = '{report.stock_code}_{report.report_year}_ESG报告.md';
+  a.click();
+}}
+</script>
+</div></body></html>""")
 
 
 @app.get("/api/diagnose/listed", tags=["diagnose"])

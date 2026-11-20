@@ -353,7 +353,10 @@ class HKEXCollector(BaseCollector):
                     )
         except Exception as e:
             logger.warning(f"HKEX 搜索失败: {e}")
-        self._write_cache(cache_key, [m.model_dump() for m in results])
+        # 只缓存非空结果：HKEX 偶发反爬/超时会返回空，若把空列表缓存下来，
+        # 后续 TTL 内所有查询都会误判为「该公司没有 ESG 报告」。
+        if results:
+            self._write_cache(cache_key, [m.model_dump() for m in results])
         return results
 
     def download_report(self, meta: HKEXReportMeta) -> Path:
