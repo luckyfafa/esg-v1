@@ -239,8 +239,9 @@ def build_client_report(
 
     title = f"{p.company_name} ESG 报告 {p.report_year}"
     parts: list[str] = [f"# {title}\n"]
+    src_name = Path(client.source_file).name if client.source_file else "采集表"
     parts.append(
-        f"> 本报告基于企业填报数据（{client.source_file or '采集表'}）与行业公开披露基线生成，"
+        f"> 本报告基于企业填报数据（{src_name}）与行业公开披露基线生成，"
         f"为分析底稿，不构成审计意见或评级结论。生成日期：{today.isoformat()}。\n"
     )
 

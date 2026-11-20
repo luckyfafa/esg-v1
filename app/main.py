@@ -1114,8 +1114,8 @@ def report_preview(
     report = generate_report(aggregate=aggregate, kpis=kpis, use_llm_narrative=False)
 
     sections = split_markdown_sections(report.markdown)
-    # sections[0] 是标题与元信息，sections[1:] 才是正文章节；试读给「头部 + 前两章」
-    free_count = min(3, len(sections))
+    # sections[0] 是标题与元信息，sections[1:] 才是正文章节；试读只放第一章
+    free_count = min(2, len(sections))
     preview_md = "\n\n".join(sections[:free_count])
     locked = [s.split("\n", 1)[0].lstrip("# ").strip() for s in sections[free_count:]]
 
@@ -1193,6 +1193,17 @@ async def diagnose_uploaded_excel(
                 for g in sorted(lagging, key=lambda x: x.gap_pct)[:5]
             ],
         }
+
+        # 生成报告正文（不调 LLM），供「报告预览」和「下载 Markdown」使用
+        try:
+            from .client_report import build_client_report
+
+            report = build_client_report(analysis, use_llm_narrative=False)
+            summary["markdown"] = report.markdown
+            summary["report_title"] = report.title
+            summary["data_quality"] = report.overall_data_quality
+        except Exception as e:  # noqa: BLE001
+            logging.warning("diagnose_upload 生成报告失败: %s", e)
 
     summary["next_step"] = "查看 3 家同行业对标 + 详细差距分析 + A 级改进路线图？留资即可获取"
     return summary

@@ -915,6 +915,10 @@ async function loadPreview(ticker, name, code, year) {
     if (!res.ok) throw new Error(res.statusText);
     const d = await res.json();
     const locked = (d.locked_sections || []).map(s => `<li>${esc(s)}</li>`).join("");
+    if (d.preview_markdown) {
+      $("#r-md").innerHTML = mdToHtml(d.preview_markdown) +
+        `<div class="notice" style="margin-top:14px">🔒 ${t('preview.locked_title')}：${(d.locked_sections || []).join(" / ")}</div>`;
+    }
     box.innerHTML = `
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap">
         <h2 style="margin:0">${t('preview.title')}</h2>
@@ -972,7 +976,7 @@ $("#p-run").addEventListener("click", async () => {
     const totalOf = currentLang === 'zh' ? "共" : "of";
     const canBench = currentLang === 'zh' ? "项可对标" : " metrics benchmarkable";
     $("#p-cards").innerHTML = `
-      <div class="card stat"><div class="k">${t('private.completeness')}</div><div class="v" style="color:${compColor}">${d.completeness_pct}%</div><div class="s">${currentLang === 'zh' ? '必填项' : 'Required'} ${d.filled_required}/${d.total_required}</div></div>
+      <div class="card stat"><div class="k">${t('private.completeness')}</div><div class="v" style="color:${compColor}">${d.completeness_pct}%</div><div class="s">${currentLang === 'zh' ? '必填指标填报率' : 'Required metrics filled'}</div></div>
       <div class="card stat"><div class="k">${t('private.missing')}</div><div class="v" style="color:var(--bad)">${d.missing_required_count}</div><div class="s">${(d.missing_required_codes || []).join(", ") || (currentLang === 'zh' ? '无' : 'None')}${d.missing_required_count > 10 ? " …" : ""}</div></div>
       <div class="card stat"><div class="k">${t('private.peers')}</div><div class="v">${d.industry_peers ?? noData}</div><div class="s">${d.industry || ""}</div></div>
       <div class="card stat"><div class="k">${t('private.lagging')}</div><div class="v" style="color:var(--bad)">${gapCount}</div><div class="s">${d.gap_overview?.total_metrics ? `${totalOf} ${d.gap_overview.total_metrics}${canBench}` : noBaseline}</div></div>`;
@@ -987,7 +991,13 @@ $("#p-run").addEventListener("click", async () => {
     }
 
     $("#p-path")?.classList.add("hide");
-    $("#p-md").innerHTML = "";
+    if (d.markdown) {
+      lastMd = d.markdown;
+      $("#p-md").innerHTML = mdToHtml(d.markdown);
+      $("#r-md").innerHTML = mdToHtml(d.markdown);
+    } else {
+      $("#p-md").innerHTML = "";
+    }
 
     $("#p-note")?.remove();
     const cta = document.createElement("div");
