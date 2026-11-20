@@ -501,6 +501,10 @@
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 let lastMd = "", lastJson = null;
+/* 管理口令：URL 带 ?token=xxx 时记住，用于解锁完整报告（普通访客不受影响） */
+const ADMIN_TOKEN = new URLSearchParams(location.search).get('token') || sessionStorage.getItem('esg_admin') || '';
+if (ADMIN_TOKEN) sessionStorage.setItem('esg_admin', ADMIN_TOKEN);
+const TOKEN_QS = ADMIN_TOKEN ? '&token=' + encodeURIComponent(ADMIN_TOKEN) : '';
 
 /* ---------- i18n 字典 ---------- */
 const I18N = {
@@ -984,7 +988,9 @@ function renderReportDoc(el, d, ctaHtml) {
   const q = d.data_quality != null ? (Math.round(d.data_quality * 1000) / 10) + "%" : "—";
   const year = d.report_year || "";
   const company = d.company_name || d.title || "";
-  const tag1 = currentLang === 'zh' ? '试读版' : 'Preview';
+  const tag1 = ADMIN_TOKEN
+    ? (currentLang === 'zh' ? '管理员 · 完整版' : 'Admin · Full')
+    : (currentLang === 'zh' ? '试读版' : 'Preview');
   const tag2 = currentLang === 'zh' ? '公开数据' : 'Public data';
 
   let html = `<article class="report-doc">
@@ -1024,7 +1030,7 @@ async function loadPreview(ticker, name, code, year) {
   box.classList.remove("hide");
   box.innerHTML = `<div class="card flat"><div class="muted">${t('preview.loading')}</div></div>`;
   try {
-    const url = `/api/report/preview?ticker=${encodeURIComponent(ticker)}&company_name=${encodeURIComponent(name)}&stock_code=${encodeURIComponent(code)}&year=${year}`;
+    const url = `/api/report/preview?ticker=${encodeURIComponent(ticker)}&company_name=${encodeURIComponent(name)}&stock_code=${encodeURIComponent(code)}&year=${year}${TOKEN_QS}`;
     const res = await fetch(url);
     if (!res.ok) throw new Error(res.statusText);
     const d = await res.json();
@@ -1070,7 +1076,7 @@ $("#p-run").addEventListener("click", async () => {
   try {
     const fd = new FormData();
     fd.append("file", pickedFile);
-    const res = await fetch("/api/diagnose/upload", { method: "POST", body: fd });
+    const res = await fetch("/api/diagnose/upload" + (ADMIN_TOKEN ? "?token=" + encodeURIComponent(ADMIN_TOKEN) : ""), { method: "POST", body: fd });
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
       throw new Error(err.detail || res.status);

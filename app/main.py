@@ -722,6 +722,11 @@ def _require_admin(token: str) -> None:
         raise HTTPException(status_code=403, detail="口令错误")
 
 
+def _is_admin(token: str) -> bool:
+    """口令正确时返回 True，用于给管理员解锁完整报告（不抛异常）。"""
+    return bool(settings.admin_token) and token == settings.admin_token
+
+
 @app.get("/admin/leads", tags=["leads"])
 def admin_leads(token: str = Query("", description="管理口令（ADMIN_TOKEN）")):
     """查看已收集的留资线索（HTML 表格）。"""
@@ -1107,6 +1112,7 @@ def report_preview(
     company_name: str = Query("", description="公司名称"),
     stock_code: str = Query("", description="港交所代码，如 00700"),
     year: int = Query(0, description="报告年度，0 或非法值取上一年"),
+    token: str = Query("", description="管理口令；填对则返回完整报告"),
 ):
     """上市公司报告「试读版」：只返回前两章，其余章节只给标题。
 
@@ -1132,7 +1138,7 @@ def report_preview(
 
     sections = split_markdown_sections(report.markdown)
     # sections[0] 是标题与元信息，sections[1:] 才是正文章节；试读只放第一章
-    free_count = min(2, len(sections))
+    free_count = len(sections) if _is_admin(token) else min(2, len(sections))
     preview_md = "\n\n".join(sections[:free_count])
     free_sections, locked_sections = _section_payload(report.markdown, free_count)
 
@@ -1154,6 +1160,7 @@ def report_preview(
 @app.post("/api/diagnose/upload", tags=["diagnose"])
 async def diagnose_uploaded_excel(
     file: UploadFile = File(..., description="填写完成的采集表（.xlsx）"),
+    token: str = Query("", description="管理口令；填对则返回完整报告"),
 ):
     """非上市企业快速诊断（获客钩子）。
 
@@ -1217,7 +1224,8 @@ async def diagnose_uploaded_excel(
             from .client_report import build_client_report
 
             report = build_client_report(analysis, use_llm_narrative=False)
-            parts = _section_payload(report.markdown, 2)
+            free_count = 10**6 if _is_admin(token) else 2
+            parts = _section_payload(report.markdown, free_count)
             free_sections, locked_sections = parts
             summary["report_title"] = report.title
             summary["data_quality"] = report.overall_data_quality
