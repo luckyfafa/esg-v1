@@ -227,6 +227,7 @@ def build_client_report(
     analysis: ClientAnalysis,
     use_llm_narrative: bool = False,
     target_rating: str | None = None,
+    materiality: dict | None = None,
 ) -> ESGReport:
     """生成定制化 Markdown 报告（不调用 LLM）。"""
     client = analysis.client
@@ -293,21 +294,38 @@ def build_client_report(
     sections.append(ReportSection(title="公司概况与 ESG 治理", narrative="治理架构与董事会构成。"))
 
     # 3 实质性议题
-    md = "## 三、实质性议题\n\n"
-    industry_label = p.industry or industry_key
-    md += (f"结合{industry_label}行业特征与本次填报数据，确定以下 {len(topics)} 项重点议题：\n\n")
-    md += "\n".join(f"{i}. {t}" for i, t in enumerate(topics, 1)) + "\n\n"
-    md += (
-        "> 议题清单依据行业常见披露重点生成。正式对外披露前，建议通过利益相关方访谈或问卷"
-        "完成实质性评估（双重重要性），再据此调整议题与指标。\n"
-    )
-    if narr.get("materiality"):
-        md += f"\n{narr['materiality']}\n"
-    parts.append(md)
-    sections.append(ReportSection(
-        title="实质性议题",
-        narrative=narr.get("materiality", "按行业特征确定的重点议题。"),
-    ))
+    if materiality:
+        from . import materiality as mat
+
+        result = materiality if materiality.get("rows") else mat.assess(materiality)
+        md = "## 三、实质性议题（双重重要性评估）\n\n" + mat.to_markdown(result)
+        if narr.get("materiality"):
+            md += f"\n{narr['materiality']}\n"
+        parts.append(md)
+        sections.append(ReportSection(
+            title="实质性议题（双重重要性）",
+            narrative=(
+                f"双重重大 {result['counts']['双重重大']} 项，"
+                f"影响重大 {result['counts']['影响重大']} 项，"
+                f"财务重大 {result['counts']['财务重大']} 项。"
+            ),
+        ))
+    else:
+        md = "## 三、实质性议题\n\n"
+        industry_label = p.industry or industry_key
+        md += (f"结合{industry_label}行业特征与本次填报数据，确定以下 {len(topics)} 项重点议题：\n\n")
+        md += "\n".join(f"{i}. {t}" for i, t in enumerate(topics, 1)) + "\n\n"
+        md += (
+            "> 议题清单依据行业常见披露重点生成。正式对外披露前，建议通过利益相关方访谈或问卷"
+            "完成实质性评估（双重重要性），再据此调整议题与指标。\n"
+        )
+        if narr.get("materiality"):
+            md += f"\n{narr['materiality']}\n"
+        parts.append(md)
+        sections.append(ReportSection(
+            title="实质性议题",
+            narrative=narr.get("materiality", "按行业特征确定的重点议题。"),
+        ))
 
     # 4 环境绩效
     md = "## 四、环境绩效\n\n"

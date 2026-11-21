@@ -553,6 +553,7 @@ def build_client_report_endpoint(
     target_rating: Optional[str] = Query(
         None, description="目标评级（A/AA）；填写后在报告中新增评级提升路径章节"
     ),
+    materiality_json: str = Query("", description="双重重要性评估 JSON，提供后第三章改为评估结果"),
     save: bool = Query(True, description="是否落盘到 data/cache/reports/"),
 ):
     """基于客户填报数据生成定制化 ESG 报告。
@@ -574,7 +575,8 @@ def build_client_report_endpoint(
     key = normalize_industry(industry or client.profile.industry)
     analysis = analyze(client, key, derive_metrics(client))
     report = build_client_report(
-        analysis, use_llm_narrative=use_llm_narrative, target_rating=target_rating
+        analysis, use_llm_narrative=use_llm_narrative, target_rating=target_rating,
+        materiality=_parse_materiality(materiality_json),
     )
     if save:
         save_client_report(report, analysis)
@@ -602,6 +604,7 @@ async def build_client_report_upload(
     file: UploadFile = File(..., description="填写完成的采集表（.xlsx）"),
     industry: Optional[str] = Form(None, description="覆盖表中的行业"),
     target_rating: Optional[str] = Form(None, description="目标评级（A/AA）"),
+    materiality_json: str = Form("", description="双重重要性评估 JSON，提供后第三章改为评估结果"),
     use_llm_narrative: bool = Form(True),
     save: bool = Form(True),
 ):
@@ -635,7 +638,8 @@ async def build_client_report_upload(
     key = normalize_industry(industry or client.profile.industry)
     analysis = analyze(client, key, derive_metrics(client))
     report = build_client_report(
-        analysis, use_llm_narrative=use_llm_narrative, target_rating=target_rating
+        analysis, use_llm_narrative=use_llm_narrative, target_rating=target_rating,
+        materiality=_parse_materiality(materiality_json),
     )
     if save:
         save_client_report(report, analysis)
@@ -725,6 +729,36 @@ def _require_admin(token: str) -> None:
 def _is_admin(token: str) -> bool:
     """口令正确时返回 True，用于给管理员解锁完整报告（不抛异常）。"""
     return bool(settings.admin_token) and token == settings.admin_token
+
+
+def _parse_materiality(raw: str) -> dict | None:
+    """解析前端传来的双重重要性评估 JSON；空串或解析失败都按未提供处理。"""
+    if not raw or not raw.strip():
+        return None
+    import json
+
+    try:
+        data = json.loads(raw)
+    except (TypeError, ValueError):
+        raise HTTPException(status_code=400, detail="materiality_json 不是合法 JSON")
+    return data if isinstance(data, dict) else None
+
+
+@app.get("/api/materiality/topics", tags=["materiality"])
+def materiality_topics(industry: str = Query("unknown", description="行业键")):
+    """返回某行业的双重重要性议题池与建议初值。"""
+    from . import materiality
+
+    return materiality.topics(industry)
+
+
+@app.post("/api/materiality/assess", tags=["materiality"])
+def materiality_assess(payload: dict):
+    """按企业自评分数计算双轴矩阵，返回结果与可插入报告的 Markdown。"""
+    from . import materiality
+
+    result = materiality.assess(payload)
+    return {**result, "markdown": materiality.to_markdown(result)}
 
 
 @app.get("/admin/leads", tags=["leads"])
@@ -1310,6 +1344,7 @@ def view_share(token: str):
 @app.post("/api/diagnose/upload", tags=["diagnose"])
 async def diagnose_uploaded_excel(
     file: UploadFile = File(..., description="填写完成的采集表（.xlsx）"),
+    materiality_json: str = Form("", description="双重重要性评估 JSON"),
     token: str = Query("", description="管理口令；填对则返回完整报告"),
 ):
     """非上市企业快速诊断（获客钩子）。
@@ -1370,10 +1405,13 @@ async def diagnose_uploaded_excel(
         }
 
         # 生成报告正文（不调 LLM），但只下发前两章，其余章节需付费/留资
+        materiality = _parse_materiality(materiality_json)
         try:
             from .client_report import build_client_report
 
-            report = build_client_report(analysis, use_llm_narrative=False)
+            report = build_client_report(
+                analysis, use_llm_narrative=False, materiality=materiality
+            )
             free_count = 10**6 if _is_admin(token) else 2
             parts = _section_payload(report.markdown, free_count)
             free_sections, locked_sections = parts

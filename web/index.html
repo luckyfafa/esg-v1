@@ -188,6 +188,18 @@
     .rd-cover h1{font-size:22px}
   }
 
+  .mat-table{min-width:1220px}
+  .mat-table td{padding:6px 7px;vertical-align:middle}
+  .mat-table input[type=number]{width:55px;padding:5px 4px;text-align:center}
+  .mat-table input[type=text]{min-width:170px;padding:6px 8px}
+  .mat-table select{min-width:116px;padding:6px 7px}
+  .mat-topic{min-width:180px;font-weight:600}
+  .mat-metrics{display:block;font-size:10.5px;color:var(--muted);font-weight:400;margin-top:2px}
+  .mat-result-grid{display:grid;grid-template-columns:1.35fr .65fr;gap:16px;margin-top:16px;align-items:start}
+  .mat-chart{width:100%;height:auto;display:block}
+  .mat-priority{padding:10px 0;border-bottom:1px solid var(--line)}
+  .mat-priority:last-child{border-bottom:0}
+  @media(max-width:850px){.mat-result-grid{grid-template-columns:1fr}}
   footer{border-top:1px solid var(--line);margin-top:36px;padding-top:16px;color:var(--muted);font-size:11.5px}
   .edge{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:14px 0 6px}
   .edge-item{background:#fff;border:1px solid var(--line);border-top:3px solid var(--green);border-radius:10px;padding:14px 15px}
@@ -211,6 +223,7 @@
       <button class="tab" data-v="listed" data-i18n="nav.listed">上市公司</button>
       <button class="tab" data-v="private" data-i18n="nav.private">非上市企业</button>
       <button class="tab" data-v="carbon" data-i18n="nav.carbon">碳核算</button>
+      <button class="tab" data-v="materiality" data-i18n="nav.materiality">重要性</button>
       <button class="tab" data-v="report" data-i18n="nav.report">报告</button>
       <button class="tab" data-v="pricing" data-i18n="nav.pricing">方案与试用</button>
     </nav>
@@ -381,6 +394,10 @@
           </div>
         </div>
 
+        <div class="notice" style="margin-top:14px;display:flex;align-items:center;gap:12px">
+          <span id="p-mat-status" style="flex:1">尚未带入双重重要性评估，报告第三章将使用行业预置清单。</span>
+          <button class="btn ghost sm" onclick="go('materiality')" data-i18n="private.mat.go">先完成评估</button>
+        </div>
         <button class="btn" id="p-run" style="margin-top:14px;width:100%">生成报告</button>
         <p class="muted" style="margin-top:8px">首次演示可直接使用 <code>docs/非上市企业ESG数据采集表-填写示例.xlsx</code>。</p>
       </div>
@@ -477,6 +494,72 @@
       <div class="card" id="c-out">
         <p class="muted" data-i18n="carbon.empty">填写左侧数据后点击计算。结果会列出每个因子及其来源。</p>
       </div>
+    </div>
+  </section>
+
+  <!-- 双重重要性 -->
+  <section class="view" id="v-materiality">
+    <div class="hero" style="margin-bottom:12px">
+      <span class="tag" data-i18n="mat.tag">双重重要性 · 企业自评底稿</span>
+      <h1 style="font-size:26px" data-i18n="mat.title">把议题放到影响与财务两条轴上</h1>
+      <p class="lead" data-i18n="mat.lead">影响重要性取规模、范围、不可补救性的均值；财务重要性取可能性、影响量级的均值，并记录时间跨度。各项采用 1–5 分，两条轴均以 3.0 为阈值。</p>
+    </div>
+
+    <div class="card">
+      <div class="row">
+        <div><label data-i18n="mat.company">企业名称</label><input type="text" id="m-company" data-i18n-ph="mat.company.ph" placeholder="如 示例制造有限公司"></div>
+        <div>
+          <label data-i18n="mat.industry">所属行业</label>
+          <select id="m-industry">
+            <option value="manufacturing" data-i18n="mat.ind.manufacturing">制造业</option><option value="technology" data-i18n="mat.ind.technology">电子科技</option>
+            <option value="retail" data-i18n="mat.ind.retail">零售与消费品</option><option value="logistics" data-i18n="mat.ind.logistics">物流运输</option>
+            <option value="real_estate" data-i18n="mat.ind.real_estate">建筑地产</option><option value="banking" data-i18n="mat.ind.banking">金融</option>
+            <option value="services" data-i18n="mat.ind.services">一般服务业</option><option value="unknown" data-i18n="mat.ind.unknown">其他／未确定</option>
+          </select>
+        </div>
+        <div><label data-i18n="mat.assessor">评估人／部门</label><input type="text" id="m-assessor" data-i18n-ph="mat.assessor.ph" placeholder="如 ESG 工作组 张小姐"></div>
+      </div>
+      <div class="row" style="justify-content:flex-end;margin-top:14px;align-items:center">
+        <div id="m-status" class="muted" style="flex:2;min-width:240px" data-i18n="mat.status.empty">修改评分后点击“生成矩阵”，系统会保存本次评估记录。</div>
+        <button class="btn ghost" id="m-download-md" data-i18n="mat.download.md">下载评估 Markdown</button>
+        <button class="btn ghost" id="m-download-json" data-i18n="mat.download.json">下载留痕 JSON</button>
+        <button class="btn" id="m-run" data-i18n="mat.run">生成双轴矩阵</button>
+      </div>
+    </div>
+
+    <h2 data-i18n="mat.scores">议题评分与采集指标映射</h2>
+    <p class="muted" style="margin-bottom:10px" data-i18n="mat.scores.hint">初值只是行业建议，请按企业实际调整；“评分依据”会写入报告与留痕文件。未映射指标不代表议题不重要，而是需要补数据口径。</p>
+    <div class="card flat" style="padding:0;overflow:hidden">
+      <div class="table-scroll">
+        <table class="mat-table">
+          <thead><tr>
+            <th data-i18n="mat.h.topic">议题／映射指标</th><th data-i18n="mat.h.scale">规模</th>
+            <th data-i18n="mat.h.scope">范围</th><th data-i18n="mat.h.irrem">不可补救性</th>
+            <th data-i18n="mat.h.likelihood">可能性</th><th data-i18n="mat.h.magnitude">影响量级</th>
+            <th data-i18n="mat.h.horizon">时间跨度</th><th data-i18n="mat.h.rationale">评分依据／调整理由</th>
+          </tr></thead>
+          <tbody id="m-topic-body"><tr><td colspan="8" class="muted" style="padding:20px">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="m-out" class="hide">
+      <h2 data-i18n="mat.result">评估结果</h2>
+      <div class="grid g4" id="m-cards"></div>
+      <div class="mat-result-grid">
+        <div class="card flat">
+          <h3 data-i18n="mat.matrix">双轴矩阵（横轴：财务重要性；纵轴：影响重要性）</h3>
+          <div id="m-chart"></div>
+          <p class="muted" style="margin-top:8px" data-i18n="mat.matrix.hint">圆点可悬停查看议题与得分；虚线为 3.0 阈值。右上角议题优先进入披露与管理行动。</p>
+        </div>
+        <div class="card flat">
+          <h3 data-i18n="mat.priority">双重重大议题（披露优先）</h3>
+          <div id="m-priority"></div>
+        </div>
+      </div>
+      <h2 data-i18n="mat.detail">全部议题判定</h2>
+      <div class="card flat" style="padding:0;overflow:hidden"><div class="table-scroll"><table id="m-result-table" style="min-width:850px"></table></div></div>
+      <div id="m-unmapped" class="notice" style="margin-top:14px"></div>
     </div>
   </section>
 
@@ -628,7 +711,26 @@ const I18N = {
     "nav.listed": "上市公司",
     "nav.private": "非上市企业",
     "nav.carbon": "碳核算",
+    "nav.materiality": "重要性",
     "nav.report": "报告",
+    "mat.tag": "双重重要性 · 企业自评底稿",
+    "mat.title": "把议题放到影响与财务两条轴上",
+    "mat.lead": "影响重要性取规模、范围、不可补救性的均值；财务重要性取可能性、影响量级的均值，并记录时间跨度。各项采用 1–5 分，两条轴均以 3.0 为阈值。",
+    "mat.company": "企业名称", "mat.company.ph": "如 示例制造有限公司",
+    "mat.industry": "所属行业", "mat.assessor": "评估人／部门", "mat.assessor.ph": "如 ESG 工作组 张小姐",
+    "mat.status.empty": "修改评分后点击“生成矩阵”，系统会保存本次评估记录。",
+    "mat.download.md": "下载评估 Markdown", "mat.download.json": "下载留痕 JSON", "mat.run": "生成双轴矩阵",
+    "mat.scores": "议题评分与采集指标映射",
+    "mat.scores.hint": "初值只是行业建议，请按企业实际调整；“评分依据”会写入报告与留痕文件。未映射指标不代表议题不重要，而是需要补数据口径。",
+    "mat.h.topic": "议题／映射指标", "mat.h.scale": "规模", "mat.h.scope": "范围", "mat.h.irrem": "不可补救性",
+    "mat.h.likelihood": "可能性", "mat.h.magnitude": "影响量级", "mat.h.horizon": "时间跨度", "mat.h.rationale": "评分依据／调整理由",
+    "mat.result": "评估结果", "mat.matrix": "双轴矩阵（横轴：财务重要性；纵轴：影响重要性）",
+    "mat.matrix.hint": "圆点可悬停查看议题与得分；虚线为 3.0 阈值。右上角议题优先进入披露与管理行动。",
+    "mat.priority": "双重重大议题（披露优先）", "mat.detail": "全部议题判定",
+    "mat.ind.manufacturing": "制造业", "mat.ind.technology": "电子科技", "mat.ind.retail": "零售与消费品",
+    "mat.ind.logistics": "物流运输", "mat.ind.real_estate": "建筑地产", "mat.ind.banking": "金融",
+    "mat.ind.services": "一般服务业", "mat.ind.unknown": "其他／未确定",
+    "private.mat.go": "先完成评估",
     "nav.pricing": "方案与试用",
     "home.edge.h": "V3 强在哪：不是模拟，是可核查的数据",
     "home.edge1.t": "家机构评级实时聚合",
@@ -805,7 +907,26 @@ const I18N = {
     "nav.listed": "Listed Cos.",
     "nav.private": "Private Cos.",
     "nav.carbon": "Carbon",
+    "nav.materiality": "Materiality",
     "nav.report": "Report",
+    "mat.tag": "Double materiality · Company assessment workbook",
+    "mat.title": "Place each topic on the impact and financial axes",
+    "mat.lead": "Impact materiality averages scale, scope and irremediability. Financial materiality averages likelihood and magnitude, with the time horizon recorded. All scores use 1–5, with 3.0 as the threshold on both axes.",
+    "mat.company": "Company", "mat.company.ph": "e.g. Example Manufacturing Ltd.",
+    "mat.industry": "Industry", "mat.assessor": "Assessor / team", "mat.assessor.ph": "e.g. ESG team, Ms Chan",
+    "mat.status.empty": "Adjust the scores and generate the matrix to save this assessment.",
+    "mat.download.md": "Download assessment MD", "mat.download.json": "Download audit JSON", "mat.run": "Generate matrix",
+    "mat.scores": "Topic scores and data-metric mapping",
+    "mat.scores.hint": "Initial values are industry suggestions only. Adjust them for your company; the rationale is kept in the report and audit file. An unmapped topic still needs a data definition, not a lower priority by default.",
+    "mat.h.topic": "Topic / mapped metrics", "mat.h.scale": "Scale", "mat.h.scope": "Scope", "mat.h.irrem": "Irremediability",
+    "mat.h.likelihood": "Likelihood", "mat.h.magnitude": "Magnitude", "mat.h.horizon": "Time horizon", "mat.h.rationale": "Basis / adjustment rationale",
+    "mat.result": "Assessment result", "mat.matrix": "Two-axis matrix (X: financial; Y: impact)",
+    "mat.matrix.hint": "Hover over a point for its topic and scores. Dashed lines mark 3.0; topics in the upper-right are disclosure priorities.",
+    "mat.priority": "Double-material topics (disclosure priority)", "mat.detail": "All topic classifications",
+    "mat.ind.manufacturing": "Manufacturing", "mat.ind.technology": "Technology", "mat.ind.retail": "Retail & consumer",
+    "mat.ind.logistics": "Logistics", "mat.ind.real_estate": "Real estate", "mat.ind.banking": "Financial services",
+    "mat.ind.services": "Services", "mat.ind.unknown": "Other / undetermined",
+    "private.mat.go": "Assess first",
     "nav.pricing": "Pricing",
     "home.edge.h": "Why V3: verifiable data, not simulation",
     "home.edge1.t": "agency ratings in one query",
@@ -1002,6 +1123,11 @@ function setLang(lang) {
   });
   if (lastListedResult) {
     renderListed(lastListedResult.d, lastListedResult.name, lastListedResult.code);
+  }
+  if (window.matReady) {
+    renderMatScores();
+    if (matResult) renderMatResult();
+    updatePrivateMatStatus();
   }
 }
 function t(key) { return I18N[currentLang]?.[key] ?? I18N.zh[key] ?? key; }
@@ -1900,6 +2026,188 @@ async function loadPreview(ticker, name, code, year, pdfUrl) {
   }
 }
 
+/* ---------- 双重重要性：议题评分、双轴矩阵与留痕 ---------- */
+const MAT_FIELDS = ["scale", "scope", "irremediability", "likelihood", "magnitude"];
+const MAT_HORIZONS = [
+  { zh: "短期（1 年内）", en: "Short term (within 1 year)" },
+  { zh: "中期（1–3 年）", en: "Medium term (1–3 years)" },
+  { zh: "长期（3 年以上）", en: "Long term (over 3 years)" }
+];
+const MAT_QUADRANTS = {
+  "双重重大": { en: "Double material", color: "#1F6B4C" },
+  "影响重大": { en: "Impact material", color: "#4C78A8" },
+  "财务重大": { en: "Financially material", color: "#A8741A" },
+  "观察项": { en: "Watch list", color: "#7A817B" }
+};
+let matTopics = [], matDraft = {}, matResult = null, matPayload = null, matThreshold = 3;
+const matAttr = s => esc(s ?? "").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+const matText = (zh, en) => currentLang === "zh" ? zh : en;
+const matQuadrant = q => currentLang === "zh" ? q : (MAT_QUADRANTS[q]?.en || q);
+const matHorizon = h => currentLang === "zh" ? h : (MAT_HORIZONS.find(x => x.zh === h)?.en || h);
+window.matReady = true;
+
+function updatePrivateMatStatus() {
+  const el = $("#p-mat-status");
+  if (!el) return;
+  el.textContent = matResult
+    ? matText(`已带入双重重要性评估：双重重大 ${matResult.counts["双重重大"]} 项，评估日期 ${matResult.date}。`, `Assessment attached: ${matResult.counts["双重重大"]} double-material topics, assessed ${matResult.date}.`)
+    : matText("尚未带入双重重要性评估，报告第三章将使用行业预置清单。", "No assessment attached; chapter 3 will use the industry preset list.");
+}
+
+function invalidateMateriality() {
+  matResult = null; matPayload = null;
+  $("#m-out").classList.add("hide");
+  $("#m-status").textContent = t("mat.status.empty");
+  localStorage.removeItem("esg_materiality_v1");
+  updatePrivateMatStatus();
+}
+
+function renderMatScores() {
+  const body = $("#m-topic-body");
+  if (!body || !matTopics.length) return;
+  body.innerHTML = matTopics.map(topic => {
+    const s = matDraft[topic.id] || topic;
+    const numbers = MAT_FIELDS.map(f => `<td><input type="number" min="1" max="5" step="1" value="${Number(s[f])}" data-id="${matAttr(topic.id)}" data-field="${f}" aria-label="${matAttr(topic.name)} · ${f}"></td>`).join("");
+    const horizons = MAT_HORIZONS.map(h => `<option value="${matAttr(h.zh)}" ${s.horizon === h.zh ? "selected" : ""}>${esc(matText(h.zh, h.en))}</option>`).join("");
+    return `<tr>
+      <td class="mat-topic">${esc(topic.name)}<span class="mat-metrics">${topic.metrics.length ? esc(topic.metrics.join(" · ")) : matText("需补数据口径", "Data definition needed")}</span></td>
+      ${numbers}
+      <td><select data-id="${matAttr(topic.id)}" data-field="horizon">${horizons}</select></td>
+      <td><input type="text" value="${matAttr(s.rationale || "")}" data-id="${matAttr(topic.id)}" data-field="rationale" placeholder="${matAttr(matText("事实、来源或调整原因", "Fact, source or reason"))}"></td>
+    </tr>`;
+  }).join("");
+}
+
+async function loadMatTopics(savedScores) {
+  const body = $("#m-topic-body");
+  body.innerHTML = `<tr><td colspan="8" class="muted" style="padding:20px">${matText("正在载入议题池…", "Loading topic pool…")}</td></tr>`;
+  try {
+    const res = await fetch(`/api/materiality/topics?industry=${encodeURIComponent($("#m-industry").value)}`);
+    if (!res.ok) throw new Error(res.statusText);
+    const d = await res.json();
+    matTopics = d.topics || []; matThreshold = d.threshold || 3;
+    matDraft = {};
+    matTopics.forEach(topic => {
+      const old = savedScores?.[topic.id] || {};
+      matDraft[topic.id] = {};
+      MAT_FIELDS.forEach(f => { matDraft[topic.id][f] = Number(old[f] ?? topic[f]); });
+      matDraft[topic.id].horizon = old.horizon || topic.horizon;
+      matDraft[topic.id].rationale = old.rationale || "";
+    });
+    renderMatScores();
+  } catch (e) {
+    body.innerHTML = `<tr><td colspan="8" class="muted" style="padding:20px">${esc(matText("议题池载入失败：", "Could not load topics: ") + e.message)}</td></tr>`;
+  }
+}
+
+function matBadge(q) {
+  const cls = q === "双重重大" ? "lead" : q === "观察项" ? "" : "mid";
+  return `<span class="badge ${cls}">${esc(matQuadrant(q))}</span>`;
+}
+
+function renderMatChart() {
+  const L = 58, R = 652, T = 30, B = 370, tx = L + (matThreshold - 1) / 4 * (R - L), ty = B - (matThreshold - 1) / 4 * (B - T);
+  const x = v => L + (v - 1) / 4 * (R - L), y = v => B - (v - 1) / 4 * (B - T);
+  let svg = `<svg class="mat-chart" viewBox="0 0 680 420" role="img" aria-label="${matAttr(matText("双重重要性矩阵", "Double materiality matrix"))}" xmlns="http://www.w3.org/2000/svg">`;
+  svg += `<rect x="${L}" y="${T}" width="${tx-L}" height="${ty-T}" fill="#EAF0F6"/><rect x="${tx}" y="${T}" width="${R-tx}" height="${ty-T}" fill="#E4F1E8"/><rect x="${L}" y="${ty}" width="${tx-L}" height="${B-ty}" fill="#F3F4EF"/><rect x="${tx}" y="${ty}" width="${R-tx}" height="${B-ty}" fill="#FAF2DF"/>`;
+  for (let n = 1; n <= 5; n++) {
+    svg += `<line x1="${x(n)}" y1="${T}" x2="${x(n)}" y2="${B}" stroke="#fff"/><line x1="${L}" y1="${y(n)}" x2="${R}" y2="${y(n)}" stroke="#fff"/><text x="${x(n)}" y="${B+20}" text-anchor="middle" font-size="11" fill="#6B726C">${n}</text><text x="${L-12}" y="${y(n)+4}" text-anchor="end" font-size="11" fill="#6B726C">${n}</text>`;
+  }
+  svg += `<line x1="${tx}" y1="${T}" x2="${tx}" y2="${B}" stroke="#7E8780" stroke-dasharray="5 4"/><line x1="${L}" y1="${ty}" x2="${R}" y2="${ty}" stroke="#7E8780" stroke-dasharray="5 4"/><rect x="${L}" y="${T}" width="${R-L}" height="${B-T}" fill="none" stroke="#C9CEC7"/>`;
+  const labels = [
+    { q: "影响重大", x: L+14, y: T+22, anchor: "start" }, { q: "双重重大", x: R-14, y: T+22, anchor: "end" },
+    { q: "观察项", x: L+14, y: B-14, anchor: "start" }, { q: "财务重大", x: R-14, y: B-14, anchor: "end" }
+  ];
+  labels.forEach(l => { svg += `<text x="${l.x}" y="${l.y}" text-anchor="${l.anchor}" font-size="12" font-weight="700" fill="${MAT_QUADRANTS[l.q].color}">${esc(matQuadrant(l.q))}</text>`; });
+  svg += `<text x="${(L+R)/2}" y="410" text-anchor="middle" font-size="12" fill="#3A403B">${matText("财务重要性 →", "Financial materiality →")}</text><text x="16" y="${(T+B)/2}" text-anchor="middle" font-size="12" fill="#3A403B" transform="rotate(-90 16 ${(T+B)/2})">${matText("影响重要性 →", "Impact materiality →")}</text>`;
+  const groups = {};
+  matResult.rows.forEach(r => { const k = `${r.impact}|${r.financial}`; (groups[k] ||= []).push(r); });
+  const offsets = [[0,0],[10,0],[-10,0],[0,10],[0,-10],[9,9],[-9,-9],[9,-9],[-9,9],[16,0],[-16,0]];
+  Object.values(groups).forEach(group => group.forEach((r, i) => {
+    const o = offsets[i % offsets.length], cx = x(r.financial) + o[0], cy = y(r.impact) + o[1];
+    svg += `<circle cx="${cx}" cy="${cy}" r="6.5" fill="${MAT_QUADRANTS[r.quadrant].color}" fill-opacity=".88" stroke="#fff" stroke-width="1.5"><title>${esc(r.name)} · ${matText("影响", "Impact")} ${r.impact} · ${matText("财务", "Financial")} ${r.financial} · ${esc(matQuadrant(r.quadrant))}</title></circle>`;
+  }));
+  return svg + "</svg>";
+}
+
+function renderMatResult() {
+  if (!matResult) return;
+  $("#m-out").classList.remove("hide");
+  const cards = ["双重重大", "影响重大", "财务重大", "观察项"];
+  $("#m-cards").innerHTML = cards.map(q => `<div class="card stat"><div class="k">${esc(matQuadrant(q))}</div><div class="v" style="color:${MAT_QUADRANTS[q].color}">${matResult.counts[q]}</div><div class="s">${matText("项议题", "topics")}</div></div>`).join("");
+  $("#m-chart").innerHTML = renderMatChart();
+  const dual = matResult.rows.filter(r => r.quadrant === "双重重大");
+  $("#m-priority").innerHTML = dual.length ? dual.map(r => `<div class="mat-priority"><b>${esc(r.name)}</b><div class="muted" style="margin-top:3px">${matText("影响", "Impact")} ${r.impact} · ${matText("财务", "Financial")} ${r.financial} · ${esc(matHorizon(r.horizon))}</div><span class="mat-metrics">${r.metrics.length ? esc(r.metrics.join(" · ")) : matText("需补数据口径", "Data definition needed")}</span>${r.rationale ? `<div style="font-size:11px;margin-top:5px">${esc(r.rationale)}</div>` : ""}</div>`).join("") : `<p class="muted">${matText("本次没有双轴均达到阈值的议题。", "No topic reached both thresholds.")}</p>`;
+  $("#m-result-table").innerHTML = `<thead><tr><th>${matText("议题", "Topic")}</th><th class="num">${matText("影响", "Impact")}</th><th class="num">${matText("财务", "Financial")}</th><th>${matText("判定", "Classification")}</th><th>${matText("时间跨度", "Horizon")}</th><th>${matText("采集指标", "Metrics")}</th></tr></thead><tbody>` + matResult.rows.map(r => `<tr><td><b>${esc(r.name)}</b></td><td class="num">${r.impact}</td><td class="num">${r.financial}</td><td>${matBadge(r.quadrant)}</td><td>${esc(matHorizon(r.horizon))}</td><td>${esc(r.metrics.join(" · ")) || matText("需补数据", "Data needed")}</td></tr>`).join("") + "</tbody>";
+  $("#m-unmapped").innerHTML = matResult.unmapped.length
+    ? `<b>${matText("需补充数据的议题", "Topics needing data definitions")}</b><br>${esc(matResult.unmapped.join("、"))}<br><span class="muted">${matText("未映射不代表不重要；正式披露前需补设定量口径或文字说明。", "Unmapped does not mean immaterial; define quantitative metrics or narrative before disclosure.")}</span>`
+    : matText("全部议题均已映射采集指标。", "All topics are mapped to data metrics.");
+  $("#m-status").textContent = matText(`已保存评估：${matResult.date} · ${matResult.rows.length} 项议题 · 评估人 ${matResult.assessor || "待填写"}`, `Assessment saved: ${matResult.date} · ${matResult.rows.length} topics · assessor ${matResult.assessor || "not provided"}`);
+  updatePrivateMatStatus();
+}
+
+async function runMateriality() {
+  if (!matTopics.length) return toast(matText("议题池尚未载入", "Topic pool is not loaded"), true);
+  const payload = {
+    industry: $("#m-industry").value,
+    company_name: $("#m-company").value.trim(),
+    assessor: $("#m-assessor").value.trim(),
+    scores: JSON.parse(JSON.stringify(matDraft))
+  };
+  const btn = $("#m-run"); btn.disabled = true; btn.textContent = matText("计算中…", "Calculating…");
+  try {
+    const res = await fetch("/api/materiality/assess", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+    if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error(err.detail || res.statusText); }
+    matPayload = payload; matResult = await res.json();
+    localStorage.setItem("esg_materiality_v1", JSON.stringify({ payload: matPayload, result: matResult }));
+    renderMatResult();
+    toast(matText("双轴矩阵已生成，上传采集表时将自动带入报告", "Matrix generated; it will be attached to the next uploaded report"));
+  } catch (e) { toast(matText("评估失败：", "Assessment failed: ") + e.message, true); }
+  finally { btn.disabled = false; btn.textContent = t("mat.run"); }
+}
+
+function onMatEdit(e) {
+  const el = e.target, id = el.dataset.id, field = el.dataset.field;
+  if (!id || !field || !matDraft[id]) return;
+  matDraft[id][field] = el.type === "number" ? (el.value === "" ? "" : Number(el.value)) : el.value;
+  invalidateMateriality();
+}
+
+$("#m-topic-body").addEventListener("input", onMatEdit);
+$("#m-topic-body").addEventListener("change", onMatEdit);
+$("#m-company").addEventListener("input", invalidateMateriality);
+$("#m-assessor").addEventListener("input", invalidateMateriality);
+$("#m-industry").addEventListener("change", async () => { invalidateMateriality(); await loadMatTopics(); });
+$("#m-run").addEventListener("click", runMateriality);
+$("#m-download-md").addEventListener("click", () => {
+  if (!matResult) return toast(matText("请先生成双轴矩阵", "Generate the matrix first"), true);
+  const company = matResult.company_name || matText("企业", "Company");
+  download(`${company}-双重重要性评估.md`, `# ${company} 双重重要性评估\n\n${matResult.markdown}`);
+});
+$("#m-download-json").addEventListener("click", () => {
+  if (!matResult) return toast(matText("请先生成双轴矩阵", "Generate the matrix first"), true);
+  download(`${matResult.company_name || "企业"}-双重重要性留痕.json`, JSON.stringify({ input: matPayload, result: matResult }, null, 2), "application/json");
+});
+$("#p-industry").addEventListener("change", e => {
+  const map = { "制造业": "manufacturing", "电子科技": "technology", "纺织消费品": "retail", "物流运输": "logistics", "建筑地产": "real_estate", "金融": "banking", "一般服务业": "services" };
+  const key = map[e.target.value];
+  if (key && key !== $("#m-industry").value) { $("#m-industry").value = key; invalidateMateriality(); loadMatTopics(); }
+});
+
+async function initMateriality() {
+  let saved = null;
+  try { saved = JSON.parse(localStorage.getItem("esg_materiality_v1") || "null"); } catch (_) { localStorage.removeItem("esg_materiality_v1"); }
+  if (saved?.payload?.industry) {
+    $("#m-industry").value = saved.payload.industry;
+    $("#m-company").value = saved.payload.company_name || "";
+    $("#m-assessor").value = saved.payload.assessor || "";
+  }
+  await loadMatTopics(saved?.payload?.scores);
+  if (saved?.result?.rows) { matPayload = saved.payload; matResult = saved.result; renderMatResult(); }
+  updatePrivateMatStatus();
+}
+initMateriality();
+
 /* ---------- 非上市企业 ---------- */
 let pickedFile = null;
 const drop = $("#drop"), fileInput = $("#file");
@@ -1924,6 +2232,9 @@ $("#p-run").addEventListener("click", async () => {
   try {
     const fd = new FormData();
     fd.append("file", pickedFile);
+    if (matResult && matPayload) {
+      fd.append("materiality_json", JSON.stringify({ ...matResult, input: matPayload }));
+    }
     const res = await fetch("/api/diagnose/upload" + (ADMIN_TOKEN ? "?token=" + encodeURIComponent(ADMIN_TOKEN) : ""), { method: "POST", body: fd });
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
