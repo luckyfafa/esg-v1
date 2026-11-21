@@ -761,6 +761,41 @@ def materiality_assess(payload: dict):
     return {**result, "markdown": materiality.to_markdown(result)}
 
 
+@app.post("/api/materiality/suggest", tags=["materiality"])
+async def materiality_suggest(
+    file: UploadFile = File(..., description="已填写的采集表（.xlsx / .xlsm）"),
+    industry: str = Form("", description="可选；不传则按采集表内行业"),
+):
+    """根据采集数据与行业对标，为每个议题生成可解释的评分建议（仅供参考，企业可覆盖）。"""
+    import uuid
+
+    from . import materiality as mat
+    from .benchmark import analyze, normalize_industry
+    from .client_data import derive_metrics, load_client_excel
+
+    suffix = Path(file.filename or "").suffix.lower()
+    if suffix not in (".xlsx", ".xlsm"):
+        raise HTTPException(status_code=400, detail="仅支持 .xlsx / .xlsm 格式")
+    content = await file.read()
+    if len(content) > MAX_UPLOAD_BYTES:
+        raise HTTPException(status_code=413, detail="文件超过 10MB")
+
+    from .config import settings
+
+    upload_dir = settings.cache_dir / "uploads"
+    upload_dir.mkdir(parents=True, exist_ok=True)
+    target = upload_dir / f"{uuid.uuid4().hex}{suffix}"
+    target.write_bytes(content)
+    try:
+        client = load_client_excel(target)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    key = normalize_industry(industry or client.profile.industry or "")
+    analysis = analyze(client, key, derive_metrics(client))
+    return mat.suggest_from_analysis(analysis)
+
+
 @app.get("/admin/leads", tags=["leads"])
 def admin_leads(token: str = Query("", description="管理口令（ADMIN_TOKEN）")):
     """查看已收集的留资线索（HTML 表格）。"""

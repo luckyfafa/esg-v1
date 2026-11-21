@@ -194,3 +194,90 @@ def to_markdown(result: dict[str, Any]) -> str:
         "正式对外披露前，建议结合利益相关方访谈或问卷复核评分，并记录调整理由。\n"
     )
     return md
+
+
+def _metric_label(analysis, code: str) -> str:
+    m = analysis.client.metric(code)
+    return m.name if m and m.name else code
+
+
+def suggest_from_analysis(analysis) -> dict[str, Any]:
+    """根据采集数据与行业对标，为每个议题生成可解释的评分建议。
+
+    规则（保守、可解释，不把"绩效领先"误判为"议题不重要"）：
+    - 议题映射的每个指标：落后 → 压力分 4；接近/领先 → 3；有数据但无对标 → 3；无数据 → 跳过。
+    - 议题得分 = 其映射指标压力分的均值（四舍五入到整数，限 1–5）。
+    - 影响轴（规模/范围）与财务轴（可能性/影响量级）取同一压力得分；
+      不可补救性保留议题默认值（议题固有属性，不因当期数据改变）。
+    - 全部映射指标无数据 → 不臆测，沿用行业建议初值，并标注"补数后可复评"。
+    """
+    from .client_data import resolve_value
+
+    pool = topics(analysis.industry_key)
+    gap_by_code = {g.code: g for g in analysis.gaps}
+    suggestions: dict[str, dict[str, Any]] = {}
+    with_data = no_data = 0
+
+    for t in pool["topics"]:
+        pressures: list[float] = []
+        evidence: list[str] = []
+        has_value = False
+        for code in t["metrics"]:
+            val = resolve_value(analysis.client, code, analysis.derived)
+            gap = gap_by_code.get(code)
+            if val is None:
+                evidence.append(f"{_metric_label(analysis, code)}：暂无数据")
+                continue
+            has_value = True
+            if gap is not None and gap.median:
+                pos = gap.position
+                dev = f"{gap.gap_pct:+.1f}%" if gap.gap_pct is not None else "—"
+                if pos == "落后":
+                    pressures.append(4)
+                    evidence.append(
+                        f"{gap.name} 落后（{gap.client_value}{gap.unit}，较中位偏离 {dev}）→ 建议上调"
+                    )
+                elif pos == "领先":
+                    pressures.append(3)
+                    evidence.append(f"{gap.name} 领先（{gap.client_value}{gap.unit}）→ 议题仍可能重大，不调低")
+                else:
+                    pressures.append(3)
+                    evidence.append(f"{gap.name} 接近中位（{gap.client_value}{gap.unit}）→ 中性")
+            else:
+                pressures.append(3)
+                evidence.append(f"{_metric_label(analysis, code)}：已填报，暂无行业对标 → 中性")
+
+        if not has_value:
+            no_data += 1
+            suggestions[t["id"]] = {
+                "scale": t["scale"], "scope": t["scope"],
+                "irremediability": t["irremediability"],
+                "likelihood": t["likelihood"], "magnitude": t["magnitude"],
+                "horizon": t["horizon"],
+                "reason": "映射指标暂无采集数据，已采用行业建议初值；补数后可复评。",
+                "evidence": evidence,
+                "from_data": False,
+            }
+            continue
+
+        with_data += 1
+        avg = sum(pressures) / len(pressures)
+        score = max(1, min(5, int(round(avg))))
+        suggestions[t["id"]] = {
+            "scale": score, "scope": score,
+            "irremediability": t["irremediability"],
+            "likelihood": score, "magnitude": score,
+            "horizon": t["horizon"],
+            "reason": "依据采集数据与行业对标生成，可手动调整；修改后即转为企业自评。",
+            "evidence": evidence,
+            "from_data": True,
+        }
+
+    return {
+        "industry": analysis.industry_key,
+        "suggestions": suggestions,
+        "summary": {
+            "with_data": with_data, "no_data": no_data,
+            "total": len(pool["topics"]),
+        },
+    }

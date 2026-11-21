@@ -195,6 +195,10 @@
   .mat-table select{min-width:116px;padding:6px 7px}
   .mat-topic{min-width:180px;font-weight:600}
   .mat-metrics{display:block;font-size:10.5px;color:var(--muted);font-weight:400;margin-top:2px}
+  .mat-sug{background:#FFF8E7;border-color:#E0C97A}
+  .mat-sug-badge{display:inline-block;font-size:10px;color:#8A6D1A;background:#FFF1CC;border:1px solid #E8D488;border-radius:3px;padding:0 5px;margin-left:6px;vertical-align:middle;font-weight:600}
+  .mat-evidence{list-style:none;font-size:10.5px;color:#6B726C;margin:3px 0 0;padding:0;line-height:1.55}
+  .mat-evidence li{margin:0}
   .mat-result-grid{display:grid;grid-template-columns:1.35fr .65fr;gap:16px;margin-top:16px;align-items:start}
   .mat-chart{width:100%;height:auto;display:block}
   .mat-priority{padding:10px 0;border-bottom:1px solid var(--line)}
@@ -521,6 +525,7 @@
       </div>
       <div class="row" style="justify-content:flex-end;margin-top:14px;align-items:center">
         <div id="m-status" class="muted" style="flex:2;min-width:240px" data-i18n="mat.status.empty">修改评分后点击“生成矩阵”，系统会保存本次评估记录。</div>
+        <button class="btn ghost" id="m-suggest" data-i18n="mat.suggest">根据采集数据生成评分建议</button>
         <button class="btn ghost" id="m-download-md" data-i18n="mat.download.md">下载评估 Markdown</button>
         <button class="btn ghost" id="m-download-json" data-i18n="mat.download.json">下载留痕 JSON</button>
         <button class="btn" id="m-run" data-i18n="mat.run">生成双轴矩阵</button>
@@ -719,6 +724,7 @@ const I18N = {
     "mat.company": "企业名称", "mat.company.ph": "如 示例制造有限公司",
     "mat.industry": "所属行业", "mat.assessor": "评估人／部门", "mat.assessor.ph": "如 ESG 工作组 张小姐",
     "mat.status.empty": "修改评分后点击“生成矩阵”，系统会保存本次评估记录。",
+    "mat.suggest": "根据采集数据生成评分建议", "mat.suggest.needFile": "请先在非上市企业页上传采集表，再生成评分建议。", "mat.suggest.status": "已为 {with} 项议题生成数据建议，{no} 项因缺数据保留行业初值。",
     "mat.download.md": "下载评估 Markdown", "mat.download.json": "下载留痕 JSON", "mat.run": "生成双轴矩阵",
     "mat.scores": "议题评分与采集指标映射",
     "mat.scores.hint": "初值只是行业建议，请按企业实际调整；“评分依据”会写入报告与留痕文件。未映射指标不代表议题不重要，而是需要补数据口径。",
@@ -915,6 +921,7 @@ const I18N = {
     "mat.company": "Company", "mat.company.ph": "e.g. Example Manufacturing Ltd.",
     "mat.industry": "Industry", "mat.assessor": "Assessor / team", "mat.assessor.ph": "e.g. ESG team, Ms Chan",
     "mat.status.empty": "Adjust the scores and generate the matrix to save this assessment.",
+    "mat.suggest": "Suggest scores from collected data", "mat.suggest.needFile": "Upload the data collection form on the Private page first, then generate suggestions.", "mat.suggest.status": "Generated data suggestions for {with} topics; {no} kept industry defaults due to missing data.",
     "mat.download.md": "Download assessment MD", "mat.download.json": "Download audit JSON", "mat.run": "Generate matrix",
     "mat.scores": "Topic scores and data-metric mapping",
     "mat.scores.hint": "Initial values are industry suggestions only. Adjust them for your company; the rationale is kept in the report and audit file. An unmapped topic still needs a data definition, not a lower priority by default.",
@@ -2039,7 +2046,7 @@ const MAT_QUADRANTS = {
   "财务重大": { en: "Financially material", color: "#A8741A" },
   "观察项": { en: "Watch list", color: "#7A817B" }
 };
-let matTopics = [], matDraft = {}, matResult = null, matPayload = null, matThreshold = 3;
+let matTopics = [], matDraft = {}, matResult = null, matPayload = null, matThreshold = 3, matSuggested = {};
 const matAttr = s => esc(s ?? "").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 const matText = (zh, en) => currentLang === "zh" ? zh : en;
 const matQuadrant = q => currentLang === "zh" ? q : (MAT_QUADRANTS[q]?.en || q);
@@ -2067,12 +2074,16 @@ function renderMatScores() {
   if (!body || !matTopics.length) return;
   body.innerHTML = matTopics.map(topic => {
     const s = matDraft[topic.id] || topic;
-    const numbers = MAT_FIELDS.map(f => `<td><input type="number" min="1" max="5" step="1" value="${Number(s[f])}" data-id="${matAttr(topic.id)}" data-field="${f}" aria-label="${matAttr(topic.name)} · ${f}"></td>`).join("");
+    const sug = matSuggested[topic.id];
+    const cls = sug ? "mat-sug " : "";
+    const numbers = MAT_FIELDS.map(f => `<td><input type="number" min="1" max="5" step="1" value="${Number(s[f])}" data-id="${matAttr(topic.id)}" data-field="${f}" class="${cls}" aria-label="${matAttr(topic.name)} · ${f}"></td>`).join("");
     const horizons = MAT_HORIZONS.map(h => `<option value="${matAttr(h.zh)}" ${s.horizon === h.zh ? "selected" : ""}>${esc(matText(h.zh, h.en))}</option>`).join("");
+    const badge = sug ? `<span class="mat-sug-badge">${matText("建议", "Suggested")}</span>` : "";
+    const ev = (sug && sug.evidence && sug.evidence.length) ? `<ul class="mat-evidence">${sug.evidence.map(e => `<li>• ${esc(e)}</li>`).join("")}</ul>` : "";
     return `<tr>
-      <td class="mat-topic">${esc(topic.name)}<span class="mat-metrics">${topic.metrics.length ? esc(topic.metrics.join(" · ")) : matText("需补数据口径", "Data definition needed")}</span></td>
+      <td class="mat-topic">${esc(topic.name)}${badge}<span class="mat-metrics">${topic.metrics.length ? esc(topic.metrics.join(" · ")) : matText("需补数据口径", "Data definition needed")}</span>${ev}</td>
       ${numbers}
-      <td><select data-id="${matAttr(topic.id)}" data-field="horizon">${horizons}</select></td>
+      <td><select data-id="${matAttr(topic.id)}" data-field="horizon" class="${cls}">${horizons}</select></td>
       <td><input type="text" value="${matAttr(s.rationale || "")}" data-id="${matAttr(topic.id)}" data-field="rationale" placeholder="${matAttr(matText("事实、来源或调整原因", "Fact, source or reason"))}"></td>
     </tr>`;
   }).join("");
@@ -2086,7 +2097,7 @@ async function loadMatTopics(savedScores) {
     if (!res.ok) throw new Error(res.statusText);
     const d = await res.json();
     matTopics = d.topics || []; matThreshold = d.threshold || 3;
-    matDraft = {};
+    matDraft = {}; matSuggested = {};
     matTopics.forEach(topic => {
       const old = savedScores?.[topic.id] || {};
       matDraft[topic.id] = {};
@@ -2166,10 +2177,49 @@ async function runMateriality() {
   finally { btn.disabled = false; btn.textContent = t("mat.run"); }
 }
 
+async function runSuggestion() {
+  if (!pickedFile) return toast(t("mat.suggest.needFile"), true);
+  const btn = $("#m-suggest");
+  btn.disabled = true; const old = btn.textContent;
+  btn.textContent = matText("正在生成建议…", "Generating suggestions…");
+  try {
+    const fd = new FormData();
+    fd.append("file", pickedFile);
+    fd.append("industry", $("#m-industry").value || "");
+    const res = await fetch("/api/materiality/suggest", { method: "POST", body: fd });
+    if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error(err.detail || res.statusText); }
+    const d = await res.json();
+    const sugg = d.suggestions || {};
+    matSuggested = {};
+    Object.keys(sugg).forEach(tid => {
+      if (!matDraft[tid]) return;
+      const v = sugg[tid];
+      MAT_FIELDS.forEach(f => { if (v[f] != null) matDraft[tid][f] = Number(v[f]); });
+      if (v.horizon) matDraft[tid].horizon = v.horizon;
+      if (v.from_data) matSuggested[tid] = { evidence: v.evidence || [], reason: v.reason || "" };
+    });
+    renderMatScores();
+    invalidateMateriality();
+    const sm = d.summary || {};
+    $("#m-status").textContent = (t("mat.suggest.status") || "").replace("{with}", sm.with_data ?? 0).replace("{no}", sm.no_data ?? 0);
+    toast(matText("评分建议已生成，可在表中复核或直接调整", "Suggestions generated — review or adjust in the table"));
+  } catch (e) { toast(matText("生成建议失败：", "Suggestion failed: ") + e.message, true); }
+  finally { btn.disabled = false; btn.textContent = old; }
+}
+
 function onMatEdit(e) {
   const el = e.target, id = el.dataset.id, field = el.dataset.field;
   if (!id || !field || !matDraft[id]) return;
   matDraft[id][field] = el.type === "number" ? (el.value === "" ? "" : Number(el.value)) : el.value;
+  if (matSuggested[id]) {
+    delete matSuggested[id];
+    const tr = el.closest("tr");
+    if (tr) {
+      tr.querySelectorAll(".mat-sug").forEach(n => n.classList.remove("mat-sug"));
+      tr.querySelector(".mat-evidence")?.remove();
+      tr.querySelector(".mat-sug-badge")?.remove();
+    }
+  }
   invalidateMateriality();
 }
 
@@ -2179,6 +2229,7 @@ $("#m-company").addEventListener("input", invalidateMateriality);
 $("#m-assessor").addEventListener("input", invalidateMateriality);
 $("#m-industry").addEventListener("change", async () => { invalidateMateriality(); await loadMatTopics(); });
 $("#m-run").addEventListener("click", runMateriality);
+$("#m-suggest").addEventListener("click", runSuggestion);
 $("#m-download-md").addEventListener("click", () => {
   if (!matResult) return toast(matText("请先生成双轴矩阵", "Generate the matrix first"), true);
   const company = matResult.company_name || matText("企业", "Company");
@@ -2290,7 +2341,13 @@ $("#p-run").addEventListener("click", async () => {
     $("#p-out").classList.remove("hide");
     $("#p-out").prepend(cta);
   } catch (e) {
-    toast(t('toast.gen_fail') + e.message, true);
+    const isNet = /fetch|network|load failed/i.test(String(e && e.message));
+    const msg = isNet
+      ? (currentLang === 'zh'
+        ? "连接中断：服务可能正在冷启动（约 40 秒）或刚重新部署，请稍等后重试"
+        : "Connection lost: the service may be cold-starting (~40s) or redeploying. Please retry shortly.")
+      : t('toast.gen_fail') + e.message;
+    toast(msg, true);
   } finally {
     btn.disabled = false; btn.textContent = t('private.btn');
   }
