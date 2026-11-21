@@ -17,6 +17,8 @@ from datetime import date
 from pathlib import Path
 from typing import Optional
 
+from . import standards
+
 from openai import OpenAI
 
 from .config import settings
@@ -361,6 +363,47 @@ def generate_report(
         narrative=overview_narr,
     ))
 
+    # ---- 披露覆盖与标准映射 ----
+    if kpis:
+        gh = kpis.ghg_emissions
+        available: list[str] = []
+        if gh.scope1 is not None:
+            available.append("scope1")
+        if gh.scope2_market_based is not None or gh.scope2_location_based is not None:
+            available.append("scope2")
+        if getattr(gh, "scope3_total", None) is not None:
+            available.append("scope3")
+        if kpis.energy.total_consumption is not None:
+            available.append("energy")
+        if kpis.water_and_waste.water_withdrawal is not None:
+            available.append("water")
+        if (kpis.water_and_waste.hazardous_waste is not None
+                or kpis.water_and_waste.non_hazardous_waste is not None):
+            available.append("waste")
+        wf = kpis.workforce
+        if wf.total_employees is not None:
+            available.append("employees")
+        if wf.female_ratio is not None:
+            available.append("female_ratio")
+        if wf.turnover_rate is not None:
+            available.append("turnover")
+        if wf.fatal_incidents is not None:
+            available.append("fatalities")
+        if wf.lost_time_injury_rate is not None:
+            available.append("injury_rate")
+        if wf.training_hours_avg is not None:
+            available.append("training_hours")
+        coverage = standards.check(available)
+        sections.append(ReportSection(
+            title="二、披露覆盖与标准映射",
+            narrative=(
+                "下表把本次取得的数据对照港交所《ESG 报告守则》与 IFRS S2 的披露要求，"
+                "用于快速看出哪些条款已有数据支撑、哪些仍需补充。"
+                "本表只核对数据是否存在，不评价披露质量，也不构成合规意见。"
+            ),
+            kpi_table=standards.to_markdown(coverage),
+        ))
+
     # ---- 温室气体排放 ----
     if kpis:
         ghg = kpis.ghg_emissions
@@ -386,7 +429,7 @@ def generate_report(
         else:
             narrative = ghg.raw_text or "(无原文摘录)"
         sections.append(ReportSection(
-            title="二、温室气体排放",
+            title="三、温室气体排放",
             narrative=narrative,
             kpi_table=kpi_table,
             data_quality_notes=section_notes,
@@ -417,7 +460,7 @@ def generate_report(
         else:
             narrative = wf.raw_text or "(无原文摘录)"
         sections.append(ReportSection(
-            title="三、员工与社会",
+            title="四、员工与社会",
             narrative=narrative,
             kpi_table=kpi_table,
             data_quality_notes=section_notes,
@@ -448,7 +491,7 @@ def generate_report(
         else:
             narrative = g.raw_text or "(无原文摘录)"
         sections.append(ReportSection(
-            title="四、公司治理",
+            title="五、公司治理",
             narrative=narrative,
             kpi_table=kpi_table,
             data_quality_notes=section_notes,
@@ -483,7 +526,7 @@ def generate_report(
         f"抽取层：LLM 自评信心 {kpis.extraction_confidence:.2f}（0-1）。"
     )
     sections.append(ReportSection(
-        title="五、数据质量与方法学说明",
+        title="六、数据质量与方法学说明",
         narrative=quality_narr,
         data_quality_notes=quality_notes,
     ))

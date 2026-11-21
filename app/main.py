@@ -48,7 +48,7 @@ from .schemas import (
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 app = FastAPI(
     title="HK ESG Report System",
-    version="0.2.0",
+    version="3.0.0",
     description="港股 ESG 数据采集层 (yfinance / NZDPU / HKEX / DATA.GOV.HK / SBTi / 新浪ESG / World Bank)",
 )
 app.add_middleware(
@@ -1168,8 +1168,8 @@ def report_preview(
     report = generate_report(aggregate=aggregate, kpis=kpis, use_llm_narrative=False)
 
     sections = split_markdown_sections(report.markdown)
-    # sections[0] 是标题与元信息，sections[1:] 才是正文章节；试读只放第一章
-    free_count = len(sections) if _is_admin(token) else min(2, len(sections))
+    # sections[0] 是标题与元信息，sections[1:] 才是正文章节；试读放前两章（含披露覆盖）
+    free_count = len(sections) if _is_admin(token) else min(3, len(sections))
     preview_md = "\n\n".join(sections[:free_count])
     free_sections, locked_sections = _section_payload(report.markdown, free_count)
 
@@ -1186,8 +1186,125 @@ def report_preview(
         "total_sections": len(sections),
         "pdf_extracted": bool(pdf_url.strip()) and not pdf_error,
         "pdf_error": pdf_error,
+        "full_markdown": report.markdown if _is_admin(token) else "",
         "disclaimer": "试读版基于公开数据，未包含披露正文数字；完整版需人工复核。",
     }
+
+
+@app.get("/api/carbon/factors", tags=["carbon"])
+def carbon_factors():
+    """碳核算可用的燃料与电网排放因子，含来源与年份。"""
+    from . import carbon
+
+    return carbon.factors()
+
+
+@app.post("/api/carbon/calculate", tags=["carbon"])
+def carbon_calculate(payload: dict):
+    """按活动数据计算范围一与范围二排放。"""
+    from . import carbon
+
+    return carbon.calculate(payload)
+
+
+@app.get("/api/roadmap", tags=["diagnose"])
+def agent_roadmap(
+    ticker: str = Query(..., description="Yahoo ticker，如 00700.HK"),
+    company_name: str = Query(""),
+    stock_code: str = Query(""),
+    year: int = Query(0),
+):
+    """按机构重点议题给出改进优先级（基于公开方法与 E/S/G 分项）。"""
+    from . import roadmap as roadmap_mod
+
+    code = (stock_code or ticker.split(".")[0]).strip()
+    y = year if year and 2000 <= year <= date.today().year + 1 else date.today().year - 1
+    name = company_name.strip() or f"{code}.HK"
+    agg = _aggregate_cached(ticker, name, code, y, f"{y - 1}-01-01", f"{y}-12-31")
+
+    ratings = []
+    comps: dict[str, float] = {}
+    if agg.sina_esg and agg.sina_esg.ratings:
+        for r in agg.sina_esg.ratings:
+            ratings.append({
+                "agency": r.agency_name,
+                "rating": r.rating,
+                "date": r.rating_date,
+            })
+        for r in agg.sina_esg.ratings:
+            if all(v is not None for v in (r.environmental_score, r.social_score, r.governance_score)):
+                comps = {
+                    "E": float(r.environmental_score),
+                    "S": float(r.social_score),
+                    "G": float(r.governance_score),
+                }
+                break
+    return roadmap_mod.build(ratings, comps)
+
+
+@app.get("/report/print", response_class=HTMLResponse, tags=["report"])
+def report_print(
+    ticker: str = Query(...),
+    company_name: str = Query(""),
+    stock_code: str = Query(""),
+    year: int = Query(0),
+    token: str = Query(""),
+    pdf_url: str = Query(""),
+):
+    """A4 打印视图；浏览器可直接另存为 PDF。管理口令可打印完整版。"""
+    from . import mdhtml
+
+    data = report_preview(
+        ticker=ticker, company_name=company_name, stock_code=stock_code,
+        year=year, token=token, pdf_url=pdf_url,
+    )
+    md = data.get("full_markdown") or data["preview_markdown"]
+    subtitle = f"{data['company_name']}（{data['stock_code']}）· {data['report_year']} 年"
+    return mdhtml.print_page(data["title"], subtitle, md)
+
+
+@app.post("/api/share", tags=["report"])
+def create_share(payload: dict):
+    """把报告正文存成只读分享页，返回链接。"""
+    import json
+    import tempfile
+    import time
+    import uuid
+
+    markdown = (payload.get("markdown") or "").strip()
+    if not markdown:
+        raise HTTPException(status_code=400, detail="缺少报告内容")
+    if len(markdown) > 400_000:
+        raise HTTPException(status_code=413, detail="内容过长")
+
+    token = uuid.uuid4().hex[:16]
+    share_dir = Path(tempfile.gettempdir()) / "esg_shares"
+    share_dir.mkdir(parents=True, exist_ok=True)
+    record = {
+        "title": payload.get("title") or "ESG 报告",
+        "subtitle": payload.get("subtitle") or "",
+        "markdown": markdown,
+        "created": time.time(),
+    }
+    (share_dir / f"{token}.json").write_text(
+        json.dumps(record, ensure_ascii=False), encoding="utf-8"
+    )
+    return {"token": token, "path": f"/s/{token}", "expires_in": "服务重启后失效"}
+
+
+@app.get("/s/{token}", response_class=HTMLResponse, tags=["report"])
+def view_share(token: str):
+    """只读分享页。"""
+    import json
+    import tempfile
+
+    path = Path(tempfile.gettempdir()) / "esg_shares" / f"{token}.json"
+    if not path.exists():
+        raise HTTPException(status_code=404, detail="链接不存在或已失效")
+    record = json.loads(path.read_text(encoding="utf-8"))
+    from . import mdhtml
+
+    return mdhtml.print_page(record["title"], record.get("subtitle", ""), record["markdown"])
 
 
 @app.post("/api/diagnose/upload", tags=["diagnose"])

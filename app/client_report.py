@@ -403,7 +403,55 @@ def build_client_report(
             narrative=path.verdict,
         ))
 
-    appendix_no = "九" if path else "八"
+    # 8 披露覆盖与标准映射
+    from . import standards
+
+    def _has_metric(code: str) -> bool:
+        m = client.metric(code)
+        return bool(m and m.value is not None)
+
+    available: list[str] = []
+    if _has_metric("E08"):
+        available.append("scope1")
+    if _has_metric("E09") or _has_metric("E10"):
+        available.append("scope2")
+    if any(_has_metric(c) for c in ("E11", "E12", "E13", "E14")):
+        available.append("scope3")
+    if _has_metric("E01"):
+        available.append("energy")
+    if _has_metric("E16"):
+        available.append("water")
+    if _has_metric("E19") or _has_metric("E20"):
+        available.append("waste")
+    if _has_metric("S01"):
+        available.append("employees")
+    if _has_metric("S03"):
+        available.append("female_ratio")
+    if _has_metric("S07"):
+        available.append("turnover")
+    if _has_metric("S12"):
+        available.append("fatalities")
+    if _has_metric("S14"):
+        available.append("injury_rate")
+    if _has_metric("S15"):
+        available.append("training_hours")
+
+    coverage = standards.check(available)
+    cov_no = "九" if path else "八"
+    md = f"## {cov_no}、披露覆盖与标准映射\n\n"
+    md += (
+        "下表把本次填报的数据对照港交所《ESG 报告守则》与 IFRS S2 的披露要求，"
+        "用于快速看出哪些条款已有数据支撑、哪些仍需补充。本表只核对数据是否存在，"
+        "不评价披露质量，也不构成合规意见。\n\n"
+    )
+    md += standards.to_markdown(coverage)
+    parts.append(md)
+    sections.append(ReportSection(
+        title="披露覆盖与标准映射",
+        narrative="港交所守则与 IFRS S2 的数据覆盖情况。",
+    ))
+
+    appendix_no = "十" if path else "九"
 
     # 8 数据附录
     md = f"## {appendix_no}、数据附录\n\n### {appendix_no}.1 缺失项清单\n\n"

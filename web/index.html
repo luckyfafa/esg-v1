@@ -189,6 +189,15 @@
   }
 
   footer{border-top:1px solid var(--line);margin-top:36px;padding-top:16px;color:var(--muted);font-size:11.5px}
+  .edge{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:14px 0 6px}
+  .edge-item{background:#fff;border:1px solid var(--line);border-top:3px solid var(--green);border-radius:10px;padding:14px 15px}
+  .edge-n{font-size:26px;font-weight:800;color:var(--green);letter-spacing:-.02em;line-height:1.1}
+  .edge-t{font-size:13px;font-weight:700;margin-top:6px}
+  .edge-s{font-size:11.5px;color:var(--muted);line-height:1.6;margin-top:5px}
+  @media(max-width:900px){.edge{grid-template-columns:1fr 1fr}}
+  @media(max-width:560px){.edge{grid-template-columns:1fr}}
+  .flash{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:var(--green);color:#fff;
+    padding:10px 16px;border-radius:8px;font-size:12.5px;z-index:9999;box-shadow:0 6px 20px rgba(0,0,0,.18)}
 </style>
 </head>
 <body>
@@ -196,11 +205,12 @@
 <header>
   <div class="bar">
     <div class="brand" data-i18n="brand.title"><div class="logo"></div>ESG 智能报告系统</div>
-    <span class="pill" data-i18n="brand.pill">试用环境</span>
+    <span class="pill" data-i18n="brand.pill">V3 · 试用环境</span>
     <nav>
       <button class="tab on" data-v="home" data-i18n="nav.home">概览</button>
       <button class="tab" data-v="listed" data-i18n="nav.listed">上市公司</button>
       <button class="tab" data-v="private" data-i18n="nav.private">非上市企业</button>
+      <button class="tab" data-v="carbon" data-i18n="nav.carbon">碳核算</button>
       <button class="tab" data-v="report" data-i18n="nav.report">报告</button>
       <button class="tab" data-v="pricing" data-i18n="nav.pricing">方案与试用</button>
     </nav>
@@ -230,6 +240,30 @@
       <div class="card stat"><div class="k" data-i18n="home.k.metric">采集指标</div><div class="v">82</div><div class="s" data-i18n="home.s.metric">E 24 · S 24 · G 16 · 行业 18</div></div>
       <div class="card stat"><div class="k" data-i18n="home.k.speed">单份生成</div><div class="v" data-i18n="home.s.speed">分钟级</div><div class="s" data-i18n="home.s.speed">含原文页码可追溯</div></div>
       <div class="card stat"><div class="k" data-i18n="home.k.completeness">实测完整度</div><div class="v">100%</div><div class="s" data-i18n="home.s.completeness">示例企业 37 项必填</div></div>
+    </div>
+
+    <h2 data-i18n="home.edge.h">V3 强在哪：不是模拟，是可核查的数据</h2>
+    <div class="edge">
+      <div class="edge-item">
+        <div class="edge-n">14</div>
+        <div class="edge-t" data-i18n="home.edge1.t">家机构评级实时聚合</div>
+        <div class="edge-s" data-i18n="home.edge1.s">MSCI、标普、中证、华证等，标注日期与口径；未覆盖就写“暂无”，不编造。</div>
+      </div>
+      <div class="edge-item">
+        <div class="edge-n">页码</div>
+        <div class="edge-t" data-i18n="home.edge2.t">每个数字可回溯原文</div>
+        <div class="edge-s" data-i18n="home.edge2.s">从港交所 PDF 抽取排放、能耗、员工数据，保留来源页，可逐项复核。</div>
+      </div>
+      <div class="edge-item">
+        <div class="edge-n">P25/50/75</div>
+        <div class="edge-t" data-i18n="home.edge3.t">香港行业基准对标</div>
+        <div class="edge-s" data-i18n="home.edge3.s">不是“感觉还行”，而是与同行业分位带比较，给出差距百分比。</div>
+      </div>
+      <div class="edge-item">
+        <div class="edge-n">82</div>
+        <div class="edge-t" data-i18n="home.edge4.t">项指标一张采集表</div>
+        <div class="edge-s" data-i18n="home.edge4.s">按部门分发、自动汇总，并对照港交所守则与 IFRS S2 列出覆盖与缺口。</div>
+      </div>
     </div>
 
     <h2 data-i18n="home.how_work">如何工作</h2>
@@ -295,6 +329,7 @@
         <table id="l-table"></table>
       </div>
       <div id="l-example" class="card flat" style="display:none;margin-top:14px;padding:16px 18px"></div>
+      <div id="l-roadmap" class="card flat" style="display:none;margin-top:14px;padding:16px 18px"></div>
       <p class="rating-note" data-i18n="listed.ratings.note">不同机构的方法与尺度不同，不可直接横向比较或取平均；“暂无公开评级”不等于 0 分。评级结果不构成审计、鉴证或投资意见。</p>
       <div id="l-note" class="notice hide"></div>
       <div id="l-preview" class="hide" style="margin-top:22px"></div>
@@ -388,9 +423,59 @@
         <div class="row" style="justify-content:flex-end;margin-bottom:10px">
           <button class="btn ghost sm" id="dl-md">下载 Markdown</button>
           <button class="btn ghost sm" id="dl-json">下载 JSON</button>
+          <button class="btn ghost sm" id="btn-print">打印 / PDF</button>
+          <button class="btn ghost sm" id="btn-share">复制分享链接</button>
           <button class="btn sm" id="go-report">在报告页查看</button>
         </div>
         <div class="md" id="p-md"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 碳核算 -->
+  <section class="view" id="v-carbon">
+    <div class="hero" style="margin-bottom:6px">
+      <span class="tag" data-i18n="carbon.tag">范围一 / 范围二 · 香港排放因子</span>
+      <h1 style="font-size:26px" data-i18n="carbon.title">先把碳算出来，再填回采集表</h1>
+      <p class="lead" data-i18n="carbon.lead">
+        输入燃料用量与用电量，按公开排放因子计算范围一、范围二，并标出港交所守则 A1.2 的填表位置。
+        因子来源与年份随结果一起显示，方便复核。
+      </p>
+    </div>
+    <div class="grid" style="grid-template-columns:1fr 1fr;align-items:start">
+      <div class="card">
+        <h3 style="margin-top:0" data-i18n="carbon.h.elec">外购电力（范围二）</h3>
+        <label class="lbl" data-i18n="carbon.l.kwh">用电量（kWh）</label>
+        <input id="c-kwh" type="number" min="0" step="any" placeholder="0">
+        <label class="lbl" data-i18n="carbon.l.grid">供电来源</label>
+        <select id="c-grid">
+          <option value="CLP">中电 · 0.39 kg CO₂e/kWh（2023）</option>
+          <option value="HKE">港灯 · 0.66 kg CO₂e/kWh（2023）</option>
+          <option value="CN_AVG">内地电网 · 0.581 kg CO₂e/kWh（2022）</option>
+          <option value="custom" data-i18n="carbon.grid.custom">自订因子</option>
+        </select>
+        <input id="c-gridfactor" type="number" min="0" step="0.001" placeholder="自订因子 kg CO₂e/kWh" class="hide" style="margin-top:8px">
+
+        <h3 data-i18n="carbon.h.fuel">燃料（范围一）</h3>
+        <div class="grid" style="grid-template-columns:1fr 1fr;gap:8px">
+          <div><label class="lbl">天然气 m³</label><input id="c-natural_gas" type="number" min="0" step="any" placeholder="0"></div>
+          <div><label class="lbl">液化石油气 kg</label><input id="c-lpg" type="number" min="0" step="any" placeholder="0"></div>
+          <div><label class="lbl">柴油 L</label><input id="c-diesel" type="number" min="0" step="any" placeholder="0"></div>
+          <div><label class="lbl">汽油 L</label><input id="c-petrol" type="number" min="0" step="any" placeholder="0"></div>
+          <div><label class="lbl">煤油 L</label><input id="c-kerosene" type="number" min="0" step="any" placeholder="0"></div>
+          <div><label class="lbl">煤炭 t</label><input id="c-coal" type="number" min="0" step="any" placeholder="0"></div>
+        </div>
+
+        <h3 data-i18n="carbon.h.intensity">强度指标（可选）</h3>
+        <div class="grid" style="grid-template-columns:1fr 1fr;gap:8px">
+          <div><label class="lbl">营业收入（百万港元）</label><input id="c-revenue" type="number" min="0" step="any" placeholder="0"></div>
+          <div><label class="lbl">员工人数</label><input id="c-employees" type="number" min="0" step="any" placeholder="0"></div>
+        </div>
+
+        <button class="btn" id="c-run" style="margin-top:14px;width:100%" data-i18n="carbon.run">计算排放量</button>
+      </div>
+      <div class="card" id="c-out">
+        <p class="muted" data-i18n="carbon.empty">填写左侧数据后点击计算。结果会列出每个因子及其来源。</p>
       </div>
     </div>
   </section>
@@ -402,6 +487,8 @@
     <div class="card" style="margin-top:16px">
       <div class="row" style="justify-content:flex-end;margin-bottom:10px">
         <button class="btn ghost sm" id="dl-md2">下载 Markdown</button>
+        <button class="btn ghost sm" id="btn-print2">打印 / PDF</button>
+        <button class="btn ghost sm" id="btn-share2">复制分享链接</button>
       </div>
       <div class="md" id="r-md" style="max-height:none"><p class="muted">暂无报告。请先在「非上市企业」页上传采集表，或在「上市公司」页查询。</p></div>
     </div>
@@ -536,12 +623,42 @@ const TOKEN_QS = ADMIN_TOKEN ? '&token=' + encodeURIComponent(ADMIN_TOKEN) : '';
 const I18N = {
   zh: {
     "brand.title": "ESG 智能报告系统",
-    "brand.pill": "试用环境",
+    "brand.pill": "V3 · 试用环境",
     "nav.home": "概览",
     "nav.listed": "上市公司",
     "nav.private": "非上市企业",
+    "nav.carbon": "碳核算",
     "nav.report": "报告",
     "nav.pricing": "方案与试用",
+    "home.edge.h": "V3 强在哪：不是模拟，是可核查的数据",
+    "home.edge1.t": "家机构评级实时聚合",
+    "home.edge1.s": "MSCI、标普、中证、华证等，标注日期与口径；未覆盖就写“暂无”，不编造。",
+    "home.edge2.t": "每个数字可回溯原文",
+    "home.edge2.s": "从港交所 PDF 抽取排放、能耗、员工数据，保留来源页，可逐项复核。",
+    "home.edge3.t": "香港行业基准对标",
+    "home.edge3.s": "不是“感觉还行”，而是与同行业分位带比较，给出差距百分比。",
+    "home.edge4.t": "项指标一张采集表",
+    "home.edge4.s": "按部门分发、自动汇总，并对照港交所守则与 IFRS S2 列出覆盖与缺口。",
+    "carbon.tag": "范围一 / 范围二 · 香港排放因子",
+    "carbon.title": "先把碳算出来，再填回采集表",
+    "carbon.lead": "输入燃料用量与用电量，按公开排放因子计算范围一、范围二，并标出港交所守则 A1.2 的填表位置。因子来源与年份随结果一起显示，方便复核。",
+    "carbon.h.elec": "外购电力（范围二）",
+    "carbon.l.kwh": "用电量（kWh）",
+    "carbon.l.grid": "供电来源",
+    "carbon.grid.custom": "自订因子",
+    "carbon.h.fuel": "燃料（范围一）",
+    "carbon.h.intensity": "强度指标（可选）",
+    "carbon.run": "计算排放量",
+    "carbon.empty": "填写左侧数据后点击计算。结果会列出每个因子及其来源。",
+    "carbon.total": "合计排放",
+    "carbon.scope1": "范围一",
+    "carbon.scope2": "范围二",
+    "carbon.items": "逐项明细",
+    "carbon.intensity": "强度指标",
+    "carbon.per_revenue": "吨 / 百万港元收入",
+    "carbon.per_employee": "千克 / 人",
+    "carbon.hkex": "填回采集表的位置",
+    "carbon.bad": "请至少填写用电量或一种燃料用量。",
     "cta.get_report": "免费获取完整报告 →",
     "home.tag": "港股 ESG 数据 · 对标 · 定制报告",
     "home.title": "从百页披露到一份可用的 ESG 底稿",
@@ -683,12 +800,42 @@ const I18N = {
   },
   en: {
     "brand.title": "ESG Intelligence Suite",
-    "brand.pill": "Demo",
+    "brand.pill": "V3 · Demo",
     "nav.home": "Overview",
     "nav.listed": "Listed Cos.",
     "nav.private": "Private Cos.",
+    "nav.carbon": "Carbon",
     "nav.report": "Report",
     "nav.pricing": "Pricing",
+    "home.edge.h": "Why V3: verifiable data, not simulation",
+    "home.edge1.t": "agency ratings in one query",
+    "home.edge1.s": "MSCI, S&P, CSI, Huazheng and more, with dates and scale. Uncovered means “no public rating”, never invented.",
+    "home.edge2.t": "every figure traces to a page",
+    "home.edge2.s": "Emissions, energy and workforce pulled from the HKEX PDF, each with its source page.",
+    "home.edge3.t": "Hong Kong industry benchmark",
+    "home.edge3.s": "Compare against peer quartile bands with explicit percentage gaps.",
+    "home.edge4.t": "indicators in one template",
+    "home.edge4.s": "Distributed by department, auto-consolidated, checked against the HKEX Code and IFRS S2.",
+    "carbon.tag": "Scope 1 / Scope 2 · Hong Kong factors",
+    "carbon.title": "Calculate emissions, then fill the template",
+    "carbon.lead": "Enter fuel and electricity use to compute Scope 1 and 2 with public factors. Each factor keeps its source and year, and the result maps to HKEX Code A1.2.",
+    "carbon.h.elec": "Purchased electricity (Scope 2)",
+    "carbon.l.kwh": "Electricity use (kWh)",
+    "carbon.l.grid": "Supply source",
+    "carbon.grid.custom": "Custom factor",
+    "carbon.h.fuel": "Fuels (Scope 1)",
+    "carbon.h.intensity": "Intensity (optional)",
+    "carbon.run": "Calculate emissions",
+    "carbon.empty": "Fill in the left side and calculate. Each factor and its source will be listed.",
+    "carbon.total": "Total emissions",
+    "carbon.scope1": "Scope 1",
+    "carbon.scope2": "Scope 2",
+    "carbon.items": "Line items",
+    "carbon.intensity": "Intensity",
+    "carbon.per_revenue": "tCO₂e per HK$m revenue",
+    "carbon.per_employee": "kg per employee",
+    "carbon.hkex": "Where to fill in the template",
+    "carbon.bad": "Enter electricity use or at least one fuel quantity.",
     "cta.get_report": "Get full report →",
     "home.tag": "HK ESG Data · Benchmark · Custom Reports",
     "home.title": "From 100-page disclosures to a working ESG workbook",
@@ -1464,6 +1611,169 @@ function renderListed(d, name, code) {
     ? `<div class="muted" style="margin-top:10px;font-size:11.5px;line-height:1.7"><b>${currentLang === 'zh' ? '部分数据源本次未取到' : 'Some sources unavailable this time'}</b>：${d.source_errors.map(e => `<div>· ${esc(e)}</div>`).join("")}</div>`
     : "";
   $("#l-note").innerHTML = `<div style="display:flex;gap:14px;align-items:center"><div style="flex:1"><b>${hint1}</b>。${hint2}</div><button class="btn" onclick="openLead('listed-diagnose', {company:'${esc(d.company || name)}', stock_code:'${esc(code)}'})">${ctaBtn}</button></div>` + errBlock;
+
+  loadRoadmap(d.ticker || (code ? code + ".HK" : ""), d.company || name, code, d.year || "");
+}
+
+/* ---------- 按机构议题的改进优先级 ---------- */
+async function loadRoadmap(ticker, name, code, year) {
+  const box = $("#l-roadmap");
+  if (!box) return;
+  box.style.display = "none";
+  box.innerHTML = "";
+  if (!ticker) return;
+  try {
+    const qs = `ticker=${encodeURIComponent(ticker)}&company_name=${encodeURIComponent(name || "")}` +
+      `&stock_code=${encodeURIComponent(code || "")}&year=${encodeURIComponent(year || "")}`;
+    const res = await fetch(`/api/roadmap?${qs}`);
+    if (!res.ok) return;
+    const d = await res.json();
+    if (!d.available || !(d.actions || []).length) return;
+    const zh = currentLang === 'zh';
+    const head = zh
+      ? `改进优先级 · ${esc(d.agency)} ${esc(d.rating)}${d.weakest_pillar ? ` · 短板在${esc(d.weakest_pillar)}` : ""}`
+      : `Improvement priorities · ${esc(d.agency)} ${esc(d.rating)}${d.weakest_pillar ? ` · weakest: ${esc(d.weakest_pillar)}` : ""}`;
+    const rows = d.actions.map(a => `
+      <div class="ex-step">
+        <div class="ex-label" style="flex-basis:96px"><span style="display:inline-block;padding:1px 6px;border-radius:4px;font-size:10.5px;background:${a.priority === '高' ? '#0F5132' : '#EFF5F1'};color:${a.priority === '高' ? '#fff' : '#0F5132'}">${esc(a.phase)}</span></div>
+        <div class="ex-text"><b>${esc(a.topic)}</b><span class="muted"> · ${esc(a.pillar)}</span><br>${esc(a.action)}<div class="muted" style="font-size:10.5px;margin-top:2px">${esc(a.basis)}</div></div>
+      </div>`).join("");
+    box.innerHTML = `<div class="ex-head">${head}</div>${rows}<div class="ex-foot">${esc(d.note || "")}</div>`;
+    box.style.display = "block";
+  } catch (e) {
+    box.style.display = "none";
+  }
+}
+
+/* ---------- V3：碳核算 ---------- */
+const CARBON_FUELS = ["natural_gas", "lpg", "diesel", "petrol", "kerosene", "coal"];
+
+async function runCarbon() {
+  const out = $("#c-out");
+  const num = id => parseFloat($(id)?.value) || 0;
+  const fuels = {};
+  CARBON_FUELS.forEach(k => {
+    const v = parseFloat($(`#c-${k}`)?.value);
+    if (v > 0) fuels[k] = v;
+  });
+  const payload = {
+    fuels,
+    electricity_kwh: num("#c-kwh"),
+    grid: $("#c-grid")?.value || "CLP",
+    revenue_hkd_million: num("#c-revenue"),
+    employees: num("#c-employees"),
+  };
+  if (payload.grid === "custom") payload.grid_factor = num("#c-gridfactor");
+  out.innerHTML = `<p class="muted">计算中…</p>`;
+  try {
+    const res = await fetch("/api/carbon/calculate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error(res.statusText);
+    const d = await res.json();
+    if (!(d.items || []).length) {
+      out.innerHTML = `<p class="muted">${t("carbon.bad")}</p>`;
+      return;
+    }
+    const rows = d.items.map(i => `<tr><td>${esc(i.scope)}</td><td>${esc(i.name)}</td>
+      <td>${i.activity} ${esc(i.unit)}</td><td>${i.factor}</td><td><b>${i.t}</b></td></tr>`).join("");
+    const intensity = [];
+    if (d.intensity_revenue != null) intensity.push(`${t("carbon.per_revenue")}：<b>${d.intensity_revenue}</b>`);
+    if (d.intensity_employee != null) intensity.push(`${t("carbon.per_employee")}：<b>${d.intensity_employee}</b>`);
+    out.innerHTML = `
+      <div class="grid g3" style="margin-bottom:12px">
+        <div><div class="muted" style="font-size:11px">${t("carbon.scope1")}</div><div style="font-size:22px;font-weight:800;color:var(--green)">${d.scope1_t}<span style="font-size:11px"> tCO₂e</span></div></div>
+        <div><div class="muted" style="font-size:11px">${t("carbon.scope2")}</div><div style="font-size:22px;font-weight:800;color:var(--green)">${d.scope2_t}<span style="font-size:11px"> tCO₂e</span></div></div>
+        <div><div class="muted" style="font-size:11px">${t("carbon.total")}</div><div style="font-size:22px;font-weight:800">${d.total_t}<span style="font-size:11px"> tCO₂e</span></div></div>
+      </div>
+      <table><thead><tr><th>范围</th><th>项目</th><th>用量</th><th>因子</th><th>tCO₂e</th></tr></thead><tbody>${rows}</tbody></table>
+      ${intensity.length ? `<p style="margin-top:8px">${t("carbon.intensity")}：${intensity.join(" · ")}</p>` : ""}
+      <p style="margin-top:10px;font-size:11.5px;line-height:1.7">
+        ${d.items.map(i => `· ${esc(i.name)}：${esc(i.factor_source)}`).join("<br>")}
+      </p>
+      <p style="margin-top:10px;font-size:11.5px"><b>${t("carbon.hkex")}</b><br>
+        ${Object.entries(d.hkex || {}).map(([, v]) => `· ${esc(v)}`).join("<br>")}</p>
+      <p class="muted" style="margin-top:8px;font-size:11px">${(d.notes || []).map(n => esc(n)).join(" ")}</p>`;
+  } catch (e) {
+    out.innerHTML = `<p class="muted">计算失败：${esc(e.message)}</p>`;
+  }
+}
+
+/* ---------- V3：打印 / 分享 ---------- */
+let lastListedParams = null;
+
+function flash(msg) {
+  const el = document.createElement("div");
+  el.className = "flash";
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 3600);
+}
+
+async function shareToken() {
+  if (!lastMd) {
+    flash(currentLang === 'zh' ? "还没有可分享的报告" : "No report to share yet");
+    return null;
+  }
+  try {
+    const res = await fetch("/api/share", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ markdown: lastMd, title: "ESG 报告" }),
+    });
+    if (!res.ok) throw new Error(res.statusText);
+    const d = await res.json();
+    return d.token;
+  } catch (e) {
+    flash((currentLang === 'zh' ? "生成分享链接失败：" : "Failed to create link: ") + e.message);
+    return null;
+  }
+}
+
+async function createShareLink() {
+  const token = await shareToken();
+  if (!token) return;
+  const url = location.origin + "/s/" + token;
+  try {
+    await navigator.clipboard.writeText(url);
+    flash((currentLang === 'zh' ? "已复制：" : "Copied: ") + url);
+  } catch (e) {
+    flash(url);
+  }
+}
+
+async function openPrint() {
+  if (lastListedParams) {
+    const p = lastListedParams;
+    const url = `/report/print?ticker=${encodeURIComponent(p.ticker)}&company_name=${encodeURIComponent(p.name)}` +
+      `&stock_code=${encodeURIComponent(p.code)}&year=${encodeURIComponent(p.year)}${TOKEN_QS}` +
+      (p.pdfUrl ? "&pdf_url=" + encodeURIComponent(p.pdfUrl) : "");
+    window.open(url, "_blank");
+    return;
+  }
+  const token = await shareToken();
+  if (token) window.open("/s/" + token, "_blank");
+}
+
+function initV3() {
+  const sel = $("#c-grid");
+  if (sel) {
+    sel.addEventListener("change", () => {
+      $("#c-gridfactor")?.classList.toggle("hide", sel.value !== "custom");
+    });
+  }
+  $("#c-run")?.addEventListener("click", runCarbon);
+  $("#btn-print")?.addEventListener("click", openPrint);
+  $("#btn-print2")?.addEventListener("click", openPrint);
+  $("#btn-share")?.addEventListener("click", createShareLink);
+  $("#btn-share2")?.addEventListener("click", createShareLink);
+}
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initV3);
+} else {
+  initV3();
 }
 
 $("#l-run").addEventListener("click", async () => {
@@ -1551,6 +1861,7 @@ function renderReportDoc(el, d, ctaHtml) {
 async function loadPreview(ticker, name, code, year, pdfUrl) {
   const box = $("#l-preview");
   lastMd = "";
+  lastListedParams = { ticker, name, code, year, pdfUrl };
   box.classList.remove("hide");
   box.innerHTML = `<div class="card flat"><div class="muted">${pdfUrl ? (currentLang === 'zh' ? '正在下载 PDF 并抽取附录数据，约 30–60 秒…' : 'Downloading PDF and extracting appendix data, 30–60s…') : t('preview.loading')}</div></div>`;
   try {
@@ -1677,6 +1988,7 @@ $("#p-run").addEventListener("click", async () => {
 function renderPrivate(rep) {
   const md = rep.markdown || "";
   lastMd = md;
+  lastListedParams = null;
   // 解析差距表：从 markdown 第 7 章提取
   const gaps = parseGaps(md);
   const lag = gaps.filter(g => g.pos === "落后").length;
