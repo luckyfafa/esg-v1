@@ -99,6 +99,27 @@
   .badge.lag{color:var(--bad);background:#FBEFED;border-color:#EBCFC9}
   .badge.mid{color:var(--mid);background:#FBF6E8;border-color:#E9DDBB}
   .badge.lead{color:var(--ok);background:#EFF5F1;border-color:#C9DCD2}
+  .table-scroll{overflow-x:auto}
+  #l-table{min-width:900px}
+  .rating-guide{min-width:340px;font-size:11.5px}
+  .rating-guide summary{color:var(--green);cursor:pointer;font-weight:600;list-style-position:inside}
+  .rating-guide-body{margin-top:7px;padding:8px 10px;background:#F7F9F4;border-radius:6px;color:var(--ink-2);line-height:1.65}
+  .rating-guide-body p{margin-bottom:6px}
+  .rating-guide-body p:last-child{margin-bottom:0}
+  .rp{padding:8px 10px;margin-bottom:8px;background:#fff;border-left:2px solid var(--green);border-radius:0 4px 4px 0}
+  .rp-lead{font-size:12.5px;line-height:1.7;color:var(--ink);margin-bottom:4px}
+  .rp-pos{font-size:11px;color:var(--muted);line-height:1.6}
+  .rp-note{font-size:11px;color:var(--muted);line-height:1.65;background:#FBF6E8;padding:6px 8px;border-radius:4px}
+  .rating-tech{margin:7px 0;font-size:11px}
+  .rating-tech summary{color:var(--muted);cursor:pointer;font-weight:600;list-style-position:inside}
+  .rating-tech[open] summary{margin-bottom:5px}
+  .ex-head{font-weight:700;font-size:13px;margin-bottom:10px}
+  .ex-step{display:flex;gap:10px;margin-bottom:7px}
+  .ex-label{flex:0 0 78px;color:var(--green);font-weight:600;font-size:11.5px}
+  .ex-text{flex:1;font-size:11.5px;line-height:1.75;color:var(--ink-2)}
+  .ex-foot{margin-top:9px;padding-top:8px;border-top:1px solid var(--line);font-size:11px;color:var(--muted);line-height:1.65}
+  .rating-links{display:flex;gap:12px;flex-wrap:wrap;margin-top:6px}
+  .rating-note{margin-top:9px;font-size:11.5px;line-height:1.7;color:var(--muted)}
 
   .notice{
     display:flex;gap:10px;align-items:flex-start;background:var(--warn-bg);
@@ -159,10 +180,6 @@
   .rd-ch-head{display:flex;gap:14px;align-items:baseline;margin-bottom:16px}
   .rd-ch-no{font-size:11.5px;font-weight:700;color:var(--green);letter-spacing:.14em}
   .rd-chapter .md h2,.rd-chapter h2{font-size:19px;margin:0;padding:0;border:0}
-  .rd-figure{margin:0 0 18px;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:#F3F5EF}
-  .rd-figure img{display:block;width:100%;height:180px;object-fit:cover}
-  .rd-figure svg{display:block;width:100%;height:180px}
-  .rd-figure figcaption{font-size:11.5px;color:var(--muted);padding:8px 12px}
   .rd-locked{padding:26px 44px 30px;border-top:1px dashed var(--line);background:#FAFAF5}
   .rd-locked-item{display:flex;align-items:center;gap:10px;padding:9px 0;font-size:13.5px;color:var(--muted);border-bottom:1px solid #EEEFE7}
   .rd-lock{width:26px;height:26px;border-radius:50%;background:#EAEDE3;display:flex;align-items:center;justify-content:center;font-size:12px;flex:none}
@@ -209,7 +226,7 @@
     </div>
 
     <div class="grid g4" style="margin-top:22px">
-      <div class="card stat"><div class="k" data-i18n="home.k.source">数据源</div><div class="v">7</div><div class="s" data-i18n="home.s.source">港交所 / 16 家评级 / SBTi / 世行等</div></div>
+      <div class="card stat"><div class="k" data-i18n="home.k.source">数据源</div><div class="v">7</div><div class="s" data-i18n="home.s.source">港交所 / 14 家评级 / SBTi / 世行等</div></div>
       <div class="card stat"><div class="k" data-i18n="home.k.metric">采集指标</div><div class="v">82</div><div class="s" data-i18n="home.s.metric">E 24 · S 24 · G 16 · 行业 18</div></div>
       <div class="card stat"><div class="k" data-i18n="home.k.speed">单份生成</div><div class="v" data-i18n="home.s.speed">分钟级</div><div class="s" data-i18n="home.s.speed">含原文页码可追溯</div></div>
       <div class="card stat"><div class="k" data-i18n="home.k.completeness">实测完整度</div><div class="v">100%</div><div class="s" data-i18n="home.s.completeness">示例企业 37 项必填</div></div>
@@ -225,7 +242,7 @@
     <h2 data-i18n="home.sources">数据来源</h2>
     <div class="sources">
       <span class="src">港交所 HKEX 披露</span>
-      <span class="src">新浪财经 · 16 家机构评级</span>
+      <span class="src">新浪财经 · 14 家机构评级</span>
       <span class="src">SBTi 科学碳目标</span>
       <span class="src">World Bank 国家排放</span>
       <span class="src">香港政府开放数据</span>
@@ -272,10 +289,13 @@
 
     <div id="l-out" class="hide" style="margin-top:18px">
       <div class="grid g3" id="l-cards"></div>
-      <h2>多机构 ESG 评级</h2>
-      <div class="card flat" style="padding:0;overflow:hidden">
+      <h2 data-i18n="listed.ratings.title">多机构 ESG 评级</h2>
+      <p class="muted" style="margin:-5px 0 10px" data-i18n="listed.ratings.sub">展开每家机构，查看评级尺度、指标模型、行业调整、风险事件和适用边界。</p>
+      <div class="card flat table-scroll" style="padding:0">
         <table id="l-table"></table>
       </div>
+      <div id="l-example" class="card flat" style="display:none;margin-top:14px;padding:16px 18px"></div>
+      <p class="rating-note" data-i18n="listed.ratings.note">不同机构的方法与尺度不同，不可直接横向比较或取平均；“暂无公开评级”不等于 0 分。评级结果不构成审计、鉴证或投资意见。</p>
       <div id="l-note" class="notice hide"></div>
       <div id="l-preview" class="hide" style="margin-top:22px"></div>
     </div>
@@ -506,7 +526,7 @@
 <script>
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-let lastMd = "", lastJson = null;
+let lastMd = "", lastJson = null, lastListedResult = null;
 /* 管理口令：URL 带 ?token=xxx 时记住，用于解锁完整报告（普通访客不受影响） */
 const ADMIN_TOKEN = new URLSearchParams(location.search).get('token') || sessionStorage.getItem('esg_admin') || '';
 if (ADMIN_TOKEN) sessionStorage.setItem('esg_admin', ADMIN_TOKEN);
@@ -527,7 +547,7 @@ const I18N = {
     "home.title": "从百页披露到一份可用的 ESG 底稿",
     "home.lead": "聚合 7 类公开数据源，自动抽取港交所报告中的排放与员工数据；未上市企业可上传填报表，按行业基线生成差距分析与改进路线图。",
     "home.k.source": "数据源", "home.k.metric": "采集指标", "home.k.speed": "单份生成", "home.k.completeness": "实测完整度",
-    "home.s.source": "港交所 / 16 家评级 / SBTi / 世行等",
+    "home.s.source": "港交所 / 14 家评级 / SBTi / 世行等",
     "home.s.metric": "E 24 · S 24 · G 16 · 行业 18",
     "home.s.speed": "含原文页码可追溯",
     "home.s.completeness": "示例企业 37 项必填",
@@ -544,9 +564,34 @@ const I18N = {
     "listed.l.year": "年度",
     "listed.l.pdf": "ESG 报告 PDF 链接（可选，填了会从附录抽取排放等数据）",
     "listed.btn": "快速诊断",
-    "listed.table.h1": "机构", "listed.table.h2": "评级", "listed.table.h3": "日期",
+    "listed.table.h1": "机构", "listed.table.h2": "原始评级", "listed.table.h3": "来源日期", "listed.table.h4": "评级方法详解",
+    "listed.ratings.title": "多机构 ESG 评级",
+    "listed.ratings.sub": "展开每家机构，查看评级尺度、指标模型、行业调整、风险事件和适用边界。",
+    "listed.ratings.note": "不同机构的方法与尺度不同，不可直接横向比较或取平均；“暂无公开评级”不等于 0 分。方法说明按公开资料整理，机构更新后以最新文件为准；评级不构成审计、鉴证或投资意见。",
+    "listed.example.title": "示例：完整读一遍这份评级",
+    "listed.example.step1": "① 结论",
+    "listed.example.step2": "② 位置",
+    "listed.example.step3": "③ 分项",
+    "listed.example.step4": "④ 交叉对照",
+    "listed.example.step5": "⑤ 怎么用",
+    "listed.example.foot": "本示例使用本次查询到的实时数据，只用于说明阅读方法；评级判断以机构原文为准。",
+    "listed.guide.toggle": "看懂这个评级",
+    "listed.guide.scale": "评级尺度与方向",
+    "listed.guide.model": "评价模型",
+    "listed.guide.adjustment": "行业与风险调整",
+    "listed.guide.use": "怎样解读",
+    "listed.guide.tech": "评级怎么算出来（技术细节）",
+    "listed.guide.comp_read": "E/S/G 分项",
+    "listed.guide.no_components": "来源未提供 E/S/G 分项",
+    "listed.guide.source": "评级来源",
+    "listed.guide.method": "官方方法／资料",
+    "listed.guide.extra": "补充资料",
+    "listed.unavailable": "暂无公开评级",
+    "listed.unavailable_hint": "未覆盖、未公开或本次未取到，不等于 0 分",
+    "listed.yahoo.direction": "Sustainalytics 未管理 ESG 风险分 · 通常越低风险越小",
+    "listed.sbti.direction": "减碳目标状态，不是综合 ESG 评级",
     "listed.none": "暂无多机构评级数据",
-    "listed.label.yahoo": "Yahoo ESG 综合分",
+    "listed.label.yahoo": "Sustainalytics ESG 风险分（via Yahoo）",
     "listed.label.sbti": "科学碳目标 (SBTi)",
     "listed.label.agencies": "多机构评级",
     "listed.label.latest_hkex": "最新 HKEX ESG 报告",
@@ -649,7 +694,7 @@ const I18N = {
     "home.title": "From 100-page disclosures to a working ESG workbook",
     "home.lead": "Aggregating 7 public data sources, auto-extracting emissions & workforce data from HKEX filings; private enterprises upload templates and receive gap analysis against industry baselines.",
     "home.k.source": "Sources", "home.k.metric": "Metrics", "home.k.speed": "Generation", "home.k.completeness": "Sample completeness",
-    "home.s.source": "HKEX / 16 agencies / SBTi / World Bank",
+    "home.s.source": "HKEX / 14 agencies / SBTi / World Bank",
     "home.s.metric": "E 24 · S 24 · G 16 · Industry 18",
     "home.s.speed": "With source page traceability",
     "home.s.completeness": "37 required items for sample",
@@ -666,9 +711,34 @@ const I18N = {
     "listed.l.year": "Year",
     "listed.l.pdf": "ESG report PDF link (optional; fills emission data from the appendix)",
     "listed.btn": "Quick Diagnose",
-    "listed.table.h1": "Agency", "listed.table.h2": "Rating", "listed.table.h3": "Date",
+    "listed.table.h1": "Agency", "listed.table.h2": "Original rating", "listed.table.h3": "Source date", "listed.table.h4": "Detailed methodology",
+    "listed.ratings.title": "Multi-Agency ESG Ratings",
+    "listed.ratings.sub": "Expand each agency for its scale, model, industry adjustments, risk events and interpretation limits.",
+    "listed.ratings.note": "Methodologies and scales differ. Do not compare raw ratings directly or average them. “No public rating” does not mean zero. Explanations are based on public materials and the latest agency documents prevail. Ratings are not audit, assurance or investment advice.",
+    "listed.example.title": "Worked example: reading one rating end to end",
+    "listed.example.step1": "① Verdict",
+    "listed.example.step2": "② Position",
+    "listed.example.step3": "③ Pillars",
+    "listed.example.step4": "④ Cross-check",
+    "listed.example.step5": "⑤ How to use",
+    "listed.example.foot": "This example uses live data from the current query to illustrate how to read a rating; the agency's own publication prevails.",
+    "listed.guide.toggle": "Understand this rating",
+    "listed.guide.scale": "Scale and direction",
+    "listed.guide.model": "Assessment model",
+    "listed.guide.adjustment": "Industry and risk adjustments",
+    "listed.guide.use": "How to interpret",
+    "listed.guide.tech": "How the rating is calculated (technical detail)",
+    "listed.guide.comp_read": "E/S/G components",
+    "listed.guide.no_components": "No E/S/G components provided by the source",
+    "listed.guide.source": "Rating source",
+    "listed.guide.method": "Official methodology / source",
+    "listed.guide.extra": "Additional source",
+    "listed.unavailable": "No public rating",
+    "listed.unavailable_hint": "Not covered, not public or unavailable; does not mean zero",
+    "listed.yahoo.direction": "Sustainalytics unmanaged ESG risk · lower generally means lower risk",
+    "listed.sbti.direction": "Target status, not an overall ESG rating",
     "listed.none": "No multi-agency ratings available",
-    "listed.label.yahoo": "Yahoo ESG Overall",
+    "listed.label.yahoo": "Sustainalytics ESG Risk (via Yahoo)",
     "listed.label.sbti": "Science-Based Targets",
     "listed.label.agencies": "Multi-Agency Ratings",
     "listed.label.latest_hkex": "Latest HKEX ESG Report",
@@ -783,6 +853,9 @@ function setLang(lang) {
     const val = I18N[lang][key];
     if (val !== undefined) el.placeholder = val;
   });
+  if (lastListedResult) {
+    renderListed(lastListedResult.d, lastListedResult.name, lastListedResult.code);
+  }
 }
 function t(key) { return I18N[currentLang]?.[key] ?? I18N.zh[key] ?? key; }
 // Apply on load
@@ -864,6 +937,535 @@ document.querySelectorAll(".tab").forEach(btn => {
 function go(v) { document.querySelector(`.tab[data-v="${v}"]`).click(); }
 
 /* ---------- 上市公司 · 快速诊断（获客钩子） ---------- */
+const RATING_SOURCE_URL = "https://finance.sina.com.cn/esg/grade.shtml";
+/* 等级 → 通俗含义。letter 用 order 定位；number 用分数区间定位。
+   机构有官方分组（如 MSCI 领先/平均/落后、华证分数线、有机数风险带）时按官方写，
+   没有的明确注明“机构未公布固定分档”，不自行造档。 */
+const RATING_SCALE = {
+  "MSCI": {
+    kind:"letter", order:["CCC","B","BB","BBB","A","AA","AAA"],
+    comp:{zh:"MSCI 分项为 0–10 分，10 最好（E 10 已接近满分）。",en:"MSCI pillar scores run 0–10, where 10 is best."},
+    bands:[
+      {codes:["CCC","B"], zhS:"落后同业", zhM:"行业最关键的 ESG 议题上管理落后于多数同业，仍有较明显的未管理风险。", enS:"industry laggard", enM:"Management of the most material industry ESG issues trails most peers, with notable unmanaged risk remaining."},
+      {codes:["BB","BBB","A"], zhS:"同业中段", zhM:"关键 ESG 议题已有基本管理，处于同业中间位置，但尚未形成领先优势。", enS:"peer average", enM:"Material ESG issues are basically managed and the company sits mid-pack in its industry, without a clear lead."},
+      {codes:["AA","AAA"], zhS:"行业领先", zhM:"在行业最关键的 ESG 议题上管理能力强于多数同业，重大风险暴露管理较充分。", enS:"industry leader", enM:"Management of the most material industry ESG issues is stronger than most peers, with major exposures largely managed."}
+    ]
+  },
+  "标普": {
+    kind:"number", min:0, max:100, higher:true,
+    comp:{zh:"分项同样为 0–100 分，仅在行业内比较。",en:"Pillar scores are also 0–100 and are compared within industry only."},
+    note:{zh:"标普不公布固定等级分数线，只能与同行业样本对照判断高低。",en:"S&P does not publish fixed score bands; compare with industry peers only."},
+    bands:[{min:0,max:100, zhS:"同行业内相对位置", zhM:"分数代表同一行业内的相对表现，不是百分制及格线；没有同业分布就无法判断 60 分算好还是差。", enS:"relative industry position", enM:"The score is a within-industry relative measure, not a pass mark; 60 cannot be judged without the peer distribution."}]
+  },
+  "中证指数": {
+    kind:"letter", order:["C","CC","CCC","B","BB","BBB","A","AA","AAA"],
+    bands:[
+      {codes:["C","CC","CCC"], zhS:"样本后段", zhM:"按官方九等分归一，处在全样本分数区间的下三分之一；属于需要重点改善的区间。", enS:"lower third", enM:"Within the official nine-bucket normalization, this sits in the bottom third of the sample."},
+      {codes:["B","BB","BBB"], zhS:"样本中段", zhM:"处在全样本分数的中间三分之一，ESG 管理与披露达到基本水平。", enS:"middle third", enM:"This sits in the middle third of the normalized sample, indicating basic ESG management and disclosure."},
+      {codes:["A","AA","AAA"], zhS:"样本前段", zhM:"处在全样本分数的上三分之一，属于样本内表现较好的公司。", enS:"upper third", enM:"This sits in the top third of the normalized sample."}
+    ],
+    note:{zh:"另有 D，由风险警示或重大安全领域违法犯罪等条件直接触发，不是普通最低分。",en:"A separate D is triggered by conditions such as risk warnings or major safety-related offences; it is not simply the lowest band."}
+  },
+  "国证指数": {
+    kind:"letter", order:["D","C","CC","CCC","B","BB","BBB","A","AA","AAA"],
+    bands:[
+      {codes:["D","C","CC","CCC"], zhS:"相对靠后", zhM:"档位反映市场相对水平并偏后；也可能是数据完备性不足，需先核对覆盖。", enS:"relatively low", enM:"A lower relative market position; insufficient data completeness may also be involved, so check coverage first."},
+      {codes:["B","BB","BBB"], zhS:"相对居中", zhM:"可持续发展实践与风险表现处于市场中间水平。", enS:"mid-market", enM:"Sustainability practices and risk performance are around the market midpoint."},
+      {codes:["A","AA","AAA"], zhS:"相对靠前", zhM:"在本土市场中相对表现较好，重大负面风险控制较充分。", enS:"relatively high", enM:"Relatively strong domestic market standing, with major negative risks comparatively well controlled."}
+    ],
+    note:{zh:"机构未公布各档分数线，字母不能换算成百分制。",en:"Grade thresholds are not published, so letters cannot be converted into percentages."}
+  },
+  "中国国新": {
+    kind:"letter", order:["C","CC","CCC","B","BB","BBB","A","AA","AAA"],
+    bands:[
+      {codes:["C","CC","CCC"], zhS:"相对靠后", zhM:"可持续发展与价值创造能力的综合评价处于后段。", enS:"relatively low", enM:"A lower overall assessment of sustainable development and value creation."},
+      {codes:["B","BB","BBB"], zhS:"相对居中", zhM:"综合评价处于中间水平，基本管理与披露到位。", enS:"mid-range", enM:"A middle assessment, with basic management and disclosure in place."},
+      {codes:["A","AA","AAA"], zhS:"相对靠前", zhM:"在国资与本土议题框架下相对表现较好。", enS:"relatively high", enM:"Relatively strong within the central-SOE and local-topic framework."}
+    ],
+    note:{zh:"机构未公布分数阈值，等级只表示相对位置。",en:"Score thresholds are not published; grades indicate relative standing only."}
+  },
+  "中债": {
+    kind:"number", min:1, max:10, higher:true,
+    comp:{zh:"分项同为 1–10 整数分，10 最高。",en:"Pillar scores are integers from 1 to 10, with 10 highest."},
+    bands:[
+      {min:1,max:4, zhS:"偏低", zhM:"ESG 得分处于十档中的下部。", enS:"low", enM:"In the lower part of the ten-point scale."},
+      {min:5,max:7, zhS:"中等", zhM:"ESG 得分处于十档中部。", enS:"moderate", enM:"In the middle of the ten-point scale."},
+      {min:8,max:10, zhS:"偏高", zhM:"ESG 得分处于十档上部。", enS:"high", enM:"In the upper part of the ten-point scale."}
+    ],
+    note:{zh:"以上分段是便于理解的通俗划分，不是机构官方分组；1 分最低、10 分最高。",en:"These groupings are a plain-language aid, not official agency bands; 1 is lowest and 10 highest."}
+  },
+  "商道融绿": {
+    kind:"letter", order:["D","C-","C","C+","B-","B","B+","A-","A","A+"],
+    bands:[
+      {codes:["D","C-","C"], zhS:"相对靠后", zhM:"ESG 管理与风险暴露表现在同业中靠后。", enS:"relatively low", enM:"ESG management and risk exposure rank low among peers."},
+      {codes:["C+","B-","B","B+"], zhS:"同业中段", zhM:"ESG 管理与信息披露达到同业中间水平。", enS:"peer average", enM:"ESG management and disclosure are around the peer midpoint."},
+      {codes:["A-","A","A+"], zhS:"同业领先", zhM:"ESG 主动管理与风险控制强于多数同业。", enS:"peer leader", enM:"Active ESG management and risk control are stronger than most peers."}
+    ],
+    note:{zh:"字母对应行业相对排名，不是固定分数线。",en:"Grades reflect industry-relative ranking, not fixed score cut-offs."}
+  },
+  "联合赤道": {
+    kind:"letter", order:["C","B-","B","B+","BB-","BB","BB+","BBB-","BBB","BBB+","A-","A","A+","AA-","AA","AA+","AAA"],
+    bands:[
+      {codes:["C","B-","B","B+","BB-","BB"], zhS:"相对靠后", zhM:"ESG 绩效在同行业中靠后，或负面事件调整后级别被下调。", enS:"relatively low", enM:"Peer-relative ESG performance is low, or a negative-event adjustment lowered the grade."},
+      {codes:["BB+","BBB-","BBB","BBB+","A-"], zhS:"同业中段", zhM:"ESG 绩效处于同业中间水平。", enS:"peer average", enM:"Peer-relative ESG performance is mid-range."},
+      {codes:["A","A+","AA-","AA","AA+","AAA"], zhS:"同业领先", zhM:"ESG 绩效在同行业中处于领先区间。", enS:"peer leader", enM:"Peer-relative ESG performance is in the leading range."}
+    ],
+    note:{zh:"等级表示同行业相对绩效；使用信用风险数据不等于偿债信用级别。",en:"Grades are peer-relative ESG performance; credit-risk data does not make this a credit rating."}
+  },
+  "中诚信": {
+    kind:"letter", order:["C","B-","B","B+","BB-","BB","BB+","BBB-","BBB","BBB+","A-","A","A+","AA-","AA","AA+","AAA"],
+    bands:[
+      {codes:["C","B-","B","B+","BB-","BB"], zhS:"相对靠后", zhM:"ESG 表现及风险控制在同行业中靠后。", enS:"relatively low", enM:"ESG performance and risk control rank low among peers."},
+      {codes:["BB+","BBB-","BBB","BBB+","A-"], zhS:"同业中段", zhM:"ESG 表现处于同业中间水平。", enS:"peer average", enM:"ESG performance is mid-range."},
+      {codes:["A","A+","AA-","AA","AA+","AAA"], zhS:"同业领先", zhM:"ESG 表现处于同业领先区间。", enS:"peer leader", enM:"ESG performance is in the leading range."}
+    ],
+    note:{zh:"最终级别由评审委员会确定，可能偏离模型结果；官方明确不评价信用状况。",en:"A rating committee sets the final grade, which may differ from the model; the agency explicitly does not assess creditworthiness."}
+  },
+  "秩鼎": {
+    kind:"letter", order:["C","CC","CCC","B","BB","BBB","A","AA","AAA"],
+    bands:[
+      {codes:["C","CC","CCC"], zhS:"行业落后", zhM:"ESG 绩效在行业中处于落后组。", enS:"industry laggard", enM:"ESG performance is in the lagging group for its industry."},
+      {codes:["B","BB","BBB"], zhS:"行业一般", zhM:"ESG 绩效在行业中处于一般水平。", enS:"industry average", enM:"ESG performance is around the industry average."},
+      {codes:["A","AA","AAA"], zhS:"行业领先", zhM:"ESG 绩效在行业中处于领先组。", enS:"industry leader", enM:"ESG performance is in the leading group for its industry."}
+    ],
+    note:{zh:"领先／一般／落后三组为机构公开表述；分数阈值未公开。",en:"The leading/average/lagging grouping is the agency's own wording; score thresholds are not public."}
+  },
+  "华证": {
+    kind:"number", min:0, max:100, higher:true,
+    comp:{zh:"分项同为 0–100 分，越高越好。",en:"Pillar scores are 0–100, higher is better."},
+    bands:[
+      {min:0,max:70, zhS:"偏低", zhM:"低于 70 分，对应 CCC 及以下档位。", enS:"low", enM:"Below 70, corresponding to CCC or lower."},
+      {min:70,max:85, zhS:"中等", zhM:"70–85 分，对应 B 至 BBB 档位。", enS:"moderate", enM:"70–85, corresponding to B through BBB."},
+      {min:85,max:100, zhS:"较高", zhM:"85 分以上，对应 A 至 AAA 档位。", enS:"high", enM:"85 and above, corresponding to A through AAA."}
+    ],
+    note:{zh:"分档按机构公布的分数线：AAA≥95、AA 90–95、A 85–90、BBB 80–85、BB 75–80、B 70–75、CCC 65–70、CC 60–65、C<60。",en:"Bands follow published thresholds: AAA≥95, AA 90–95, A 85–90, BBB 80–85, BB 75–80, B 70–75, CCC 65–70, CC 60–65, C<60."}
+  },
+  "有机数": {
+    kind:"number", min:0, max:100, higher:false,
+    comp:{zh:"分项同样是风险分，越高风险越大。",en:"Pillar scores are also risk scores; higher means more risk."},
+    bands:[
+      {min:0,max:25, zhS:"风险极低至低", zhM:"CERS 0–25 分，对应 AAA、AA、A，未管理风险暴露很小。", enS:"negligible to low risk", enM:"CERS 0–25 (AAA, AA, A): very limited unmanaged risk exposure."},
+      {min:26,max:50, zhS:"风险中低至中高", zhM:"CERS 26–50 分，对应 BBB、BB、B，存在需要关注的负面风险记录。", enS:"low-to-high moderate risk", enM:"CERS 26–50 (BBB, BB, B): negative-risk records warrant attention."},
+      {min:51,max:100, zhS:"风险较高至极高", zhM:"CERS 51–100 分，对应 CCC、CC、C，负面事件暴露明显。", enS:"high to extreme risk", enM:"CERS 51–100 (CCC, CC, C): notable exposure to negative events."}
+    ],
+    note:{zh:"注意方向与多数评级相反：分数越低越好，低分只代表负面风险少，不代表 ESG 绩效优秀。",en:"Direction is reversed versus most ratings: lower is better, and a low score means less negative exposure, not strong ESG performance."}
+  },
+  "妙盈": {
+    kind:"letter", order:["D","DD","DDD","C","CC","CCC","B","BB","BBB","A","AA","AAA"],
+    bands:[
+      {codes:["D","DD","DDD","C"], zhS:"相对靠后", zhM:"ESG 管理与绩效在同业中靠后。", enS:"relatively low", enM:"ESG management and performance rank low among peers."},
+      {codes:["CC","CCC","B","BB"], zhS:"同业中段", zhM:"ESG 管理与绩效处于同业中间水平。", enS:"peer average", enM:"ESG management and performance are mid-range."},
+      {codes:["BBB","A","AA","AAA"], zhS:"相对靠前", zhM:"ESG 管理与绩效在同业中靠前。", enS:"relatively high", enM:"ESG management and performance rank high among peers."}
+    ],
+    note:{zh:"现行分数与等级阈值未完整公开，系统按来源原样保留字母。",en:"Current score thresholds are not fully public, so letters are preserved as published."}
+  },
+  "中财绿金院": {
+    kind:"letter", order:["D-","D","D+","C-","C","C+","B-","B","B+","A-","A","A+"],
+    bands:[
+      {codes:["D-","D","D+","C-"], zhS:"相对靠后", zhM:"ESG 表现靠后；若是 D-，还需先排除数据不可得的情况。", enS:"relatively low", enM:"ESG performance is low; for D-, first rule out unavailable data."},
+      {codes:["C","C+","B-","B"], zhS:"同业中段", zhM:"ESG 表现处于同业中间水平。", enS:"peer average", enM:"ESG performance is mid-range."},
+      {codes:["B+","A-","A","A+"], zhS:"相对靠前", zhM:"ESG 表现领先，负面扣分较少。", enS:"relatively high", enM:"ESG performance is strong with fewer negative deductions."}
+    ],
+    note:{zh:"机构未公布原始分数阈值；官方研究提示 D- 有时反映数据不可得。",en:"Raw thresholds are not published; the agency notes D- can reflect unavailable data."}
+  }
+};
+/* 返回：结论短标签、一句话含义、尺度位置、说明、分项读法 */
+function plainRead(agency, rating) {
+  const s = RATING_SCALE[agency];
+  const zh = currentLang === 'zh';
+  if (!s || !rating) return null;
+  let band = null, position = "";
+  const num = parseFloat(String(rating).replace(/[^0-9.]/g, ""));
+  if (s.kind === "letter") {
+    const i = s.order.indexOf(String(rating).trim().toUpperCase());
+    if (i < 0) return null;
+    position = zh
+      ? `该机构共 ${s.order.length} 档，${rating} 是第 ${i + 1} 档（由低到高）`
+      : `${rating} is grade ${i + 1} of ${s.order.length}, counting from the lowest`;
+    band = (s.bands || []).find(b => b.codes.includes(String(rating).trim().toUpperCase()));
+  } else {
+    if (isNaN(num)) return null;
+    position = zh
+      ? `该机构为 ${s.min}–${s.max} 分制，本公司 ${rating} 分，${s.higher ? "越高越好" : "越高风险越大"}`
+      : `Scored on ${s.min}–${s.max}; the company is at ${rating}, where ${s.higher ? "higher is better" : "higher means more risk"}`;
+    band = (s.bands || []).find(b => num >= b.min && num <= b.max);
+  }
+  return {
+    short: band ? band[zh ? "zhS" : "enS"] : "",
+    meaning: band ? band[zh ? "zhM" : "enM"] : "",
+    position,
+    note: s.note ? s.note[zh ? "zh" : "en"] : "",
+    comp: s.comp ? s.comp[zh ? "zh" : "en"] : ""
+  };
+}
+const RATING_GUIDE = {
+  "MSCI": {
+    method:"https://www.msci.com/legal/sustainability-and-climate-resources-and-disclosures/msci-sustainability-and-climate-methodologies",
+    zh:{
+      scale:"行业调整分 IAS 为 0–10，依次分为 CCC、B、BB、BBB、A、AA、AAA，越高越好；AAA 为 8.571–10，A 为 5.714–<7.143，CCC 为 <1.429。2026 年起阈值附近设 ±0.1 等级保留缓冲区。",
+      model:"从 27 项 E/S 议题中按行业选 2–7 项，结合风险暴露、管理和绩效；治理 6 项全部评价并采用扣分法，再合成加权关键议题分 WAKIS。",
+      adjustment:"按 GICS 子行业确定议题与权重，再相对 ESG Rating Industry 同业归一化。争议事件按危害与范围分级，管理分可扣 0–5 分；部分缺失绩效会按行业情境估计。",
+      use:"适合比较同行业相对风险管理能力，不是企业实际社会影响、道德评分或收益预测；含估计的分项不等于公司已披露实绩。"
+    },
+    en:{
+      scale:"The Industry-Adjusted Score runs from 0–10 across CCC, B, BB, BBB, A, AA and AAA. AAA is 8.571–10, A is 5.714–<7.143 and CCC is <1.429. From 2026, a ±0.1 buffer can preserve the prior grade near a threshold.",
+      model:"Two to seven of 27 E/S topics are selected by industry and assessed through exposure, management and performance. All six governance topics are assessed using deductions, then combined into a weighted average key issue score.",
+      adjustment:"GICS sub-industries drive topic selection and weights before peer normalization. Controversies can deduct 0–5 management points; some missing performance inputs are estimated using industry context.",
+      use:"Use for peer-relative risk management, not as a measure of real-world impact, corporate virtue or expected returns. Estimated inputs are not company-reported performance."
+    }
+  },
+  "标普": {
+    method:"https://portal.s1.spglobal.com/survey/documents/spglobal_esg_scores_methodology.pdf",
+    zh:{
+      scale:"S&P Global ESG Score 为 0–100，越高代表同一行业内相对表现越好，不设 AAA 等字母档；页面如出现 60+，是来源提供的区间，并非系统换算。",
+      model:"采用双重重要性，结合公司问卷、公开资料、分析师评估、建模及持续争议监测；未主动参与 CSA 的公司也可依据公开信息评估。",
+      adjustment:"使用 62 套 GICS 对齐的行业问卷，不适用问题的权重会重新分配。媒体与利益相关方分析 MSA 可在准则层扣分；无信息问题、私密数据及估算部分有不同处理，不能把全部得分视为披露实绩。",
+      use:"适合同行业管理与绩效比较，不宜跨行业排名；解读时应同时看披露分析、是否含建模分及 MSA 扣分。"
+    },
+    en:{
+      scale:"The S&P Global ESG Score runs from 0–100, with higher scores indicating better relative performance within an industry. Bands such as 60+ are preserved from the source rather than calculated by this system.",
+      model:"A double-materiality approach combines company questionnaires, public disclosures, analyst assessment, modelling and ongoing controversy monitoring. Non-participating companies can be assessed from public information.",
+      adjustment:"Sixty-two GICS-aligned industry questionnaires redistribute weights for non-applicable questions. Media and Stakeholder Analysis can deduct criterion scores; missing, private and modelled inputs receive different treatments.",
+      use:"Use for within-industry management and performance comparisons, not cross-industry league tables. Check disclosure analysis, modelled inputs and MSA deductions alongside the headline score."
+    }
+  },
+  "中证指数": {
+    method:"https://oss-ch.csindex.com.cn/notice/20260915144550-%E3%80%8A%E4%B8%AD%E8%AF%81%E4%B8%8A%E5%B8%82%E5%85%AC%E5%8F%B8ESG%E8%AF%84%E4%BB%B7%E6%96%B9%E6%B3%95%E3%80%8BV4.0.pdf",
+    zh:{
+      scale:"V4.0 原始总分为 0–1，全样本归一后九等分为 C、CC、CCC、B、BB、BBB、A、AA、AAA；另有 D，由风险警示或重大安全领域违法犯罪等条件直接触发，不是普通最低分。",
+      model:"设 3 个维度、12 个主题、31 个单元和近 200 项指标，逐级加权，兼顾 ESG 风险、机遇、管理、披露与实质表现。",
+      adjustment:"V4.0 同时考虑绝对表现与相对水平，按行业业务模式和影响差异定权；关注事件分 1–5 级，3–5 级为重点并可在单元层扣分，不预设各等级固定比例。",
+      use:"适合观察中国监管与本土议题框架下的表现；不是纯行业百分位。公开 V4 覆盖以沪深样本为主，港股是否适用须先确认覆盖范围。"
+    },
+    en:{
+      scale:"V4.0 normalizes a 0–1 raw score into C, CC, CCC, B, BB, BBB, A, AA and AAA. A separate D is triggered by conditions such as risk warnings or major safety-related offences; it is not simply the lowest score band.",
+      model:"Three dimensions, 12 themes, 31 units and nearly 200 indicators are weighted through a hierarchy covering ESG risks, opportunities, management, disclosure and performance.",
+      adjustment:"V4.0 combines absolute and relative performance with industry-specific weights. Concern events are graded 1–5, with levels 3–5 treated as key events that can reduce unit scores; fixed grade quotas are not assumed.",
+      use:"Useful within the Chinese regulatory and local-topic framework, but not a pure industry percentile. Confirm coverage before applying the public V4 methodology, focused on mainland-listed samples, to Hong Kong stocks."
+    }
+  },
+  "国证指数": {
+    method:"https://www.cnindex.com.cn/zh_analytics/esg_ratings/download/201911/P020250107605656065558.pdf",
+    zh:{
+      scale:"V2.0 共 10 档：D、C、CC、CCC、B、BB、BBB、A、AA、AAA，反映市场相对水平；公开方法未给出各档分数线，不能把字母直接换算成百分制。",
+      model:"设 3 个维度、15 个主题、34 个领域和 220 余项指标，由底层指标逐级加权至总分，并强调 ESG 风险与未来财务状况的联系。",
+      adjustment:"按主营业务设置差异化指标和权重并作行业标准化，强调“行业中性”；通常季度更新，重大负面风险可即时调整，并穿透识别关联公司风险。仅数据完备的主体获得评价。",
+      use:"适合观察本土实践、市场相对表现与重大风险，不是绝对达标证明；未出等级也可能是数据完备性不足。"
+    },
+    en:{
+      scale:"V2.0 has ten grades: D, C, CC, CCC, B, BB, BBB, A, AA and AAA, representing relative market standing. Public thresholds are unavailable, so letter grades cannot be converted into percentages.",
+      model:"Three dimensions, 15 themes, 34 fields and more than 220 indicators roll up into an overall score, with explicit attention to links between ESG risks and future financial conditions.",
+      adjustment:"Indicators and weights vary by principal business and are standardized by industry. Updates are normally quarterly, while major negative risks can trigger immediate adjustments, including risks through affiliates. Only entities meeting data-completeness requirements are rated.",
+      use:"Use for local practices, relative market performance and major-risk monitoring, not as absolute compliance. A missing grade may reflect insufficient data rather than poor performance."
+    }
+  },
+  "中国国新": {
+    method:"https://www.crhcc.com/esgpj/A001011index_1.htm",
+    zh:{
+      scale:"设 AAA、AA、A、BBB、BB、B、CCC、CC、C 九档，越高越好；数值总分、等级阈值和具体权重未公开，结果随企业数据更新不定期调整。",
+      model:"2024 年公开框架包括 3 个范畴、11 个议题、42 个三级指标、122 个四级指标和 400 余个数据点，结合定量／定性及静态／动态分析。",
+      adjustment:"行业体系从通用指标中选取行业重要性议题并作行业内评估；缺失值及争议事件的独立调整规则未公开。评价也被用作央企 ESG 指数及 ESG 动量因子。",
+      use:"适合观察可持续发展与价值创造能力，尤其国资央企研究；不是偿债评级或绿色债券认证。官方查询页明确覆盖 A 股，港股覆盖需另行确认。"
+    },
+    en:{
+      scale:"Nine grades run from AAA, AA, A, BBB, BB, B, CCC, CC to C. Numeric scores, thresholds and detailed weights are not public; results are updated as company data changes.",
+      model:"The 2024 public framework covers three domains, 11 topics, 42 level-three indicators, 122 level-four indicators and more than 400 data points, combining quantitative/qualitative and static/dynamic analysis.",
+      adjustment:"Industry models select material topics from the common framework for peer assessment. Separate missing-data and controversy rules are not public. The assessment also feeds central-SOE ESG indices and momentum factors.",
+      use:"Relevant to sustainable development and value creation, especially central-SOE research. It is neither a credit rating nor green-bond certification; Hong Kong coverage is not confirmed by the public A-share query page."
+    }
+  },
+  "中债": {
+    method:"https://www.chinabond.com.cn/zzsj/zzsj_zzjgcp/zzjgcp_cpdt/cpdt_zzESG/202509/P020250926611153191742.pdf",
+    zh:{
+      scale:"2025 版不用字母级别：综合、E/S/G 分项及评价因素均为 1–10 的整数，共十档，1 最低、10 最高；不要与 AAA—C 体系混排。",
+      model:"E/S/G 下设 15 个评价维度、42 个评价因素和 200 余项指标，服务债券发行人及上市公司分析；具体指标权重数值未公开。",
+      adjustment:"缺失值采用统计方法补空，标准化后按信息有效性、数据可得性和重要性赋权，再作行业差异调整；负面舆情按性质与影响程度调整分项和综合得分，每月发布。",
+      use:"可与信用分析联合使用，但 ESG 分不是债项或主体信用级别。2026 年扩展至港股并适配两地披露规则，仍须核对具体主体覆盖。"
+    },
+    en:{
+      scale:"The 2025 methodology uses integer scores from 1 to 10 for the overall result, E/S/G pillars and assessment factors: 1 is lowest and 10 highest. It does not use AAA–C letter grades.",
+      model:"Fifteen dimensions, 42 factors and more than 200 indicators support analysis of bond issuers and listed companies. Detailed numerical weights are not public.",
+      adjustment:"Missing values are statistically imputed before weighting by information validity, availability and importance, followed by industry adjustment. Negative events affect pillar and overall scores according to their nature and impact; publication is monthly.",
+      use:"Can complement credit analysis but is not an issuer or instrument credit rating. Coverage expanded to Hong Kong stocks in 2026 with adaptations for both disclosure regimes; entity coverage still needs checking."
+    }
+  },
+  "商道融绿": {
+    method:"https://syntaogf.com/pages/methodology",
+    zh:{
+      scale:"原始总分和行业调整分均为 0–100；级别为 A+、A、A-、B+、B、B-、C+、C、C-、D 十档，越高越好。字母评级对应行业相对位置，不是固定分数线。",
+      model:"3.0 版包括 14 个议题、200 余项指标、1000 余个数据点和 51 个行业模型；总分由“主动管理得分＋风险暴露得分”构成，也等于 E/S/G 分数加总。",
+      adjustment:"风险暴露结合行业基准风险、企业个体 Beta 和风险事件，再按行业相对排名形成调整分与级别；负面信息经自动初筛后由分析师按行业实质性评估，通常季度更新。",
+      use:"适合投资风控和行业相对表现分析。港股覆盖主要是 2019 年以来曾纳入港股通的公司，并非全部港股；也不是偿债信用评级。"
+    },
+    en:{
+      scale:"Both raw and industry-adjusted scores run from 0–100. Ten grades run from A+, A, A-, B+, B, B-, C+, C, C- to D. Grades reflect industry-relative positions rather than fixed public score thresholds.",
+      model:"Version 3.0 covers 14 topics, more than 200 indicators, over 1,000 data points and 51 industry models. The total combines active management and risk exposure, and also equals the sum of E/S/G scores.",
+      adjustment:"Risk exposure combines industry baseline risk, company-specific beta and risk events before industry-relative grading. Automated screening of negative information is followed by analyst materiality review, normally with quarterly updates.",
+      use:"Designed for investment risk control and peer-relative analysis. Hong Kong coverage mainly comprises companies included in Stock Connect since 2019, not the entire market; it is not a credit rating."
+    }
+  },
+  "联合赤道": {
+    method:"https://www.lheia.com/esgzxypj.html",
+    zh:{
+      scale:"主体级为 AAA、AA、A、BBB、BB、B、C 七级；除 AAA 和 C 外可加 +／-，形成 17 档，越高越好；未公开数值总分及各档分数线。",
+      model:"公开框架列示 13 大主题；产品资料另披露 30 余个议题、120 余项指标和 1000 余个数据点，E/S/G 权重及缺失值规则未公开。",
+      adjustment:"评级路径为“评价得分→基础级别→负面事件风险调整→行业 ESG 风险评价→最终级别”；除企业披露外，还整合自有风险库、政府及第三方平台的 50 余万条信用风险数据。",
+      use:"结果表示同行业相对 ESG 绩效。使用信用风险数据不等于输出偿债信用级别，绿色债券认证也是另一项独立产品。"
+    },
+    en:{
+      scale:"Seven main grades—AAA, AA, A, BBB, BB, B and C—support +/− notches except at AAA and C, producing 17 grades. Numeric scores and grade thresholds are not public.",
+      model:"The public framework lists 13 themes; product materials describe more than 30 topics, 120 indicators and 1,000 data points. Pillar weights and missing-data rules are not disclosed.",
+      adjustment:"The sequence is assessment score, base grade, negative-event adjustment, industry ESG risk assessment and final grade. Company disclosures are supplemented by more than 500,000 credit-risk records from proprietary, government and third-party sources.",
+      use:"The result represents peer-relative ESG performance. Using credit-risk data does not make it a debt-servicing rating, and green-bond certification is a separate product."
+    }
+  },
+  "中诚信": {
+    method:"http://ccxgf.com.cn/article/239.html",
+    zh:{
+      scale:"AAA、AA、A、BBB、BB、B、C 七级，除 AAA、C 外加 +／-，共 17 档；越高越好，未公开总分区间。最终级别由评审委员会决定，可能偏离模型结果。",
+      model:"三层指标中，E 设环境管理、排放物、资源、可持续发展 4 项一级指标，S 设 7 项、G 设 6 项；通过历史回测、熵权法和 AHP 复合赋权。",
+      adjustment:"公开行业权重区间为 E 18.7%–28.3%、S 24.1%–34%、G 44%–51.8%，治理权重通常较高。政策、环保标准及严重舆情可触发微调；未披露信息用“未披露因子”综合分析替代。",
+      use:"适合观察治理占比较高的本土 ESG 评价。官方明确不评价信用状况，不能与债项信用级别或绿色认证混同。"
+    },
+    en:{
+      scale:"Seven main grades with +/− notches, except at AAA and C, produce 17 grades. No overall numeric range is public. A rating committee determines the final grade and may override the model outcome.",
+      model:"The three-tier framework assigns E four first-level indicators—environmental management, emissions, resources and sustainable development—plus seven S and six G indicators. Historical backtesting, entropy weighting and AHP are combined.",
+      adjustment:"Published industry weight ranges are E 18.7%–28.3%, S 24.1%–34% and G 44%–51.8%, giving governance a relatively large role. Policy, environmental standards and severe controversies can trigger adjustments; undisclosed items use a dedicated non-disclosure factor.",
+      use:"Useful where a governance-heavy local ESG perspective is required. It explicitly does not assess creditworthiness and must not be confused with bond ratings or green certification."
+    }
+  },
+  "秩鼎": {
+    method:"https://www.quantdata.com.cn/file/%E4%B8%8A%E5%B8%82%E5%85%AC%E5%8F%B8ESG%E8%AF%84%E7%BA%A7%E6%96%B9%E6%B3%95%E8%AE%BA.pdf",
+    zh:{
+      scale:"九级为 AAA、AA、A、BBB、BB、B、CCC、CC、C，并分为行业领先、一般、落后三组；未公开总分上下限及等级阈值。",
+      model:"E/S/G 下设 10 个以上二级维度；指标分通用、行业、风险三类，纳入精准扶贫、安全生产、反腐，以及汽车召回、药品抽检等本土和行业特定指标。",
+      adjustment:"按申万、中证、中信、GICS、证监会等分类设置行业权重；以 AI 和海量数据点处理信息，对少披露、晚披露设专门规则，并按月更新。具体权重及缺失值公式未公开。",
+      use:"适合月度跟踪、回测与风险预警，尤其是中国本土行业事件；不能把等级当作跨机构可比的绝对分。"
+    },
+    en:{
+      scale:"Nine grades—AAA, AA, A, BBB, BB, B, CCC, CC and C—are grouped as industry-leading, average and lagging. Overall score limits and grade thresholds are not public.",
+      model:"More than ten second-level dimensions sit under E/S/G. General, industry and risk indicators include local topics such as poverty alleviation, workplace safety and anti-corruption, plus sector-specific events such as vehicle recalls and drug inspections.",
+      adjustment:"Industry weights use classifications including Shenwan, CSI, CITIC, GICS and CSRC. AI processes large volumes of data, with dedicated rules for limited or late disclosure and monthly updates. Detailed weights and imputation formulas are unavailable.",
+      use:"Suited to monthly monitoring, backtesting and risk alerts involving Chinese industry events; grades are not absolute scores comparable across agencies."
+    }
+  },
+  "华证": {
+    method:"https://www.chindices.com/files/%E5%8D%8E%E8%AF%81ESG%E8%AF%84%E7%BA%A7%E6%96%B9%E6%B3%95%E8%AE%BAV2.1.pdf",
+    zh:{
+      scale:"V2.1 为 0–100 分：AAA≥95，AA 90–<95，A 85–<90，BBB 80–<85，BB 75–<80，B 70–<75，CCC 65–<70，CC 60–<65，C<60；越高越好。",
+      model:"设 3 个支柱、16 个主题、44 个议题、近 80 个底层指标和 300+ 数据指标；议题权重取决于对三级行业的影响程度与持续时间，非核心议题权重可为 0。",
+      adjustment:"用 NLP 处理非结构化信息并对缺失值统计补空；按行业最高／最低基准标准化，参考前后 5% 样本。重大负面事件可临时调级，常规季度更新。",
+      use:"适合行业内选股、指数与风险预警。行业调整后的分数偏相对表现，跨行业比较或把 AAA 直接等同其他机构 AAA 都不合适。"
+    },
+    en:{
+      scale:"V2.1 uses 0–100: AAA ≥95, AA 90–<95, A 85–<90, BBB 80–<85, BB 75–<80, B 70–<75, CCC 65–<70, CC 60–<65 and C <60. Higher is better.",
+      model:"Three pillars, 16 themes, 44 topics, nearly 80 underlying indicators and more than 300 data metrics are used. Topic weights reflect the magnitude and duration of impact on each third-level industry; non-core topics can receive zero weight.",
+      adjustment:"NLP processes unstructured information and missing values are statistically imputed. Scores are standardized to industry high/low benchmarks with reference to the top and bottom 5% of observations. Major controversies can trigger interim grade changes; routine updates are quarterly.",
+      use:"Designed for within-industry selection, indices and risk alerts. Industry-adjusted scores are relative, so cross-industry comparisons and equivalence with other agencies' AAA grades are inappropriate."
+    }
+  },
+  "有机数": {
+    method:"https://www.youjivest.com/2023/06/13/923/",
+    zh:{
+      scale:"CERS 是 0–100 风险分，分数越高、风险越大：AAA 0–15 极低，AA 16–20 低，A 21–25 较低，BBB 26–35 中低，BB 36–45 中等，B 46–50 中高，CCC 51–65 较高，CC 66–75 高，C 76–100 极高。",
+      model:"从 10000+ 新闻、社交媒体及监管等公开渠道提炼 25 类风险议题，清洗、标准化后归入 E/S/G，跨维度事件另归入 M，再汇总风险总分。",
+      adjustment:"以 NLP 做主体识别和实质负面筛选，主要看第三方记录而非企业自报；数据日更、评分周更，重大风险可日度推送。权重与行业调整公式未公开。",
+      use:"适合争议预警、信贷和投研风控。低分只表示负面风险较低，不能据此断定 ESG 绩效优秀，也不能与华证等“越高越好”的绩效分直接排名。"
+    },
+    en:{
+      scale:"CERS is a 0–100 risk score where higher means greater risk: AAA 0–15, AA 16–20, A 21–25, BBB 26–35, BB 36–45, B 46–50, CCC 51–65, CC 66–75 and C 76–100, ranging from negligible to extremely high risk.",
+      model:"Twenty-five risk topics are extracted from more than 10,000 public news, social-media and regulatory channels. Events are cleaned and standardized into E/S/G, with cross-cutting events assigned to M before aggregation.",
+      adjustment:"NLP identifies entities and screens material negative events using third-party records rather than company self-reporting. Data is updated daily and scores weekly, with daily alerts for major risks. Weights and industry formulas are not public.",
+      use:"Designed for controversy alerts, credit and investment risk control. A low score indicates lower negative-risk exposure, not excellent ESG performance, and cannot be ranked directly against higher-is-better scores."
+    }
+  },
+  "妙盈": {
+    method:"https://www.miotech.com/en-US/article/193",
+    extra:"https://www.miotech.com/zh-CN/data-intelligence?origin=footer",
+    zh:{
+      scale:"官方研究采用 0–100 分、越高越好；公开数据页另展示 D、DD、DDD、C、CC、CCC、B、BB、BBB、A、AA、AAA 十二级，但现行分数阈值未见官方完整公开，系统保留原始字母。",
+      model:"自研 MICS 分 11 个一级、62 个二级行业，并结合公司具体业务、行业和地理位置确定议题风险权重；研究综述记载底层指标 700+，但现行官方完整指标表未公开。",
+      adjustment:"以 AI 持续追踪新闻、社交媒体和信息披露等另类数据，并另列争议事件、绿色／SDG 收入、碳与气候风险数据；具体标准化公式和权重未公开。",
+      use:"适合大中华区跨市场监测、行业对标和另类数据研究。使用时应核对评级版本，不把研究综述中的指标数量或历史尺度当作当前完整方法。"
+    },
+    en:{
+      scale:"Official research uses a 0–100 higher-is-better score. Public data pages also show twelve grades from D, DD, DDD, C, CC, CCC, B, BB, BBB, A, AA to AAA, but current official thresholds are not fully published, so original letters are preserved.",
+      model:"The proprietary MICS taxonomy has 11 first-level and 62 second-level industries, with topic risk weights reflecting company activities, industry and geography. Research reviews cite more than 700 underlying indicators, but no current official full indicator table is public.",
+      adjustment:"AI tracks alternative data across news, social media and disclosures, alongside controversy, green/SDG revenue, carbon and climate-risk datasets. Detailed standardization formulas and weights are unavailable.",
+      use:"Suited to Greater China cross-market monitoring, peer comparison and alternative-data research. Verify the model version rather than treating review-reported indicator counts or historical scales as the current full methodology."
+    }
+  },
+  "中财绿金院": {
+    method:"https://iigf.cufe.edu.cn/info/1012/9939.htm",
+    extra:"https://iigf.cufe.edu.cn/lsjrsjk/ESGsjk.htm",
+    zh:{
+      scale:"公开研究采用 A+、A、A-、B+、B、B-、C+、C、C-、D+、D、D- 十二级；原始分数范围与等级阈值未公开，研究中的 100–1 转换只是回归处理，不是原始评分。",
+      model:"数据库设 3 个一级、36 项二级和 300+ 三级指标；E 强调行业特色，S/G 使用更多通用指标以增强横向可比性，并纳入环保处罚、债务、违规、负面新闻、精准扶贫和科技创新等本土议题。",
+      adjustment:"按制造业、服务业、金融业及 31 个二级行业设置指标，E/S/G 均有正面加分与负面扣分。具体数值权重未公开；官方研究还提示 D- 有时与数据不可得有关。",
+      use:"适合中国本土研究、投资筛选和风险排查。看到 D- 须先核查数据覆盖，不能直接断定绩效最差；港股还需确认对应年份覆盖与版本。"
+    },
+    en:{
+      scale:"Public research uses twelve grades: A+, A, A-, B+, B, B-, C+, C, C-, D+, D and D-. Raw score limits and thresholds are not public; the 100–1 conversion in research is a regression transformation, not the original score.",
+      model:"The database contains three first-level, 36 second-level and more than 300 third-level indicators. E is more industry-specific, while common S/G indicators support comparability. Local topics include environmental penalties, debt, violations, negative news, poverty alleviation and technology innovation.",
+      adjustment:"Indicators vary across manufacturing, services, finance and 31 second-level industries, with positive additions and negative deductions across E/S/G. Detailed weights are unavailable; official research notes that D- can sometimes reflect unavailable data.",
+      use:"Designed for Chinese local research, screening and risk checks. Investigate data coverage before treating D- as worst performance, and confirm Hong Kong coverage and model version for the relevant year."
+    }
+  }
+};
+function guideFor(agency) {
+  const g = RATING_GUIDE[agency];
+  if (!g) return {
+    scale:currentLang === 'zh' ? "该机构尺度尚未纳入系统，保留原始结果，不推断方向。" : "This agency's scale is not yet included; the original result is preserved without inferring direction.",
+    model:currentLang === 'zh' ? "公开评价模型尚未核实。" : "The public assessment model has not been verified.",
+    adjustment:currentLang === 'zh' ? "行业与风险调整规则尚未核实。" : "Industry and risk-adjustment rules have not been verified.",
+    use:currentLang === 'zh' ? "请通过来源页核查，不与其他机构直接比较。" : "Check the source page and do not compare directly with other agencies.",
+    method:"", extra:""
+  };
+  const content = g[currentLang];
+  return {...content, method:g.method || "", extra:g.extra || ""};
+}
+const AGENCY_EN = {
+  "MSCI":"MSCI", "标普":"S&P Global", "中证指数":"CSI", "国证指数":"CNI",
+  "中国国新":"China Reform", "中债":"ChinaBond", "商道融绿":"SynTao Green Finance",
+  "联合赤道":"Lianhe Equator", "中诚信":"CCX Green Finance", "秩鼎":"QuantData",
+  "华证":"Huazheng", "有机数":"YoujiVest", "妙盈":"MioTech", "中财绿金院":"IIGF"
+};
+function agencyName(a) {
+  return currentLang === 'en' && AGENCY_EN[a] ? AGENCY_EN[a] : a;
+}
+/* 用当前公司的真实数据，完整走一遍「这份评级说明什么」 */
+function exampleHTML(d, ratings, name, code) {
+  const zh = currentLang === 'zh';
+  const rated = (ratings || []).filter(r => r.rating);
+  if (!rated.length) return "";
+  const pick = rated.find(r => r.agency === "MSCI") || rated[0];
+  const p = plainRead(pick.agency, pick.rating);
+  if (!p || !p.meaning) return "";
+  const company = esc(d.company || name || code || "");
+  const num = v => (v === null || v === undefined || v === "") ? null : Number(v);
+  const e = num(pick.environmental_score), s = num(pick.social_score), g = num(pick.governance_score);
+  const pillars = [[zh ? "环境 E" : "Environmental (E)", e], [zh ? "社会 S" : "Social (S)", s], [zh ? "治理 G" : "Governance (G)", g]];
+  const hasPillars = pillars.every(([, v]) => v !== null && !isNaN(v));
+  const dir = zh ? "越高越好" : "higher is better";
+
+  const steps = [];
+  steps.push([t('listed.example.step1'), zh
+    ? `${agencyName(pick.agency)} 给 ${company} 的评级是 <b>${esc(pick.rating)}</b>，按该机构口径属于「${esc(p.short)}」：${esc(p.meaning)}`
+    : `${agencyName(pick.agency)} rates ${company} <b>${esc(pick.rating)}</b>, in the “${esc(p.short)}” band: ${esc(p.meaning)}`]);
+
+  let posText = esc(p.position);
+  if (pick.agency === "MSCI") {
+    posText += zh
+      ? "。MSCI 把 AA／AAA 归为「领先」、A／BBB／BB 归为「平均」、CCC／B 归为「落后」，所以 A 是平均组里最高的一档。"
+      : ". MSCI groups AA/AAA as Leader, A/BBB/BB as Average and CCC/B as Laggard, so A sits at the top of the Average group.";
+  } else if (p.note) {
+    posText += "。" + esc(p.note);
+  }
+  steps.push([t('listed.example.step2'), posText]);
+
+  if (hasPillars) {
+    const sorted = [...pillars].sort((a, b) => b[1] - a[1]);
+    const hi = sorted[0], lo = sorted[sorted.length - 1];
+    steps.push([t('listed.example.step3'), zh
+      ? `${esc(p.comp || "")} 本例 E ${e}、S ${s}、G ${g}（${dir}）：${hi[0]} 得分最高、${lo[0]} 相对最弱，说明各维度成熟度并不一致。三个维度权重不同，这里只作方向性参考。`
+      : `${esc(p.comp || "")} Here E ${e}, S ${s}, G ${g} (${dir}): ${hi[0]} is strongest and ${lo[0]} weakest, showing uneven maturity across pillars. Weights differ, so read this as directional only.`]);
+  } else {
+    steps.push([t('listed.example.step3'), zh
+      ? "该机构本次未提供 E/S/G 分项，只能看综合等级，无法判断是哪个维度拖累或拉动。"
+      : "No E/S/G components were provided this time, so only the overall grade can be read."]);
+  }
+
+  const cross = [];
+  if (d.yahoo_esg && d.yahoo_esg.total_score !== null && d.yahoo_esg.total_score !== undefined) {
+    const v = Number(d.yahoo_esg.total_score);
+    const band = v < 10 ? (zh ? "可忽略" : "negligible") : v < 20 ? (zh ? "低" : "low") : v < 30 ? (zh ? "中等" : "medium") : v < 40 ? (zh ? "高" : "high") : (zh ? "严重" : "severe");
+    cross.push(zh
+      ? `Sustainalytics 未管理风险分为 <b>${v}</b>（${band}风险）。这与 ${agencyName(pick.agency)} ${esc(pick.rating)} 并不矛盾：前者看「还剩多少未被管理的风险」，后者看「在同业中的管理能力」，一个低分风险、一个中段评级可以同时成立。`
+      : `The Sustainalytics unmanaged-risk score is <b>${v}</b> (${band} risk). This does not contradict ${agencyName(pick.agency)} ${esc(pick.rating)}: one measures remaining unmanaged risk, the other measures management capability relative to peers.`);
+  }
+  const other = rated.find(r => r.agency !== pick.agency && plainRead(r.agency, r.rating));
+  if (other) {
+    const po = plainRead(other.agency, other.rating);
+    cross.push(zh
+      ? `另一家 ${agencyName(other.agency)} 给 ${esc(other.rating)}（${esc(po.short)}）。两家尺度不同，只能各自和同业对照，不能把两个字母或分数换算成同一个分数。`
+      : `${agencyName(other.agency)} rates ${esc(other.rating)} (${esc(po.short)}). The scales differ, so compare each with its own peers rather than converting between them.`);
+  }
+  if (cross.length) steps.push([t('listed.example.step4'), cross.join("<br>")]);
+
+  const hiName = hasPillars ? [...pillars].sort((a, b) => b[1] - a[1])[0][0] : "";
+  const loName = hasPillars ? [...pillars].sort((a, b) => b[1] - a[1])[2][0] : "";
+  steps.push([t('listed.example.step5'), zh
+    ? `对外引用要写全「${agencyName(pick.agency)} ${esc(pick.rating)}${pick.date ? "，" + esc(pick.date) : ""}」，不能简写成「本公司获评 A 级」。${hasPillars ? `客户问卷可以讲 ${hiName} 的具体做法，${loName} 要准备好改进措施，否则被追问时容易失分。` : "客户问卷中应注明机构与日期，并准备好支撑材料。"}`
+    : `Always cite “${agencyName(pick.agency)} ${esc(pick.rating)}${pick.date ? ", " + esc(pick.date) : ""}”, not a bare “we are rated A”. ${hasPillars ? `Use ${hiName} practices as evidence in questionnaires, and prepare improvement actions for ${loName} to avoid follow-up gaps.` : "State the agency, date and supporting evidence in questionnaires."}`]);
+
+  return `<div class="ex-head">${t('listed.example.title')} · ${company}${code ? `（${esc(code)}）` : ""}</div>` +
+    steps.map(([label, text]) => `<div class="ex-step"><div class="ex-label">${label}</div><div class="ex-text">${text}</div></div>`).join("") +
+    `<div class="ex-foot">${t('listed.example.foot')}</div>`;
+}
+function renderListed(d, name, code) {
+  const cards = [];
+  if (d.yahoo_esg) {
+    cards.push(`<div class="card stat"><div class="k">${t('listed.label.yahoo')}</div><div class="v">${d.yahoo_esg.total_score ?? "—"}</div><div class="s">E ${d.yahoo_esg.environmental_score ?? "—"} · S ${d.yahoo_esg.social_score ?? "—"} · G ${d.yahoo_esg.governance_score ?? "—"}${d.yahoo_esg.rating ? " · " + esc(d.yahoo_esg.rating) : ""}</div><div class="s">${t('listed.yahoo.direction')} · <a href="https://www.sustainalytics.com/esg-data" target="_blank" rel="noopener noreferrer">${t('listed.guide.method')}</a></div></div>`);
+  }
+  if (d.sbti) {
+    const has = d.sbti.near_term_target_set || d.sbti.net_zero_target_set;
+    const yes = currentLang === 'zh' ? "已设定" : "Set";
+    const no = currentLang === 'zh' ? "未匹配" : "Not matched";
+    const near_label = currentLang === 'zh' ? "近期" : "near-term";
+    const net_label = currentLang === 'zh' ? "净零" : "net-zero";
+    cards.push(`<div class="card stat"><div class="k">${t('listed.label.sbti')}</div><div class="v">${has ? yes : no}</div><div class="s">${esc(d.sbti.scope || "")}${d.sbti.target_year_near_term ? ` · ${near_label} ${d.sbti.target_year_near_term}` : ""}${d.sbti.target_year_net_zero ? ` · ${net_label} ${d.sbti.target_year_net_zero}` : ""}${d.sbti.reduction_pct_near_term ? ` · -${d.sbti.reduction_pct_near_term}%` : ""}</div><div class="s">${t('listed.sbti.direction')} · <a href="https://sciencebasedtargets.org/companies-taking-action" target="_blank" rel="noopener noreferrer">${t('listed.guide.source')}</a></div></div>`);
+  }
+  const ratings = d.ratings || [];
+  const rated = ratings.filter(r => r.rating).length;
+  cards.push(`<div class="card stat"><div class="k">${t('listed.label.agencies')}</div><div class="v">${rated}/${ratings.length}</div><div class="s">${currentLang === 'zh' ? `${rated} 家有公开评级 · 共查询 ${ratings.length} 家机构` : `${rated} with public ratings · ${ratings.length} agencies queried`}</div></div>`);
+  if (d.latest_hkex_report) {
+    cards.push(`<div class="card stat"><div class="k">${t('listed.label.latest_hkex')}</div><div class="v">${d.latest_hkex_report.release_date || "—"}</div><div class="s">${esc(d.latest_hkex_report.title || "—")}</div></div>`);
+  }
+  if (d.nzdpu_scope) {
+    cards.push(`<div class="card stat"><div class="k">${t('listed.label.nzdpu')}</div><div class="v">${d.nzdpu_scope.scope1 ?? "—"}</div><div class="s">Scope 1 kt CO₂e · Scope 2 ${d.nzdpu_scope.scope2 ?? "—"}</div></div>`);
+  }
+  if (d.china_benchmark_kt) {
+    cards.push(`<div class="card stat"><div class="k">${t('listed.label.china_bm')}</div><div class="v">${d.china_benchmark_kt.toLocaleString()}</div><div class="s">World Bank · ${currentLang === 'zh' ? "千吨 CO₂" : "kt CO₂"}</div></div>`);
+  }
+  $("#l-cards").innerHTML = cards.join("");
+  $("#l-table").innerHTML = ratings.length ?
+    `<thead><tr><th>${t('listed.table.h1')}</th><th>${t('listed.table.h2')}</th><th>${t('listed.table.h3')}</th><th>${t('listed.table.h4')}</th></tr></thead><tbody>` +
+    ratings.map(r => {
+      const g = guideFor(r.agency);
+      const p = plainRead(r.agency, r.rating);
+      const hasComponents = [r.environmental_score, r.social_score, r.governance_score].some(v => v !== null && v !== undefined && v !== "");
+      const components = hasComponents
+        ? `E ${r.environmental_score ?? "—"} · S ${r.social_score ?? "—"} · G ${r.governance_score ?? "—"}`
+        : t('listed.guide.no_components');
+      const rating = r.rating
+        ? `<b>${esc(r.rating)}</b>${p && p.short ? `<div class="muted">${esc(p.short)}</div>` : ""}`
+        : `<b>—</b><div class="muted">${t('listed.unavailable')}</div>`;
+      const plainBlock = p
+        ? `<div class="rp">${p.meaning ? `<p class="rp-lead">${esc(p.meaning)}</p>` : ""}<p class="rp-pos">${esc(p.position)}</p></div>`
+        : "";
+      const noteBlock = p && p.note ? `<p class="rp-note">${esc(p.note)}</p>` : "";
+      const compRead = p && p.comp ? `${esc(p.comp)} ` : "";
+      return `<tr><td>${esc(agencyName(r.agency))}</td><td>${rating}</td><td class="muted">${esc(r.date || "—")}</td><td><details class="rating-guide"><summary>${t('listed.guide.toggle')}</summary><div class="rating-guide-body">${plainBlock}<p><b>${t('listed.guide.comp_read')}</b>：${components}。${compRead}</p>${noteBlock}<details class="rating-tech"><summary>${t('listed.guide.tech')}</summary><p><b>${t('listed.guide.scale')}</b>：${esc(g.scale)}</p><p><b>${t('listed.guide.model')}</b>：${esc(g.model)}</p><p><b>${t('listed.guide.adjustment')}</b>：${esc(g.adjustment)}</p><p><b>${t('listed.guide.use')}</b>：${esc(g.use)}</p></details><div class="rating-links"><a href="${RATING_SOURCE_URL}" target="_blank" rel="noopener noreferrer">${t('listed.guide.source')} ↗</a>${g.method ? `<a href="${g.method}" target="_blank" rel="noopener noreferrer">${t('listed.guide.method')} ↗</a>` : ""}${g.extra ? `<a href="${g.extra}" target="_blank" rel="noopener noreferrer">${t('listed.guide.extra')} ↗</a>` : ""}</div></div></details></td></tr>`;
+    }).join("") + "</tbody>" :
+    `<tbody><tr><td colspan=4 class='muted'>${t('listed.none')}</td></tr></tbody>`;
+
+  const exEl = $("#l-example");
+  if (exEl) {
+    const exHtml = ratings.length ? exampleHTML(d, ratings, name, code) : "";
+    exEl.innerHTML = exHtml;
+    exEl.style.display = exHtml ? "block" : "none";
+  }
+
+  $("#l-note").classList.remove("hide");
+  const hint1 = t('listed.label.next');
+  const hint2 = t('listed.cta_sub');
+  const ctaBtn = t('listed.cta');
+  const errBlock = (d.source_errors && d.source_errors.length)
+    ? `<div class="muted" style="margin-top:10px;font-size:11.5px;line-height:1.7"><b>${currentLang === 'zh' ? '部分数据源本次未取到' : 'Some sources unavailable this time'}</b>：${d.source_errors.map(e => `<div>· ${esc(e)}</div>`).join("")}</div>`
+    : "";
+  $("#l-note").innerHTML = `<div style="display:flex;gap:14px;align-items:center"><div style="flex:1"><b>${hint1}</b>。${hint2}</div><button class="btn" onclick="openLead('listed-diagnose', {company:'${esc(d.company || name)}', stock_code:'${esc(code)}'})">${ctaBtn}</button></div>` + errBlock;
+}
+
 $("#l-run").addEventListener("click", async () => {
   const code = $("#l-code").value.trim();
   const name = $("#l-name").value.trim();
@@ -879,54 +1481,8 @@ $("#l-run").addEventListener("click", async () => {
     if (!res.ok) throw new Error(res.statusText);
     const d = await res.json();
 
-    const cards = [];
-    if (d.yahoo_esg) {
-      cards.push(`<div class="card stat"><div class="k">${t('listed.label.yahoo')}</div><div class="v">${d.yahoo_esg.total_score ?? "—"}</div><div class="s">E ${d.yahoo_esg.environmental_score ?? "—"} · S ${d.yahoo_esg.social_score ?? "—"} · G ${d.yahoo_esg.governance_score ?? "—"}${d.yahoo_esg.rating ? " · " + d.yahoo_esg.rating : ""}</div></div>`);
-    }
-    if (d.sbti) {
-      const has = d.sbti.near_term_target_set || d.sbti.net_zero_target_set;
-      const yes = currentLang === 'zh' ? "已设定" : "Set";
-      const no = currentLang === 'zh' ? "未匹配" : "Not matched";
-      const near_label = currentLang === 'zh' ? "近期" : "near-term";
-      const net_label = currentLang === 'zh' ? "净零" : "net-zero";
-      cards.push(`<div class="card stat"><div class="k">${t('listed.label.sbti')}</div><div class="v">${has ? yes : no}</div><div class="s">${d.sbti.scope || ""}${d.sbti.target_year_near_term ? ` · ${near_label} ${d.sbti.target_year_near_term}` : ""}${d.sbti.target_year_net_zero ? ` · ${net_label} ${d.sbti.target_year_net_zero}` : ""}${d.sbti.reduction_pct_near_term ? ` · -${d.sbti.reduction_pct_near_term}%` : ""}</div></div>`);
-    }
-    cards.push(`<div class="card stat"><div class="k">${t('listed.label.agencies')}</div><div class="v">${d.ratings?.length || 0}</div><div class="s">${(d.ratings || []).slice(0, 5).map(r => `${r.agency}: ${r.rating}`).join("  ·  ") || (currentLang === 'zh' ? "暂无数据" : "No data")}</div></div>`);
-    if (d.latest_hkex_report) {
-      cards.push(`<div class="card stat"><div class="k">${t('listed.label.latest_hkex')}</div><div class="v">${d.latest_hkex_report.release_date || "—"}</div><div class="s">${d.latest_hkex_report.title || "—"}</div></div>`);
-    }
-    if (d.nzdpu_scope) {
-      cards.push(`<div class="card stat"><div class="k">${t('listed.label.nzdpu')}</div><div class="v">${d.nzdpu_scope.scope1 ?? "—"}</div><div class="s">Scope 1 kt CO₂e · Scope 2 ${d.nzdpu_scope.scope2 ?? "—"}</div></div>`);
-    }
-    if (d.china_benchmark_kt) {
-      cards.push(`<div class="card stat"><div class="k">${t('listed.label.china_bm')}</div><div class="v">${d.china_benchmark_kt.toLocaleString()}</div><div class="s">World Bank · ${currentLang === 'zh' ? "千吨 CO₂" : "kt CO₂"}</div></div>`);
-    }
-
-    $("#l-cards").innerHTML = cards.join("");
-    $("#l-table").innerHTML = (d.ratings && d.ratings.length) ?
-      `<thead><tr><th>${t('listed.table.h1')}</th><th>${t('listed.table.h2')}</th><th>${t('listed.table.h3')}</th></tr></thead><tbody>` +
-      d.ratings.map(r => `<tr><td>${esc(r.agency)}</td><td><b>${esc(r.rating || "—")}</b></td><td class="muted">${esc(r.date || "—")}</td></tr>`).join("") +
-      "</tbody>" :
-      `<tbody><tr><td colspan=3 class='muted'>${t('listed.none')}</td></tr></tbody>`;
-
-    // 获客 CTA
-    $("#l-note").classList.remove("hide");
-    const hint1 = t('listed.label.next');
-    const hint2 = t('listed.cta_sub');
-    const ctaBtn = t('listed.cta');
-    const errBlock = (d.source_errors && d.source_errors.length)
-      ? `<div class="muted" style="margin-top:10px;font-size:11.5px;line-height:1.7">
-           <b>${currentLang === 'zh' ? '部分数据源本次未取到' : 'Some sources unavailable this time'}</b>：
-           ${d.source_errors.map(e => `<div>· ${esc(e)}</div>`).join("")}
-         </div>`
-      : "";
-    $("#l-note").innerHTML = `
-      <div style="display:flex;gap:14px;align-items:center">
-        <div style="flex:1">
-          <b>${hint1}</b>。${hint2}
-        </div>
-        <button class="btn" onclick="openLead('listed-diagnose', {company:'${esc(d.company || name)}', stock_code:'${esc(code)}'})">${ctaBtn}</button>
-      </div>` + errBlock;
+    lastListedResult = {d, name, code};
+    renderListed(d, name, code);
     $("#l-out").classList.remove("hide");
     loadPreview(ticker, name || d.company || code, code, year, (($("#l-pdf") || {}).value || "").trim());
   } catch (e) {
@@ -943,47 +1499,7 @@ $("#l-run").addEventListener("click", async () => {
 });
 
 /* ---------- 上市公司报告试读 ---------- */
-/* ---------- 报告文档渲染（封面 + 内置 SVG 章节插画 + 锁定章节） ---------- */
-/* 插画全部为内联 SVG：不依赖外部图片服务，离线/弱网也能正常显示 */
-const RD_THEMES = [
-  {
-    keys: ["概况", "报告说明", "概览", "评分"], caption: "企业 ESG 报告",
-    svg: `<svg viewBox="0 0 800 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="200" fill="#EDF4EF"/><g fill="#C9DCD2"><rect x="110" y="78" width="66" height="122"/><rect x="192" y="46" width="86" height="154"/><rect x="294" y="96" width="58" height="104"/><rect x="368" y="62" width="96" height="138"/><rect x="480" y="104" width="66" height="96"/><rect x="562" y="80" width="82" height="120"/></g><g fill="#1F6B4C" opacity=".38"><rect x="212" y="66" width="12" height="12"/><rect x="236" y="66" width="12" height="12"/><rect x="212" y="92" width="12" height="12"/><rect x="236" y="92" width="12" height="12"/><rect x="390" y="84" width="12" height="12"/><rect x="414" y="84" width="12" height="12"/></g></svg>`
-  },
-  {
-    keys: ["温室", "环境", "排放", "碳", "能耗"], caption: "环境绩效 · 清洁能源与减排",
-    svg: `<svg viewBox="0 0 800 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="200" fill="#F1F7F2"/><circle cx="648" cy="54" r="30" fill="#E9DCA9"/><path d="M0 200 Q200 120 400 168 T800 140 V200Z" fill="#DDEADE"/><g stroke="#1F6B4C" stroke-width="6" stroke-linecap="round" fill="none"><path d="M300 176 V96"/><path d="M300 96 L352 66"/><path d="M300 96 L248 66"/><path d="M300 96 L300 40"/></g><circle cx="300" cy="96" r="7" fill="#0F5132"/></svg>`
-  },
-  {
-    keys: ["员工", "社会", "人力", "安全"], caption: "社会绩效 · 员工与社区",
-    svg: `<svg viewBox="0 0 800 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="200" fill="#F4F7F3"/><g fill="#CFE0D5"><circle cx="300" cy="84" r="26"/><path d="M258 176c0-24 19-44 42-44s42 20 42 44z"/><circle cx="500" cy="84" r="26"/><path d="M458 176c0-24 19-44 42-44s42 20 42 44z"/></g><g fill="#9FC4AE"><circle cx="400" cy="72" r="30"/><path d="M352 176c0-27 21-50 48-50s48 23 48 50z"/></g></svg>`
-  },
-  {
-    keys: ["治理", "董事会", "合规", "反腐"], caption: "公司治理 · 决策与监督",
-    svg: `<svg viewBox="0 0 800 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="200" fill="#F3F7F4"/><g fill="#9FC4AE"><circle cx="250" cy="78" r="18"/><circle cx="340" cy="70" r="18"/><circle cx="460" cy="70" r="18"/><circle cx="550" cy="78" r="18"/></g><rect x="180" y="104" width="440" height="52" rx="26" fill="#D3E3D8"/><rect x="300" y="122" width="200" height="8" rx="4" fill="#1F6B4C" opacity=".3"/></svg>`
-  },
-  {
-    keys: ["数据质量", "方法", "核证", "数据附"], caption: "数据质量 · 方法与证据",
-    svg: `<svg viewBox="0 0 800 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="200" fill="#F4F8F5"/><rect x="230" y="46" width="150" height="120" rx="8" fill="#DDEADE"/><g fill="#1F6B4C" opacity=".26"><rect x="250" y="66" width="110" height="8" rx="4"/><rect x="250" y="86" width="90" height="8" rx="4"/><rect x="250" y="106" width="100" height="8" rx="4"/></g><g fill="#1F6B4C" opacity=".55"><rect x="430" y="120" width="34" height="46" rx="4"/><rect x="478" y="96" width="34" height="70" rx="4"/><rect x="526" y="68" width="34" height="98" rx="4"/></g></svg>`
-  },
-  {
-    keys: ["实质", "议题", "利益相关"], caption: "实质性议题 · 利益相关方",
-    svg: `<svg viewBox="0 0 800 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="200" fill="#F3F7F4"/><g stroke="#DCE7DF" stroke-width="2"><path d="M300 30V180M400 30V180M500 30V180M250 60H550M250 110H550M250 160H550"/></g><g fill="#1F6B4C"><circle cx="345" cy="62" r="12" opacity=".32"/><circle cx="455" cy="108" r="18" opacity=".52"/><circle cx="512" cy="152" r="9" opacity=".28"/><circle cx="302" cy="132" r="14" opacity=".38"/></g></svg>`
-  },
-  {
-    keys: ["差距", "路线", "改进", "行动"], caption: "差距分析 · 改进路线",
-    svg: `<svg viewBox="0 0 800 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="200" fill="#F4F8F5"/><g fill="#D3E3D8"><rect x="230" y="150" width="90" height="30"/><rect x="320" y="120" width="90" height="60"/><rect x="410" y="90" width="90" height="90"/><rect x="500" y="60" width="90" height="120"/></g><path d="M250 150 L340 120 L430 90 L520 60" stroke="#1F6B4C" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M520 60 l-18 2 11 15z" fill="#1F6B4C"/></svg>`
-  },
-  {
-    keys: ["评级", "提升", "目标", "路径"], caption: "评级提升 · 目标路径",
-    svg: `<svg viewBox="0 0 800 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="200" fill="#F2F7F3"/><g fill="#CFE0D5"><rect x="290" y="130" width="42" height="50" rx="4"/><rect x="352" y="108" width="42" height="72" rx="4"/><rect x="414" y="86" width="42" height="94" rx="4"/><rect x="476" y="56" width="42" height="124" rx="4"/></g><path d="M300 140 L370 116 L432 92 L500 56" stroke="#0F5132" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M500 56 l-18 0 12 16z" fill="#0F5132"/></svg>`
-  }
-];
-
-function rdFigure(title) {
-  const hit = RD_THEMES.find(x => x.keys.some(k => String(title).includes(k))) || RD_THEMES[0];
-  return `<figure class="rd-figure">${hit.svg}<figcaption>${esc(hit.caption)}</figcaption></figure>`;
-}
+/* ---------- 报告文档渲染（封面 + 锁定章节） ---------- */
 
 function renderReportDoc(el, d, ctaHtml) {
   if (!el) return;
@@ -1017,7 +1533,6 @@ function renderReportDoc(el, d, ctaHtml) {
     const title = String(s.title || "").replace(/^[一二三四五六七八九十百]+、\s*/, "");
     html += `<section class="rd-chapter">
       <div class="rd-ch-head"><span class="rd-ch-no">${String(i + 1).padStart(2, '0')}</span><h2>${esc(title)}</h2></div>
-      ${rdFigure(title)}
       <div class="md">${mdToHtml(s.body || "")}</div>
     </section>`;
   });

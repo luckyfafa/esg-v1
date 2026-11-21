@@ -1079,6 +1079,10 @@ def diagnose_listed_company(
                 ratings.append({
                     "agency": r.agency_name or "",
                     "rating": r.rating or "",
+                    "esg_score": r.esg_score or "",
+                    "environmental_score": r.environmental_score,
+                    "social_score": r.social_score,
+                    "governance_score": r.governance_score,
                     "date": r.rating_date or "",
                 })
             summary["ratings"] = ratings

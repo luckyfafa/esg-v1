@@ -290,7 +290,7 @@ def generate_report(
     if aggregate.sbti_target and aggregate.sbti_target.targets_committed:
         sources.append("SBTi（科学碳目标）")
     if aggregate.sina_esg and aggregate.sina_esg.ratings:
-        sources.append(f"新浪财经ESG评级（{len(aggregate.sina_esg.ratings)} 家机构）")
+        sources.append(f"新浪财经ESG评级（查询 {len(aggregate.sina_esg.ratings)} 家机构）")
     if aggregate.country_emission:
         sources.append("World Bank 国家排放基准")
     if kpis and kpis.source_pdf:
@@ -303,10 +303,11 @@ def generate_report(
     )
 
     # ---- ESG 评分概述 ----
-    esg_score_text = "Yahoo/Sustainalytics 未获取"
+    esg_score_text = "Yahoo/Sustainalytics 风险评分未获取"
     if aggregate.yahoo_esg and aggregate.yahoo_esg.total_score is not None:
         esg_score_text = (
-            f"Yahoo/Sustainalytics 总分 {aggregate.yahoo_esg.total_score:.1f}，"
+            f"Yahoo/Sustainalytics ESG 风险总分 {aggregate.yahoo_esg.total_score:.1f}"
+            "（分数越低，未管理 ESG 风险通常越小），"
             f"E {aggregate.yahoo_esg.environmental_score}, "
             f"S {aggregate.yahoo_esg.social_score}, "
             f"G {aggregate.yahoo_esg.governance_score}"
@@ -327,13 +328,24 @@ def generate_report(
     if aggregate.sina_esg and aggregate.sina_esg.ratings:
         msci = aggregate.sina_esg.msci_rating
         csi = aggregate.sina_esg.csi_rating
+        rated = [r for r in aggregate.sina_esg.ratings if r.rating]
         parts = []
         if msci:
             parts.append(f"MSCI {msci}")
         if csi:
             parts.append(f"中证指数 {csi}")
         if parts:
-            esg_ratings_text = f"；多机构评级：{'、'.join(parts)}"
+            esg_ratings_text = (
+                f"；多机构评级：{'、'.join(parts)}"
+                f"（共查询 {len(aggregate.sina_esg.ratings)} 家机构，{len(rated)} 家有公开评级）"
+            )
+    rating_guide = (
+        "\n\n**评级阅读说明**：各机构评价范围、行业权重、数据年份和评分尺度不同，"
+        "原始评级不可直接横向比较或简单平均；Yahoo/Sustainalytics 是风险评分，通常分数越低、"
+        "未管理风险越小；SBTi 是科学碳目标状态，不是综合 ESG 评级。"
+        "“暂无公开评级”表示未覆盖、未公开或本次未取到，不等于 0 分。"
+        "评级结果不构成审计、鉴证或投资意见。"
+    ) if esg_ratings_text else ""
     overview_narr = (
         f"{company_name}（港交所代码 {stock_code}，Yahoo ticker {ticker}）"
         f"在 {report_year} 年的 ESG 表现综述。行业/板块：{sector}。\n\n"
@@ -342,6 +354,7 @@ def generate_report(
         f"本报告综合采集层（{len(aggregate.hkex_reports or [])} 份 HKEX 报告 + "
         f"{'有' if benchmark else '无'}香港行业基准）"
         f"与 LLM 抽取层（信心 {kpis.extraction_confidence:.2f}）的数据。"
+        f"{rating_guide}"
     )
     sections.append(ReportSection(
         title="一、公司概况与 ESG 评分",
