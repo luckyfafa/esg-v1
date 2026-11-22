@@ -212,6 +212,11 @@
   .edge-s{font-size:11.5px;color:var(--muted);line-height:1.6;margin-top:5px}
   @media(max-width:900px){.edge{grid-template-columns:1fr 1fr}}
   @media(max-width:560px){.edge{grid-template-columns:1fr}}
+  .edge{align-items:stretch}
+  .edge-item{display:flex;flex-direction:column}
+  .edge-s{margin-top:auto;padding-top:8px}
+  #v-home .grid.g3 .card{display:flex;flex-direction:column}
+  #v-home .grid.g3 .card > :last-child{margin-top:auto}
   .flash{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:var(--green);color:#fff;
     padding:10px 16px;border-radius:8px;font-size:12.5px;z-index:9999;box-shadow:0 6px 20px rgba(0,0,0,.18)}
 </style>
@@ -221,7 +226,7 @@
 <header>
   <div class="bar">
     <div class="brand" data-i18n="brand.title"><div class="logo"></div>ESG 智能报告系统</div>
-    <span class="pill" data-i18n="brand.pill">V3 · 试用环境</span>
+    <span class="pill" data-i18n="brand.pill">香港 ESG 诊断工具</span>
     <nav>
       <button class="tab on" data-v="home" data-i18n="nav.home">概览</button>
       <button class="tab" data-v="listed" data-i18n="nav.listed">上市公司</button>
@@ -244,12 +249,38 @@
   <!-- 概览 -->
   <section class="view on" id="v-home">
     <div class="hero">
-      <span class="tag" data-i18n="home.tag">港股 ESG 数据 · 对标 · 定制报告</span>
-      <h1 data-i18n="home.title">从百页披露到一份可用的 ESG 底稿</h1>
+      <span class="tag" data-i18n="home.tag">香港 ESG 诊断 · 评级对标 · 补助底稿</span>
+      <h1 data-i18n="home.title">一份 ESG 底稿，四类人都能用</h1>
       <p class="lead" data-i18n="home.lead">
-        聚合 7 类公开数据源，自动抽取港交所报告中的排放与员工数据；
-        未上市企业可上传填报表，按行业基线生成差距分析与改进路线图。
+        中小企业上传一张采集表，上市公司输入一个港股代码，几分钟拿到可核查的诊断、评级与差距。
       </p>
+    </div>
+
+    <div class="grid g4" style="margin-top:22px">
+      <div class="card flat" style="cursor:pointer" onclick="go('private')">
+        <h3 style="margin-top:0" data-i18n="home.aud.sme">我是中小企业主</h3>
+        <p class="muted" data-i18n="home.aud.sme.d">免费诊断：看自己在同行什么位置、差多少、先改哪几项。</p>
+        <span class="muted" style="font-weight:600" data-i18n="home.aud.go.sme">开始诊断 →</span>
+      </div>
+      <div class="card flat" style="cursor:pointer" onclick="go('listed')">
+        <h3 style="margin-top:0" data-i18n="home.aud.ir">我是上市公司 IR</h3>
+        <p class="muted" data-i18n="home.aud.ir.d">查 14 家机构评级，抽取同行报告数据做对标。</p>
+        <span class="muted" style="font-weight:600" data-i18n="home.aud.go.ir">查评级 →</span>
+      </div>
+      <div class="card flat" style="cursor:pointer" onclick="go('pricing')">
+        <h3 style="margin-top:0" data-i18n="home.aud.cons">我是 ESG 顾问 / 从业者</h3>
+        <p class="muted" data-i18n="home.aud.cons.d">报告样本和评级分析可直接作为项目底稿与交付物。</p>
+        <span class="muted" style="font-weight:600" data-i18n="home.aud.go.cons">看方案 →</span>
+      </div>
+      <div class="card flat" style="cursor:pointer" onclick="go('pricing')">
+        <h3 style="margin-top:0" data-i18n="home.aud.fund">我要申请港府补助</h3>
+        <p class="muted" data-i18n="home.aud.fund.d">先诊断，再申请：ESG Ready 最高 15 万，政府 1:1 配对。</p>
+        <span class="muted" style="font-weight:600" data-i18n="home.aud.go.fund">看补助路径 →</span>
+      </div>
+    </div>
+
+    <div class="notice" style="margin-top:14px">
+      <div data-i18n="home.fund.note">港府 ESG 补助没有那么难：最耗时的诊断与碳核算底稿，基础版和专业版即可完成。</div>
     </div>
 
     <div class="grid g4" style="margin-top:22px">
@@ -259,7 +290,7 @@
       <div class="card stat"><div class="k" data-i18n="home.k.completeness">实测完整度</div><div class="v">100%</div><div class="s" data-i18n="home.s.completeness">示例企业 37 项必填</div></div>
     </div>
 
-    <h2 data-i18n="home.edge.h">V3 强在哪：不是模拟，是可核查的数据</h2>
+    <h2 data-i18n="home.edge.h">为什么可信：不是模拟，是可核查的数据</h2>
     <div class="edge">
       <div class="edge-item">
         <div class="edge-n">14</div>
@@ -277,17 +308,33 @@
         <div class="edge-s" data-i18n="home.edge3.s">不是“感觉还行”，而是与同行业分位带比较，给出差距百分比。</div>
       </div>
       <div class="edge-item">
-        <div class="edge-n">82</div>
-        <div class="edge-t" data-i18n="home.edge4.t">项指标一张采集表</div>
-        <div class="edge-s" data-i18n="home.edge4.s">按部门分发、自动汇总，并对照港交所守则与 IFRS S2 列出覆盖与缺口。</div>
+        <div class="edge-n">双轴</div>
+        <div class="edge-t" data-i18n="home.edge4.t">双重重要性与碳核算</div>
+        <div class="edge-s" data-i18n="home.edge4.s">影响 × 财务两条轴定重大议题；范围一、范围二算出排放量与强度。</div>
       </div>
     </div>
 
-    <h2 data-i18n="home.how_work">如何工作</h2>
-    <div class="steps">
-      <div class="step"><i>STEP 01</i><h3 style="margin-top:6px" data-i18n="home.collect.h">采集</h3><p class="muted" data-i18n="home.collect.p">输入股票代码，或上传企业填报表。上市公司自动抓取披露与评级，未上市走填报流程。</p></div>
-      <div class="step"><i>STEP 02</i><h3 style="margin-top:6px" data-i18n="home.bench.h">对标</h3><p class="muted" data-i18n="home.bench.p">把排放、能耗、员工与治理指标统一为强度或比率口径，与同行业分位带比较。</p></div>
-      <div class="step"><i>STEP 03</i><h3 style="margin-top:6px" data-i18n="home.output.h">成稿</h3><p class="muted" data-i18n="home.output.p">输出八章 Markdown 报告与结构化 JSON，缺失项与低置信字段如实标注。</p></div>
+    <h2 data-i18n="home.how_work">三步走：从数据到可交付的底稿</h2>
+    <p class="lead" data-i18n="home.how_lead">采集、评估、出稿都在同一个页面完成，不用在几个系统之间倒数据。</p>
+    <div class="grid g3" style="margin-top:16px">
+      <div class="card flat">
+        <div style="font-size:30px;font-weight:700;color:#BBD3C5;line-height:1">1</div>
+        <h3 style="margin-top:10px" data-i18n="home.collect.h">数据采集</h3>
+        <p class="muted" data-i18n="home.collect.p">输入港股代码，自动抓取披露与评级；或上传企业采集表，按部门汇总 82 项指标。</p>
+        <p class="muted" style="font-size:12px" data-i18n="home.collect.tags">港交所披露 · 14 家评级 · 企业填报</p>
+      </div>
+      <div class="card flat">
+        <div style="font-size:30px;font-weight:700;color:#BBD3C5;line-height:1">2</div>
+        <h3 style="margin-top:10px" data-i18n="home.eval.h">分析评估</h3>
+        <p class="muted" data-i18n="home.eval.p">双重重要性定重大议题，碳核算算范围一、范围二，再与同行业分位带对标找差距。</p>
+        <p class="muted" style="font-size:12px" data-i18n="home.eval.tags">双重重要性 · 碳核算 · 行业对标</p>
+      </div>
+      <div class="card flat">
+        <div style="font-size:30px;font-weight:700;color:#BBD3C5;line-height:1">3</div>
+        <h3 style="margin-top:10px" data-i18n="home.output.h">成果输出</h3>
+        <p class="muted" data-i18n="home.output.p">8 章完整报告、诊断底稿与结构化 JSON，可导出 PDF，直接用于业主问卷或补助申请。</p>
+        <p class="muted" style="font-size:12px" data-i18n="home.output.tags">报告 · 诊断底稿 · 补助材料</p>
+      </div>
     </div>
 
     <h2 data-i18n="home.sources">数据来源</h2>
@@ -585,61 +632,85 @@
   <!-- 方案与试用 -->
   <section class="view" id="v-pricing">
     <h1 style="font-size:22px">方案与试用</h1>
-    <p class="lead">先试用三家标的，确认数据颗粒度与交付形态后再决定订阅方式。</p>
+    <p class="lead">先做 ESG 诊断，再按需要升级。港府 ESG 补助没有想象中难——最花时间的诊断和碳核算底稿，基础版和专业版就能搞定。</p>
+
+    <div class="grid g3" style="margin-top:18px">
+      <div class="card flat">
+        <h3 style="margin-top:0">中小企业主</h3>
+        <p class="muted">基础版做诊断 → 专业版出认证底稿 → 定制版申请补助。三步走，不用一次买齐。</p>
+      </div>
+      <div class="card flat">
+        <h3 style="margin-top:0">ESG 顾问 / 从业者</h3>
+        <p class="muted">上市公司评级与报告分析、非上市公司完整报告，可直接作为项目参考和交付底稿。</p>
+      </div>
+      <div class="card flat">
+        <h3 style="margin-top:0">求职者 / 转行者</h3>
+        <p class="muted">用真实港股报告练手，看懂评级逻辑与披露结构，比看教程快得多。</p>
+      </div>
+    </div>
 
     <div class="grid g4" style="margin-top:18px">
       <div class="card price">
-        <div class="name">试用</div>
-        <div class="amt">免费 <small>／30 天</small></div>
+        <div class="name">免费版</div>
+        <div class="amt">免费 <small>／即时</small></div>
         <ul>
-          <li>3 家标的</li>
-          <li>标准版报告的 Markdown + JSON</li>
-          <li>1 次 30 分钟解读</li>
-          <li>不含对外披露用途</li>
+          <li><b>上市公司：14 家机构评级 + 报告分析</b></li>
+          <li>非上市：上传采集表即出诊断</li>
+          <li>数据完整度 + 行业对标 + 差距</li>
+          <li>完整报告与导出需升级</li>
         </ul>
-        <button class="btn ghost" data-trial>申请试用</button>
+        <button class="btn ghost" data-trial>免费开始</button>
       </div>
 
       <div class="card price hot">
         <span class="hot-tag">多数客户选择</span>
-        <div class="name">基础版</div>
+        <div class="name">基础版 · ESG 诊断</div>
         <div class="amt">¥9,800 <small>／年</small></div>
         <ul>
-          <li>12 家标的 / 年</li>
-          <li>上市公司标准报告</li>
-          <li>多机构评级汇总</li>
-          <li>邮件交付，含来源索引</li>
+          <li>完整《ESG 现状诊断报告》</li>
+          <li>能源、废弃物、员工、供应链盘点</li>
+          <li>行业对标 + 差距 + 路线图</li>
+          <li>PDF + Markdown 导出</li>
         </ul>
         <button class="btn" data-trial>预约演示</button>
       </div>
 
       <div class="card price">
-        <div class="name">专业版</div>
+        <div class="name">专业版 · 诊断 + 认证准备</div>
         <div class="amt">¥29,800 <small>／年</small></div>
         <ul>
-          <li>40 家标的 / 年</li>
-          <li>非上市企业定制报告</li>
-          <li>行业基线（同行业 5–10 家测算）</li>
-          <li>季度数据更新</li>
+          <li>基础版全部功能</li>
+          <li>双重重要性矩阵 + 逐项评分</li>
+          <li>碳核算（范围一、二）</li>
+          <li>8 章完整报告 + 认证路径建议</li>
         </ul>
         <button class="btn ghost" data-trial>预约演示</button>
       </div>
 
       <div class="card price">
-        <div class="name">企业版</div>
+        <div class="name">企业定制版 · 资助落地</div>
         <div class="amt">¥98,000 <small>起／年</small></div>
         <ul>
-          <li>不限标的数量</li>
-          <li>私有化部署，数据不出内网</li>
-          <li>自定义指标与报告模板</li>
-          <li>团队培训与实施支持</li>
+          <li>全部系统功能 + 顾问团队</li>
+          <li>ESG Ready 申请材料包 12 项</li>
+          <li>组合资助：Ready → TVP → BUD</li>
+          <li>培训、认证对接、递交陪同</li>
         </ul>
         <button class="btn ghost" data-trial>联系我们</button>
       </div>
     </div>
 
     <div class="notice" style="margin-top:18px">
-      <div>以上为演示用建议价格框架，实际报价按标的数量、年度跨度、交付形态与是否需要复核支持调整。演示环境不产生费用。</div>
+      <div><b>港府 ESG 补助其实没那么难。</b> ESG Ready 最高 15 万、政府 1:1 配对，申请材料里最耗时的是诊断和碳核算底稿——这两块基础版和专业版就能完成。剩下的计划书、报价与递交，交给定制版。先诊断，再申请，不要为了申请而申请。</div>
+    </div>
+
+    <div class="card flat" style="margin-top:16px">
+      <h3 style="margin-top:0">ESG 顾问、从业者、求职者怎么用</h3>
+      <ul class="muted" style="margin:8px 0 0 18px">
+        <li><b>上市公司分析</b>：查 14 家机构评级、抽取同行报告数据，用于项目前期研究和对标。</li>
+        <li><b>非上市公司交付</b>：拿一份完整诊断报告，按客户行业调整后直接作为交付物。</li>
+        <li><b>求职与转行</b>：用真实港股 ESG 报告练习披露结构与评级逻辑，比看教程有效。</li>
+      </ul>
     </div>
 
     <h2>常见问题</h2>
@@ -658,7 +729,7 @@
       </div>
       <div class="card flat">
         <h3>数据会不会外泄？</h3>
-        <p class="muted">支持私有化部署，大模型可切换为本地模型，填报数据不出内网。云端模式仅处理客户主动上传的文件。</p>
+        <p class="muted">云端模式只处理你主动上传的文件，不用于训练模型；企业定制版可签保密协议并按内部权限管理数据。</p>
       </div>
     </div>
   </section>
@@ -711,7 +782,7 @@ const TOKEN_QS = ADMIN_TOKEN ? '&token=' + encodeURIComponent(ADMIN_TOKEN) : '';
 const I18N = {
   zh: {
     "brand.title": "ESG 智能报告系统",
-    "brand.pill": "V3 · 试用环境",
+    "brand.pill": "香港 ESG 诊断工具",
     "nav.home": "概览",
     "nav.listed": "上市公司",
     "nav.private": "非上市企业",
@@ -738,15 +809,20 @@ const I18N = {
     "mat.ind.services": "一般服务业", "mat.ind.unknown": "其他／未确定",
     "private.mat.go": "先完成评估",
     "nav.pricing": "方案与试用",
-    "home.edge.h": "V3 强在哪：不是模拟，是可核查的数据",
+    "home.edge.h": "为什么可信：不是模拟，是可核查的数据",
     "home.edge1.t": "家机构评级实时聚合",
     "home.edge1.s": "MSCI、标普、中证、华证等，标注日期与口径；未覆盖就写“暂无”，不编造。",
     "home.edge2.t": "每个数字可回溯原文",
     "home.edge2.s": "从港交所 PDF 抽取排放、能耗、员工数据，保留来源页，可逐项复核。",
     "home.edge3.t": "香港行业基准对标",
     "home.edge3.s": "不是“感觉还行”，而是与同行业分位带比较，给出差距百分比。",
-    "home.edge4.t": "项指标一张采集表",
-    "home.edge4.s": "按部门分发、自动汇总，并对照港交所守则与 IFRS S2 列出覆盖与缺口。",
+    "home.edge4.t": "双重重要性与碳核算",
+    "home.edge4.s": "影响 × 财务两条轴定重大议题；范围一、范围二算出排放量与强度。",
+    "home.how_lead": "采集、评估、出稿都在同一个页面完成，不用在几个系统之间倒数据。",
+    "home.collect.tags": "港交所披露 · 14 家评级 · 企业填报",
+    "home.eval.h": "分析评估", "home.eval.p": "双重重要性定重大议题，碳核算算范围一、范围二，再与同行业分位带对标找差距。",
+    "home.eval.tags": "双重重要性 · 碳核算 · 行业对标",
+    "home.output.tags": "报告 · 诊断底稿 · 补助材料",
     "carbon.tag": "范围一 / 范围二 · 香港排放因子",
     "carbon.title": "先把碳算出来，再填回采集表",
     "carbon.lead": "输入燃料用量与用电量，按公开排放因子计算范围一、范围二，并标出港交所守则 A1.2 的填表位置。因子来源与年份随结果一起显示，方便复核。",
@@ -768,18 +844,31 @@ const I18N = {
     "carbon.hkex": "填回采集表的位置",
     "carbon.bad": "请至少填写用电量或一种燃料用量。",
     "cta.get_report": "免费获取完整报告 →",
-    "home.tag": "港股 ESG 数据 · 对标 · 定制报告",
-    "home.title": "从百页披露到一份可用的 ESG 底稿",
-    "home.lead": "聚合 7 类公开数据源，自动抽取港交所报告中的排放与员工数据；未上市企业可上传填报表，按行业基线生成差距分析与改进路线图。",
+    "home.tag": "香港 ESG 诊断 · 评级对标 · 补助底稿",
+    "home.title": "一份 ESG 底稿，四类人都能用",
+    "home.lead": "中小企业上传一张采集表，上市公司输入一个港股代码，几分钟拿到可核查的诊断、评级与差距。",
+    "home.aud.sme": "我是中小企业主",
+    "home.aud.sme.d": "免费诊断：看自己在同行什么位置、差多少、先改哪几项。",
+    "home.aud.go.sme": "开始诊断 →",
+    "home.aud.ir": "我是上市公司 IR",
+    "home.aud.ir.d": "查 14 家机构评级，抽取同行报告数据做对标。",
+    "home.aud.go.ir": "查评级 →",
+    "home.aud.cons": "我是 ESG 顾问 / 从业者",
+    "home.aud.cons.d": "报告样本和评级分析可直接作为项目底稿与交付物。",
+    "home.aud.go.cons": "看方案 →",
+    "home.aud.fund": "我要申请港府补助",
+    "home.aud.fund.d": "先诊断，再申请：ESG Ready 最高 15 万，政府 1:1 配对。",
+    "home.aud.go.fund": "看补助路径 →",
+    "home.fund.note": "港府 ESG 补助没有那么难：最耗时的诊断与碳核算底稿，基础版和专业版即可完成。",
     "home.k.source": "数据源", "home.k.metric": "采集指标", "home.k.speed": "单份生成", "home.k.completeness": "实测完整度",
     "home.s.source": "港交所 / 14 家评级 / SBTi / 世行等",
     "home.s.metric": "E 24 · S 24 · G 16 · 行业 18",
     "home.s.speed": "含原文页码可追溯",
     "home.s.completeness": "示例企业 37 项必填",
     "home.how_work": "如何工作",
-    "home.collect.h": "采集", "home.collect.p": "输入股票代码，或上传企业填报表。上市公司自动抓取披露与评级，未上市走填报流程。",
+    "home.collect.h": "数据采集", "home.collect.p": "输入港股代码，自动抓取披露与评级；或上传企业采集表，按部门汇总 82 项指标。",
     "home.bench.h": "对标", "home.bench.p": "把排放、能耗、员工与治理指标统一为强度或比率口径，与同行业分位带比较。",
-    "home.output.h": "成稿", "home.output.p": "输出八章 Markdown 报告与结构化 JSON，缺失项与低置信字段如实标注。",
+    "home.output.h": "成果输出", "home.output.p": "8 章完整报告、诊断底稿与结构化 JSON，可导出 PDF，直接用于业主问卷或补助申请。",
     "home.sources": "数据来源",
     "home.disclaimer": "演示环境使用公开数据与示例填报数据，输出为分析底稿，不构成审计意见或投资建议。正式交付前需人工复核关键排放数字。",
     "listed.title": "上市公司 ESG 快查",
@@ -853,18 +942,18 @@ const I18N = {
     "report.btn": "生成报告",
     "report.auto": "已自动匹配到公开数据源，点击生成查看完整报告。",
     "pricing.title": "方案与试用",
-    "pricing.tag": "按标的数量与交付形态灵活定价",
-    "pricing.free.name": "免费试用",
-    "pricing.free.desc": "上传 1 份填报表，立即生成定制差距分析",
-    "pricing.basic.name": "基础版",
-    "pricing.basic.desc": "3–5 家企业 · 季度更新",
-    "pricing.pro.name": "专业版",
-    "pricing.pro.desc": "年度订阅 · 无限次更新 · 自定义指标",
-    "pricing.enterprise.name": "企业版",
-    "pricing.enterprise.desc": "私有化部署 · 团队培训",
+    "pricing.tag": "先诊断，再申请：诊断、认证、资助三步走",
+    "pricing.free.name": "免费版",
+    "pricing.free.desc": "上市公司评级与报告分析；非上市上传采集表出诊断",
+    "pricing.basic.name": "基础版 · ESG 诊断",
+    "pricing.basic.desc": "完整诊断报告 · 行业对标 · 差距 · 路线图",
+    "pricing.pro.name": "专业版 · 诊断 + 认证准备",
+    "pricing.pro.desc": "双重重要性 · 碳核算 · 8 章完整报告 · 认证路径",
+    "pricing.enterprise.name": "企业定制版 · 资助落地",
+    "pricing.enterprise.desc": "ESG Ready 材料包 · 组合资助 · 递交陪同",
     "pricing.cta.contact": "联系我们",
-    "pricing.cta.trial": "申请试用",
-    "pricing.disclaimer": "以上为演示用建议价格框架，实际报价按标的数量、年度跨度、交付形态与是否需要复核支持调整。演示环境不产生费用。",
+    "pricing.cta.trial": "立即诊断",
+    "pricing.disclaimer": "港府 ESG 补助没有那么难：最耗时的诊断和碳核算底稿，基础版和专业版即可完成；计划书、报价与递交由定制版补齐。",
     "faq.title": "常见问题",
     "faq.q1": "数据准确吗？",
     "faq.a1": "每个数字可追溯到披露文件页码；取不到的留空并注明原因，不做估算填充。低置信字段会被标注，便于优先复核。",
@@ -873,7 +962,7 @@ const I18N = {
     "faq.q3": "和商业数据库比？",
     "faq.a3": "定位不同。终端是数据订阅，覆盖广；我们聚焦「从原文到结构化底稿」，成本结构不同，可并用。",
     "faq.q4": "数据会不会外泄？",
-    "faq.a4": "支持私有化部署，大模型可切换为本地模型，填报数据不出内网。云端模式仅处理客户主动上传的文件。",
+    "faq.a4": "云端模式只处理你主动上传的文件，不用于训练模型；企业定制版可签保密协议并按内部权限管理数据。",
     "footer": "ESG 智能报告系统 · 演示环境 · 数据来源为公开披露与示例填报，仅供产品演示",
     "lead.title": "查看完整 ESG 报告",
     "lead.hint": "留下联系方式，我们 24 小时内为您生成完整对标分析与改进路线图。",
@@ -908,7 +997,7 @@ const I18N = {
   },
   en: {
     "brand.title": "ESG Intelligence Suite",
-    "brand.pill": "V3 · Demo",
+    "brand.pill": "HK ESG Diagnosis Tool",
     "nav.home": "Overview",
     "nav.listed": "Listed Cos.",
     "nav.private": "Private Cos.",
@@ -935,15 +1024,20 @@ const I18N = {
     "mat.ind.services": "Services", "mat.ind.unknown": "Other / undetermined",
     "private.mat.go": "Assess first",
     "nav.pricing": "Pricing",
-    "home.edge.h": "Why V3: verifiable data, not simulation",
+    "home.edge.h": "Why trust it: verifiable data, not simulation",
     "home.edge1.t": "agency ratings in one query",
     "home.edge1.s": "MSCI, S&P, CSI, Huazheng and more, with dates and scale. Uncovered means “no public rating”, never invented.",
     "home.edge2.t": "every figure traces to a page",
     "home.edge2.s": "Emissions, energy and workforce pulled from the HKEX PDF, each with its source page.",
     "home.edge3.t": "Hong Kong industry benchmark",
     "home.edge3.s": "Compare against peer quartile bands with explicit percentage gaps.",
-    "home.edge4.t": "indicators in one template",
-    "home.edge4.s": "Distributed by department, auto-consolidated, checked against the HKEX Code and IFRS S2.",
+    "home.edge4.t": "Double materiality & carbon",
+    "home.edge4.s": "Impact × financial axes set material topics; Scope 1 and 2 give emissions and intensity.",
+    "home.how_lead": "Collect, assess and publish in one place — no copy-paste between systems.",
+    "home.collect.tags": "HKEX filings · 14 ratings · SME templates",
+    "home.eval.h": "Assess", "home.eval.p": "Double materiality defines material topics, carbon accounting covers Scope 1 and 2, then benchmark against industry quartiles.",
+    "home.eval.tags": "Double materiality · Carbon · Benchmark",
+    "home.output.tags": "Report · Diagnosis · Funding pack",
     "carbon.tag": "Scope 1 / Scope 2 · Hong Kong factors",
     "carbon.title": "Calculate emissions, then fill the template",
     "carbon.lead": "Enter fuel and electricity use to compute Scope 1 and 2 with public factors. Each factor keeps its source and year, and the result maps to HKEX Code A1.2.",
@@ -965,18 +1059,31 @@ const I18N = {
     "carbon.hkex": "Where to fill in the template",
     "carbon.bad": "Enter electricity use or at least one fuel quantity.",
     "cta.get_report": "Get full report →",
-    "home.tag": "HK ESG Data · Benchmark · Custom Reports",
-    "home.title": "From 100-page disclosures to a working ESG workbook",
-    "home.lead": "Aggregating 7 public data sources, auto-extracting emissions & workforce data from HKEX filings; private enterprises upload templates and receive gap analysis against industry baselines.",
+    "home.tag": "HK ESG Diagnosis · Ratings Benchmark · Funding Workbook",
+    "home.title": "One ESG workbook, four ways to use it",
+    "home.lead": "SMEs upload a data template; listed companies enter a HKEX code. In minutes you get a traceable diagnosis, ratings and gaps.",
+    "home.aud.sme": "I run an SME",
+    "home.aud.sme.d": "Free diagnosis: see where you stand, how far behind, and what to fix first.",
+    "home.aud.go.sme": "Start diagnosis →",
+    "home.aud.ir": "I handle listed-company IR",
+    "home.aud.ir.d": "Check 14 agency ratings and extract peer data for benchmarking.",
+    "home.aud.go.ir": "Check ratings →",
+    "home.aud.cons": "I am an ESG consultant / practitioner",
+    "home.aud.cons.d": "Report samples and rating analysis can serve directly as project workpapers.",
+    "home.aud.go.cons": "See plans →",
+    "home.aud.fund": "I want HK government funding",
+    "home.aud.fund.d": "Diagnose first, then apply: ESG Ready up to HK$150k, 1:1 matching.",
+    "home.aud.go.fund": "See funding path →",
+    "home.fund.note": "HK ESG funding is not that hard: the most time-consuming diagnosis and carbon accounting drafts are covered by Basic and Pro.",
     "home.k.source": "Sources", "home.k.metric": "Metrics", "home.k.speed": "Generation", "home.k.completeness": "Sample completeness",
     "home.s.source": "HKEX / 14 agencies / SBTi / World Bank",
     "home.s.metric": "E 24 · S 24 · G 16 · Industry 18",
     "home.s.speed": "With source page traceability",
     "home.s.completeness": "37 required items for sample",
     "home.how_work": "How it works",
-    "home.collect.h": "Collect", "home.collect.p": "Enter ticker or upload your template. Listed cos. auto-pull disclosures & ratings; private cos. use the template.",
+    "home.collect.h": "Data collection", "home.collect.p": "Enter a HKEX code to auto-pull disclosures and ratings, or upload an SME template to consolidate 82 metrics.",
     "home.bench.h": "Benchmark", "home.bench.p": "Normalize emissions, energy, workforce and governance into intensity/ratio, compare with industry percentiles.",
-    "home.output.h": "Draft", "home.output.p": "Eight-chapter Markdown + structured JSON. Missing items and low-confidence fields labeled honestly.",
+    "home.output.h": "Output", "home.output.p": "Eight-chapter report, diagnosis workbook and structured JSON, exportable to PDF for landlord questionnaires or funding applications.",
     "home.sources": "Data sources",
     "home.disclaimer": "Demo uses public and sample data. Output is an analytical draft, not audit or investment advice. Key emissions numbers must be manually reviewed before any formal use.",
     "listed.title": "Listed Company ESG Quick Scan",
@@ -1050,18 +1157,18 @@ const I18N = {
     "report.btn": "Generate Report",
     "report.auto": "Public data matched automatically. Click generate to view the full report.",
     "pricing.title": "Plans & Trial",
-    "pricing.tag": "Flexible pricing by ticker count and delivery format",
-    "pricing.free.name": "Free Trial",
-    "pricing.free.desc": "Upload 1 template, receive gap analysis instantly",
-    "pricing.basic.name": "Basic",
-    "pricing.basic.desc": "3–5 companies · quarterly refresh",
-    "pricing.pro.name": "Pro",
-    "pricing.pro.desc": "Annual subscription · unlimited refresh · custom metrics",
-    "pricing.enterprise.name": "Enterprise",
-    "pricing.enterprise.desc": "On-premise · team training",
+    "pricing.tag": "Diagnose first, then apply: diagnosis, certification, funding",
+    "pricing.free.name": "Free",
+    "pricing.free.desc": "Listed-company ratings and report analysis; upload a template for SME diagnosis",
+    "pricing.basic.name": "Basic · ESG diagnosis",
+    "pricing.basic.desc": "Full diagnosis report · peer benchmark · gaps · roadmap",
+    "pricing.pro.name": "Pro · Diagnosis + certification prep",
+    "pricing.pro.desc": "Double materiality · carbon accounting · 8-chapter report · certification path",
+    "pricing.enterprise.name": "Enterprise · Funding delivery",
+    "pricing.enterprise.desc": "ESG Ready pack · combined funding · submission support",
     "pricing.cta.contact": "Contact us",
-    "pricing.cta.trial": "Request trial",
-    "pricing.disclaimer": "Suggested pricing for demo purposes. Actual quotes depend on ticker count, year span, delivery format and review support. Demo is free.",
+    "pricing.cta.trial": "Start diagnosis",
+    "pricing.disclaimer": "HK ESG funding is not as hard as it looks: the diagnosis and carbon accounting drafts — the most time-consuming parts — are covered by Basic and Pro. Proposal, quotes and submission are handled by the Enterprise tier.",
     "faq.title": "FAQ",
     "faq.q1": "Is the data accurate?",
     "faq.a1": "Every number traces back to a disclosure page. Missing items are left blank and labeled — no imputation. Low-confidence fields are flagged for review.",
@@ -1070,7 +1177,7 @@ const I18N = {
     "faq.q3": "How does this compare with Bloomberg/Refinitiv?",
     "faq.a3": "Different positioning. Terminals are subscriptions with broad coverage; we focus on turning raw filings into structured workbooks with a different cost model. They complement each other.",
     "faq.q4": "Will data leak out?",
-    "faq.a4": "On-premise deployment is available. The LLM can run locally. Uploaded data never leaves your network. Cloud mode only processes files you actively submit.",
+    "faq.a4": "Cloud mode only processes files you actively upload and does not use them for model training. The Enterprise tier supports NDAs and internal access controls.",
     "footer": "ESG Intelligence Suite · Demo · Data from public disclosures and sample templates, for product demonstration only",
     "lead.title": "Get the full ESG report",
     "lead.hint": "Leave contact and we'll deliver a full benchmark analysis and improvement roadmap within 24 hours.",
@@ -2230,13 +2337,40 @@ $("#m-assessor").addEventListener("input", invalidateMateriality);
 $("#m-industry").addEventListener("change", async () => { invalidateMateriality(); await loadMatTopics(); });
 $("#m-run").addEventListener("click", runMateriality);
 $("#m-suggest").addEventListener("click", runSuggestion);
-$("#m-download-md").addEventListener("click", () => {
+const ENT_KEY = "esg_entitle";
+async function ensureEntitle() {
+  if (localStorage.getItem(ENT_KEY) === "1") return true;
+  const code = window.prompt(matText("导出需授权码，请输入（可向管理员索取）：", "Export requires an access code. Please enter it:"));
+  if (!code) return false;
+  try {
+    const r = await fetch(`/api/entitle/check?code=${encodeURIComponent(code.trim())}`);
+    const d = await r.json();
+    if (d.entitled) {
+      localStorage.setItem(ENT_KEY, "1");
+      toast(matText("已解锁导出", "Export unlocked"));
+      return true;
+    }
+  } catch (_) { /* 网络异常按未授权处理 */ }
+  toast(matText("授权码无效", "Invalid access code"), true);
+  return false;
+}
+(() => {
+  const tk = new URLSearchParams(location.search).get("token");
+  if (!tk) return;
+  fetch(`/api/entitle/check?code=${encodeURIComponent(tk)}`)
+    .then(r => r.json())
+    .then(d => { if (d.entitled) localStorage.setItem(ENT_KEY, "1"); })
+    .catch(() => {});
+})();
+$("#m-download-md").addEventListener("click", async () => {
   if (!matResult) return toast(matText("请先生成双轴矩阵", "Generate the matrix first"), true);
+  if (!(await ensureEntitle())) return;
   const company = matResult.company_name || matText("企业", "Company");
   download(`${company}-双重重要性评估.md`, `# ${company} 双重重要性评估\n\n${matResult.markdown}`);
 });
-$("#m-download-json").addEventListener("click", () => {
+$("#m-download-json").addEventListener("click", async () => {
   if (!matResult) return toast(matText("请先生成双轴矩阵", "Generate the matrix first"), true);
+  if (!(await ensureEntitle())) return;
   download(`${matResult.company_name || "企业"}-双重重要性留痕.json`, JSON.stringify({ input: matPayload, result: matResult }, null, 2), "application/json");
 });
 $("#p-industry").addEventListener("change", e => {

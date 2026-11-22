@@ -201,17 +201,23 @@ def health():
 
 
 def _section_payload(markdown: str, free_count: int) -> tuple[list[dict], list[str]]:
-    """把报告 Markdown 拆成章节，前 free_count 段放正文，其余只留标题。"""
+    """把报告 Markdown 拆成章节，前 free_count 个实质章节放正文，其余只留标题。"""
     from .reporter import split_markdown_sections
 
     parts = split_markdown_sections(markdown)
     free: list[dict] = []
     locked: list[str] = []
-    for i, part in enumerate(parts):
+    used = 0
+    for part in parts:
         head, _, body = part.partition("\n")
         title = head.lstrip("#").strip()
-        if i < free_count:
+        if not head.startswith("## "):
+            # 一级标题与元信息属于封面，免费可见，不占免费配额
             free.append({"title": title, "markdown": part, "body": body.strip()})
+            continue
+        if used < free_count:
+            free.append({"title": title, "markdown": part, "body": body.strip()})
+            used += 1
         else:
             locked.append(title)
     return free, locked
@@ -731,6 +737,12 @@ def _is_admin(token: str) -> bool:
     return bool(settings.admin_token) and token == settings.admin_token
 
 
+@app.get("/api/entitle/check", tags=["entitle"])
+def entitle_check(code: str = ""):
+    """校验授权码，用于解锁结果导出；未配置或错误一律返回 False。"""
+    return {"entitled": _is_admin(code)}
+
+
 def _parse_materiality(raw: str) -> dict | None:
     """解析前端传来的双重重要性评估 JSON；空串或解析失败都按未提供处理。"""
     if not raw or not raw.strip():
@@ -1238,7 +1250,7 @@ def report_preview(
 
     sections = split_markdown_sections(report.markdown)
     # sections[0] 是标题与元信息，sections[1:] 才是正文章节；试读放前两章（含披露覆盖）
-    free_count = len(sections) if _is_admin(token) else min(3, len(sections))
+    free_count = len(sections) if _is_admin(token) else min(1, len(sections))
     preview_md = "\n\n".join(sections[:free_count])
     free_sections, locked_sections = _section_payload(report.markdown, free_count)
 
@@ -1447,7 +1459,7 @@ async def diagnose_uploaded_excel(
             report = build_client_report(
                 analysis, use_llm_narrative=False, materiality=materiality
             )
-            free_count = 10**6 if _is_admin(token) else 2
+            free_count = 10**6 if _is_admin(token) else 1
             parts = _section_payload(report.markdown, free_count)
             free_sections, locked_sections = parts
             summary["report_title"] = report.title
