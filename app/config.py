@@ -49,6 +49,9 @@ class Settings(BaseSettings):
     # Zapier、n8n 等均可）。/tmp 会被清空，webhook 是线索不丢失的可靠方式。
     lead_webhook_url: str = ""
 
+    # 统计：GA4 衡量 ID（G-XXXXXXXXXX），为空则不注入统计代码
+    ga4_id: str = ""
+
     # HTTP
     user_agent: str = "ESG-Report-Bot/0.1 contact@example.com"
 

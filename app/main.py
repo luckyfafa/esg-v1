@@ -69,7 +69,7 @@ def demo_ui():
     index = WEB_DIR / "index.html"
     if not index.exists():
         raise HTTPException(status_code=404, detail="演示界面未部署（缺少 web/index.html）")
-    return FileResponse(index)
+    return HTMLResponse(_with_ga4(index.read_text(encoding="utf-8")))
 
 
 @app.get("/robots.txt", include_in_schema=False)
@@ -106,11 +106,28 @@ def sitemap_xml(request: Request):
 LANDING_DIR = WEB_DIR / "landing"
 
 
-def _landing_page(filename: str) -> FileResponse:
+def _landing_page(filename: str) -> HTMLResponse:
     page = LANDING_DIR / filename
     if not page.exists():
         raise HTTPException(status_code=404, detail="页面不存在")
-    return FileResponse(page, media_type="text/html; charset=utf-8")
+    return HTMLResponse(_with_ga4(page.read_text(encoding="utf-8")))
+
+
+def _with_ga4(html: str) -> str:
+    """把 GA4 统计代码注入 </head>；未配置 GA4_ID 时原样返回。"""
+    from .config import settings
+
+    gid = settings.ga4_id.strip()
+    if not gid or "</head>" not in html:
+        return html
+    snippet = (
+        f'<script async src="https://www.googletagmanager.com/gtag/js?id={gid}"></script>'
+        "<script>window.dataLayer=window.dataLayer||[];"
+        "function gtag(){dataLayer.push(arguments);}"
+        "gtag('js',new Date());"
+        f"gtag('config','{gid}');</script>"
+    )
+    return html.replace("</head>", snippet + "</head>", 1)
 
 
 @app.get("/sitemap.xml/BingSiteAuth.xml", include_in_schema=False)
