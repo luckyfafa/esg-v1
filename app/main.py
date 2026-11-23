@@ -113,6 +113,12 @@ def _landing_page(filename: str) -> FileResponse:
     return FileResponse(page, media_type="text/html; charset=utf-8")
 
 
+@app.get("/sitemap.xml/BingSiteAuth.xml", include_in_schema=False)
+def bing_site_auth_alias():
+    """兼容：Bing 若把 sitemap.xml 当成站点根，会来这个路径取验证文件。"""
+    return bing_site_auth()
+
+
 @app.get("/google216aa9a55ab4e973.html", include_in_schema=False)
 def google_site_verification():
     """Google Search Console 站点验证文件（请勿删除）。"""
