@@ -13,9 +13,9 @@ from datetime import date
 from pathlib import Path
 from typing import Optional
 
-from fastapi import FastAPI, File, Form, HTTPException, Query, UploadFile
+from fastapi import FastAPI, File, Form, HTTPException, Query, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.responses import FileResponse, HTMLResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 from .collectors import (
@@ -70,6 +70,88 @@ def demo_ui():
     if not index.exists():
         raise HTTPException(status_code=404, detail="演示界面未部署（缺少 web/index.html）")
     return FileResponse(index)
+
+
+@app.get("/robots.txt", include_in_schema=False)
+def robots_txt(request: Request):
+    base = str(request.base_url).rstrip("/")
+    body = (
+        "User-agent: *\n"
+        "Allow: /\n"
+        "Disallow: /api/\n"
+        "Disallow: /ui/\n"
+        f"Sitemap: {base}/sitemap.xml\n"
+    )
+    return Response(content=body, media_type="text/plain; charset=utf-8")
+
+
+@app.get("/sitemap.xml", include_in_schema=False)
+def sitemap_xml(request: Request):
+    base = str(request.base_url).rstrip("/")
+    pages = ["/", "/tools/collection-template", "/tools/carbon-guide"]
+    urls = "\n".join(
+        f"  <url><loc>{base}{p}</loc><changefreq>weekly</changefreq>"
+        f"<priority>{'1.0' if p == '/' else '0.8'}</priority></url>"
+        for p in pages
+    )
+    body = (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        f"{urls}\n"
+        "</urlset>\n"
+    )
+    return Response(content=body, media_type="application/xml; charset=utf-8")
+
+
+LANDING_DIR = WEB_DIR / "landing"
+
+
+def _landing_page(filename: str) -> FileResponse:
+    page = LANDING_DIR / filename
+    if not page.exists():
+        raise HTTPException(status_code=404, detail="页面不存在")
+    return FileResponse(page, media_type="text/html; charset=utf-8")
+
+
+@app.get("/google216aa9a55ab4e973.html", include_in_schema=False)
+def google_site_verification():
+    """Google Search Console 站点验证文件（请勿删除）。"""
+    f = WEB_DIR / "google216aa9a55ab4e973.html"
+    if not f.exists():
+        raise HTTPException(status_code=404, detail="验证文件不存在")
+    return FileResponse(f, media_type="text/html; charset=utf-8")
+
+
+@app.get("/BingSiteAuth.xml", include_in_schema=False)
+def bing_site_auth():
+    """Bing 站长平台站点验证文件。"""
+    f = WEB_DIR / "BingSiteAuth.xml"
+    if not f.exists():
+        raise HTTPException(status_code=404, detail="验证文件不存在")
+    return FileResponse(f, media_type="application/xml; charset=utf-8")
+
+
+@app.get("/favicon.ico", include_in_schema=False)
+def favicon():
+    svg = (
+        "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'>"
+        "<rect width='32' height='32' rx='7' fill='#0F5132'/>"
+        "<path d='M9 22V10h10M9 16h7' stroke='#fff' stroke-width='2.4' "
+        "fill='none' stroke-linecap='round'/></svg>"
+    )
+    return Response(content=svg, media_type="image/svg+xml")
+
+
+@app.get("/tools/collection-template", include_in_schema=False)
+def landing_collection_template():
+    """落地页：非上市企业 ESG 数据采集表模板下载。"""
+    return _landing_page("collection-template.html")
+
+
+@app.get("/tools/carbon-guide", include_in_schema=False)
+def landing_carbon_guide():
+    """落地页：企业碳核算指南（范围一/二/三）。"""
+    return _landing_page("carbon-guide.html")
 
 
 def _collect_aggregate(
@@ -597,7 +679,7 @@ def download_client_template():
         raise HTTPException(status_code=404, detail="模板文件不存在")
     return FileResponse(
         tpl,
-        filename="非上市企业ESG数据采集表.xlsx",
+        filename="esg_collection_template.xlsx",
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     )
 
@@ -1286,6 +1368,60 @@ def carbon_calculate(payload: dict):
     from . import carbon
 
     return carbon.calculate(payload)
+
+
+@app.get("/api/carbon/template", tags=["carbon"])
+def carbon_template():
+    """下载活动数据标准模板（CSV，含列头与示例行）。"""
+    from . import carbon
+    from fastapi.responses import Response
+
+    return Response(
+        content=carbon.activity_template_csv(),
+        media_type="text/csv; charset=utf-8",
+        headers={"Content-Disposition": 'attachment; filename="carbon_activity_template.csv"'},
+    )
+
+
+@app.post("/api/carbon/calculate/batch", tags=["carbon"])
+async def carbon_calculate_batch(file: UploadFile = File(...), grid: str = "CN_AVG"):
+    """上传能源明细表（xlsx/csv），自动识别活动数据列并计算范围一/二/三排放。
+
+    grid 可选：CLP / HKE / CN_AVG / custom（默认 CN_AVG）。
+    返回中含 recognized（识别到的列）与 unrecognized（未识别的列名）。
+    """
+    from . import carbon
+
+    data = await file.read()
+    if not data:
+        raise HTTPException(status_code=400, detail="上传文件为空")
+    # 上传的是「非上市企业ESG数据采集表」时，直接读 E 表活动数据/已填排放
+    coll = carbon.parse_collection_bytes(data)
+    if coll is not None:
+        result = carbon.calculate_from_collection(coll, grid)
+        result["filename"] = file.filename
+        return result
+    payload, recognized, unrecognized = carbon.parse_activity_bytes(data, file.filename or "")
+    payload["grid"] = grid
+    result = carbon.calculate(payload)
+    result["recognized"] = recognized
+    result["unrecognized"] = unrecognized
+    result["filename"] = file.filename
+    return result
+
+
+@app.post("/api/carbon/export", tags=["carbon"])
+def carbon_export(payload: dict):
+    """按碳核算结果生成已填好范围一/二/三的采集表（xlsx）供下载。"""
+    from . import carbon
+    from fastapi.responses import Response
+
+    xlsx = carbon.build_filled_template(payload)
+    return Response(
+        content=xlsx,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": 'attachment; filename="esg_collection_filled.xlsx"'},
+    )
 
 
 @app.get("/api/roadmap", tags=["diagnose"])

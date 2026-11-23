@@ -4,7 +4,75 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ESG 智能报告系统 · 演示</title>
+<title>ESG 智能报告系统｜上市公司 ESG 数据聚合 · 非上市企业采集表与碳核算</title>
+<meta name="description" content="面向港股上市公司与香港中小企业的 ESG 工具：自动聚合 14 家机构评级、粘贴报告即抽出排放与员工数据；非上市企业用一张采集表完成填报、行业对标与范围一/二/三碳核算，并可导出已填好的采集表。免费试用。">
+<meta name="robots" content="index,follow">
+<meta name="author" content="ESG 智能报告系统">
+<link rel="canonical" href="https://esg-v1-0uyh.onrender.com/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ESG 智能报告系统">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:url" content="https://esg-v1-0uyh.onrender.com/">
+<meta property="og:title" content="ESG 智能报告系统｜40 秒拿全上市公司 ESG 数据">
+<meta property="og:description" content="上市公司：自动聚合 14 家机构评级，粘贴报告即抽出排放与员工数据。非上市企业：一张采集表汇总多部门，自动对标行业基准、排出改进顺序，并完成碳核算。">
+<meta property="og:image" content="https://esg-v1-0uyh.onrender.com/ui/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="ESG 智能报告系统｜40 秒拿全上市公司 ESG 数据">
+<meta name="twitter:description" content="上市公司自动聚合 14 家机构评级；非上市企业一张采集表完成填报、行业对标与碳核算。">
+<meta name="twitter:image" content="https://esg-v1-0uyh.onrender.com/ui/og-cover.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "ESG 智能报告系统",
+      "url": "https://esg-v1-0uyh.onrender.com/",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web",
+      "inLanguage": "zh-CN",
+      "description": "面向港股上市公司与香港中小企业的 ESG 工具：聚合机构评级与报告数据，支持非上市企业采集表填报、行业对标与范围一/二/三碳核算。",
+      "featureList": [
+        "上市公司 ESG 数据聚合与 14 家机构评级对比",
+        "非上市企业 ESG 数据采集表模板与填报诊断",
+        "范围一/二/三温室气体排放核算与不确定性区间",
+        "上传采集表自动读取能耗并回填排放结果"
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "非上市企业 ESG 数据采集表怎么填？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "下载标准采集表模板，按 E-环境、S-社会、G-治理三页填写；也可在碳核算页直接上传已填的采集表，系统会读取 E02 外购电力、E03 天然气、E04 汽柴油等能耗数据自动计算排放，并导出一份已填好范围一/二/三的采集表。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "范围一、范围二、范围三排放怎么算？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "范围一按天然气、柴油等燃料用量乘以公开排放因子；范围二按外购电量乘以电网排放因子（中电、港灯或内地电网）；范围三按采购额、运输吨公里等行业参考因子估算，误差约 ±25%，正式披露建议向供应商索取实际因子。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "没有 ESG 报告经验能用吗？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "可以。系统提供双重重要性评估、必填项完整度诊断、与同行业分位带的差距分析和改进路线图，按提示逐步补齐数据即可形成报告底稿。"
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230F5132'/%3E%3Cpath d='M9 22V10h10M9 16h7' stroke='%23fff' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
 <style>
   :root{
@@ -223,6 +291,21 @@
 </head>
 <body>
 
+<noscript>
+  <div style="max-width:820px;margin:40px auto;padding:0 24px;font-family:system-ui,sans-serif;line-height:1.8">
+    <h1>ESG 智能报告系统</h1>
+    <p>面向港股上市公司与香港中小企业的 ESG 工具。上市公司可自动聚合 14 家机构评级、粘贴报告抽出排放与员工数据；非上市企业可用一张 ESG 数据采集表完成填报、行业对标与范围一/二/三碳核算。</p>
+    <h2>主要功能</h2>
+    <ul>
+      <li>上市公司 ESG 数据聚合与评级对比</li>
+      <li>非上市企业数据采集表模板、填报诊断与行业分位对标</li>
+      <li>范围一/二/三温室气体排放核算，附排放因子来源与不确定性区间</li>
+      <li>上传已填采集表自动读取能耗，导出已填好排放结果的采集表</li>
+    </ul>
+    <p>本工具需要启用 JavaScript 才能使用完整交互功能。</p>
+  </div>
+</noscript>
+
 <header>
   <div class="bar">
     <div class="brand" data-i18n="brand.title"><div class="logo"></div>ESG 智能报告系统</div>
@@ -409,7 +492,7 @@
       <div class="card">
         <div class="drop" id="drop">
           <b>点击或拖拽上传采集表</b>
-          <span>.xlsx / .xlsm，10MB 以内 · 没有模板？<a href="/client/template" download>下载空白模板</a></span>
+          <span>.xlsx / .xlsm，10MB 以内 · 没有模板？<a href="/client/template" download onclick="return downloadTemplate(event)">下载空白模板</a></span>
           <input type="file" id="file" accept=".xlsx,.xlsm" class="hide">
         </div>
         <div id="fname" class="muted hide" style="margin-top:10px"></div>
@@ -450,7 +533,7 @@
           <button class="btn ghost sm" onclick="go('materiality')" data-i18n="private.mat.go">先完成评估</button>
         </div>
         <button class="btn" id="p-run" style="margin-top:14px;width:100%">生成报告</button>
-        <p class="muted" style="margin-top:8px">首次演示可直接使用 <code>docs/非上市企业ESG数据采集表-填写示例.xlsx</code>。</p>
+        <p class="muted" style="margin-top:8px">已算过碳排？请上传碳核算页导出的「esg采集表_已填碳排.xlsx」，范围一/二/三会自动带入。只想看报告效果，可用 <code>docs/非上市企业ESG数据采集表-填写示例.xlsx</code>（内含演示数据，不是你的实际值）。</p>
       </div>
 
       <div class="card flat">
@@ -510,11 +593,23 @@
         因子来源与年份随结果一起显示，方便复核。
       </p>
     </div>
+    <div class="card" style="margin-bottom:12px">
+      <h3 style="margin-top:0" data-i18n="carbon.batch.h">上传采集表或能源明细表（推荐）</h3>
+      <p class="muted" style="font-size:12px;margin:4px 0 10px" data-i18n="carbon.batch.p">直接上传贵司已填的「非上市企业ESG数据采集表」，系统会读取 E02 外购电力、E03 天然气、E04 汽柴油自动算碳，范围三沿用表内 E11–E14；也可上传普通 Excel/CSV 能源明细（列头写「用电量(kWh)、天然气(m³)」等）。</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+        <a class="btn" href="/api/carbon/template" data-i18n="carbon.batch.tpl">下载活动数据模板</a>
+        <input type="file" id="c-batch-file" accept=".xlsx,.csv" class="hide">
+        <button class="btn" id="c-batch-pick" data-i18n="carbon.batch.pick">选择文件</button>
+        <span id="c-batch-name" class="muted" style="font-size:12px"></span>
+        <button class="btn primary" id="c-batch-run" data-i18n="carbon.batch.run">上传并计算</button>
+      </div>
+      <div id="c-batch-msg" style="margin-top:8px;font-size:12px"></div>
+    </div>
     <div class="grid" style="grid-template-columns:1fr 1fr;align-items:start">
       <div class="card">
         <h3 style="margin-top:0" data-i18n="carbon.h.elec">外购电力（范围二）</h3>
         <label class="lbl" data-i18n="carbon.l.kwh">用电量（kWh）</label>
-        <input id="c-kwh" type="number" min="0" step="any" placeholder="0">
+        <input id="c-kwh" type="number" min="0" step="any" placeholder="例：120000" title="数据来源：电费单或电表读数。例：年用电量 120000 kWh">
         <label class="lbl" data-i18n="carbon.l.grid">供电来源</label>
         <select id="c-grid">
           <option value="CLP">中电 · 0.39 kg CO₂e/kWh（2023）</option>
@@ -526,13 +621,22 @@
 
         <h3 data-i18n="carbon.h.fuel">燃料（范围一）</h3>
         <div class="grid" style="grid-template-columns:1fr 1fr;gap:8px">
-          <div><label class="lbl">天然气 m³</label><input id="c-natural_gas" type="number" min="0" step="any" placeholder="0"></div>
-          <div><label class="lbl">液化石油气 kg</label><input id="c-lpg" type="number" min="0" step="any" placeholder="0"></div>
-          <div><label class="lbl">柴油 L</label><input id="c-diesel" type="number" min="0" step="any" placeholder="0"></div>
-          <div><label class="lbl">汽油 L</label><input id="c-petrol" type="number" min="0" step="any" placeholder="0"></div>
-          <div><label class="lbl">煤油 L</label><input id="c-kerosene" type="number" min="0" step="any" placeholder="0"></div>
-          <div><label class="lbl">煤炭 t</label><input id="c-coal" type="number" min="0" step="any" placeholder="0"></div>
+          <div><label class="lbl">天然气 m³</label><input id="c-natural_gas" type="number" min="0" step="any" placeholder="例：3000" title="数据来源：燃气账单。例：3000 m³"></div>
+          <div><label class="lbl">液化石油气 kg</label><input id="c-lpg" type="number" min="0" step="any" placeholder="例：500" title="数据来源：采购记录。例：500 kg"></div>
+          <div><label class="lbl">柴油 L</label><input id="c-diesel" type="number" min="0" step="any" placeholder="例：500" title="数据来源：加油记录/车辆台账。例：500 L"></div>
+          <div><label class="lbl">汽油 L</label><input id="c-petrol" type="number" min="0" step="any" placeholder="例：200" title="数据来源：加油记录。例：200 L"></div>
+          <div><label class="lbl">煤油 L</label><input id="c-kerosene" type="number" min="0" step="any" placeholder="例：100" title="数据来源：采购记录。例：100 L"></div>
+          <div><label class="lbl">煤炭 t</label><input id="c-coal" type="number" min="0" step="any" placeholder="例：15" title="数据来源：采购合同/过磅单。例：15 t"></div>
         </div>
+
+        <h3 data-i18n="carbon.h.scope3">范围三（估算，仅供参考）</h3>
+        <div class="grid" style="grid-template-columns:1fr 1fr;gap:8px">
+          <div><label class="lbl">采购商品与服务（万元）</label><input id="c-s3-purchased_goods" type="number" min="0" step="any" placeholder="例：800" title="数据来源：采购台账年度总额。例：800 万元"></div>
+          <div><label class="lbl">上游运输配送（吨·公里）</label><input id="c-s3-upstream_transport" type="number" min="0" step="any" placeholder="例：50000" title="数据来源：物流对账单（运输吨数×公里数）。例：50000 吨·公里"></div>
+          <div><label class="lbl">商务差旅（人·公里）</label><input id="c-s3-business_travel" type="number" min="0" step="any" placeholder="例：12000" title="数据来源：差旅系统里程合计。例：12000 人·公里"></div>
+          <div><label class="lbl">员工通勤（人·公里）</label><input id="c-s3-employee_commute" type="number" min="0" step="any" placeholder="例：40000" title="数据来源：员工通勤调查（人次×平均单程公里×2）。例：40000 人·公里"></div>
+        </div>
+        <p class="muted" style="font-size:11px;margin-top:4px" data-i18n="carbon.scope3.note">范围三按行业平均参考值估算（±25%），正式披露请向供应商索取实际因子。</p>
 
         <h3 data-i18n="carbon.h.intensity">强度指标（可选）</h3>
         <div class="grid" style="grid-template-columns:1fr 1fr;gap:8px">
@@ -734,6 +838,10 @@
     </div>
   </section>
 
+  <div style="text-align:center;padding:20px 0 4px;font-size:12.5px">
+    <a href="/tools/collection-template" style="margin:0 10px">ESG 数据采集表模板下载</a>
+    <a href="/tools/carbon-guide" style="margin:0 10px">碳核算指南（范围一/二/三）</a>
+  </div>
   <footer data-i18n="footer">
     ESG 智能报告系统 · 演示环境 · 数据来源为公开披露与示例填报，仅供产品演示
   </footer>
@@ -831,12 +939,22 @@ const I18N = {
     "carbon.l.grid": "供电来源",
     "carbon.grid.custom": "自订因子",
     "carbon.h.fuel": "燃料（范围一）",
+    "carbon.h.scope3": "范围三（估算，仅供参考）",
+    "carbon.scope3.note": "范围三按行业平均参考值估算（±25%），正式披露请向供应商索取实际因子。",
     "carbon.h.intensity": "强度指标（可选）",
     "carbon.run": "计算排放量",
+    "carbon.batch.h": "上传采集表或能源明细表（推荐）",
+    "carbon.batch.p": "直接上传贵司已填的「非上市企业ESG数据采集表」，系统会读取 E02 外购电力、E03 天然气、E04 汽柴油自动算碳，范围三沿用表内 E11–E14；也可上传普通 Excel/CSV 能源明细（列头写「用电量(kWh)、天然气(m³)」等）。",
+    "carbon.batch.tpl": "下载活动数据模板",
+    "carbon.batch.pick": "选择文件",
+    "carbon.batch.run": "上传并计算",
+    "carbon.export": "下载已填好的采集表（写入范围一/二/三）",
+    "carbon.export.done": "已生成采集表，E 表已填入范围一/二/三排放",
     "carbon.empty": "填写左侧数据后点击计算。结果会列出每个因子及其来源。",
     "carbon.total": "合计排放",
     "carbon.scope1": "范围一",
     "carbon.scope2": "范围二",
+    "carbon.scope3": "范围三",
     "carbon.items": "逐项明细",
     "carbon.intensity": "强度指标",
     "carbon.per_revenue": "吨 / 百万港元收入",
@@ -1046,12 +1164,22 @@ const I18N = {
     "carbon.l.grid": "Supply source",
     "carbon.grid.custom": "Custom factor",
     "carbon.h.fuel": "Fuels (Scope 1)",
+    "carbon.h.scope3": "Scope 3 (estimated, reference only)",
+    "carbon.scope3.note": "Scope 3 uses industry-average reference factors (±25%). For formal disclosure, obtain actual factors from suppliers.",
     "carbon.h.intensity": "Intensity (optional)",
     "carbon.run": "Calculate emissions",
+    "carbon.batch.h": "Upload collection sheet or activity details (recommended)",
+    "carbon.batch.p": "Upload your filled-in ESG collection sheet — it reads E02 electricity, E03 natural gas, E04 gasoline/diesel to compute emissions, and reuses E11–E14 for Scope 3. A plain Excel/CSV with columns like 「用电量(kWh), 天然气(m³)」 also works.",
+    "carbon.batch.tpl": "Download activity template",
+    "carbon.batch.pick": "Choose file",
+    "carbon.batch.run": "Upload & calculate",
+    "carbon.export": "Download pre-filled collection template (Scope 1/2/3 written)",
+    "carbon.export.done": "Template generated; Scope 1/2/3 written into sheet E.",
     "carbon.empty": "Fill in the left side and calculate. Each factor and its source will be listed.",
     "carbon.total": "Total emissions",
     "carbon.scope1": "Scope 1",
     "carbon.scope2": "Scope 2",
+    "carbon.scope3": "Scope 3",
     "carbon.items": "Line items",
     "carbon.intensity": "Intensity",
     "carbon.per_revenue": "tCO₂e per HK$m revenue",
@@ -1887,6 +2015,7 @@ async function loadRoadmap(ticker, name, code, year) {
 
 /* ---------- V3：碳核算 ---------- */
 const CARBON_FUELS = ["natural_gas", "lpg", "diesel", "petrol", "kerosene", "coal"];
+const SCOPE3_KEYS = ["purchased_goods", "upstream_transport", "business_travel", "employee_commute"];
 
 async function runCarbon() {
   const out = $("#c-out");
@@ -1896,10 +2025,16 @@ async function runCarbon() {
     const v = parseFloat($(`#c-${k}`)?.value);
     if (v > 0) fuels[k] = v;
   });
+  const scope3 = {};
+  SCOPE3_KEYS.forEach(k => {
+    const v = parseFloat($(`#c-s3-${k}`)?.value);
+    if (v > 0) scope3[k] = v;
+  });
   const payload = {
     fuels,
     electricity_kwh: num("#c-kwh"),
     grid: $("#c-grid")?.value || "CLP",
+    scope3,
     revenue_hkd_million: num("#c-revenue"),
     employees: num("#c-employees"),
   };
@@ -1913,31 +2048,144 @@ async function runCarbon() {
     });
     if (!res.ok) throw new Error(res.statusText);
     const d = await res.json();
-    if (!(d.items || []).length) {
-      out.innerHTML = `<p class="muted">${t("carbon.bad")}</p>`;
-      return;
-    }
-    const rows = d.items.map(i => `<tr><td>${esc(i.scope)}</td><td>${esc(i.name)}</td>
-      <td>${i.activity} ${esc(i.unit)}</td><td>${i.factor}</td><td><b>${i.t}</b></td></tr>`).join("");
-    const intensity = [];
-    if (d.intensity_revenue != null) intensity.push(`${t("carbon.per_revenue")}：<b>${d.intensity_revenue}</b>`);
-    if (d.intensity_employee != null) intensity.push(`${t("carbon.per_employee")}：<b>${d.intensity_employee}</b>`);
-    out.innerHTML = `
-      <div class="grid g3" style="margin-bottom:12px">
-        <div><div class="muted" style="font-size:11px">${t("carbon.scope1")}</div><div style="font-size:22px;font-weight:800;color:var(--green)">${d.scope1_t}<span style="font-size:11px"> tCO₂e</span></div></div>
-        <div><div class="muted" style="font-size:11px">${t("carbon.scope2")}</div><div style="font-size:22px;font-weight:800;color:var(--green)">${d.scope2_t}<span style="font-size:11px"> tCO₂e</span></div></div>
-        <div><div class="muted" style="font-size:11px">${t("carbon.total")}</div><div style="font-size:22px;font-weight:800">${d.total_t}<span style="font-size:11px"> tCO₂e</span></div></div>
-      </div>
-      <table><thead><tr><th>范围</th><th>项目</th><th>用量</th><th>因子</th><th>tCO₂e</th></tr></thead><tbody>${rows}</tbody></table>
-      ${intensity.length ? `<p style="margin-top:8px">${t("carbon.intensity")}：${intensity.join(" · ")}</p>` : ""}
-      <p style="margin-top:10px;font-size:11.5px;line-height:1.7">
-        ${d.items.map(i => `· ${esc(i.name)}：${esc(i.factor_source)}`).join("<br>")}
-      </p>
-      <p style="margin-top:10px;font-size:11.5px"><b>${t("carbon.hkex")}</b><br>
-        ${Object.entries(d.hkex || {}).map(([, v]) => `· ${esc(v)}`).join("<br>")}</p>
-      <p class="muted" style="margin-top:8px;font-size:11px">${(d.notes || []).map(n => esc(n)).join(" ")}</p>`;
+    window._lastCarbon = d;
+    renderCarbonResult(d);
   } catch (e) {
-    out.innerHTML = `<p class="muted">计算失败：${esc(e.message)}</p>`;
+    $("#c-out").innerHTML = `<p class="muted">计算失败：${esc(e.message)}</p>`;
+  }
+}
+
+function renderCarbonResult(d) {
+  const out = $("#c-out");
+  if (!(d.items || []).length) {
+    out.innerHTML = `<p class="muted">${t("carbon.bad")}</p>` +
+      (d.notes || []).map(n => `<p class="muted" style="font-size:11.5px">${esc(n)}</p>`).join("");
+    return;
+  }
+  const rows = d.items.map(i => `<tr><td>${esc(i.scope)}</td><td>${esc(i.name)}${i.estimated ? `<span style="color:#c80;font-size:10px"> 估</span>` : ""}</td>
+    <td>${i.activity} ${esc(i.unit)}</td><td>${i.factor}</td><td>±${i.uncertainty_pct}%</td><td><b>${i.t}</b></td></tr>`).join("");
+  const intensity = [];
+  if (d.intensity_revenue != null) intensity.push(`${t("carbon.per_revenue")}：<b>${d.intensity_revenue}</b>`);
+  if (d.intensity_employee != null) intensity.push(`${t("carbon.per_employee")}：<b>${d.intensity_employee}</b>`);
+  const u = d.uncertainty || {};
+  const band = b => (b && b.pct) ? `±${b.pct}% [${b.low}–${b.high}]` : "—";
+  const card = (label, val, b) => `<div><div class="muted" style="font-size:11px">${label}</div><div style="font-size:22px;font-weight:800;color:var(--green)">${val}<span style="font-size:11px"> tCO₂e</span></div><div class="muted" style="font-size:10px">${band(b)}</div></div>`;
+  out.innerHTML = `
+    <div style="margin-bottom:10px"><button class="btn primary" onclick="exportCarbonCollection()" data-i18n="carbon.export">下载已填好的采集表（写入范围一/二/三）</button></div>
+    <div class="grid" style="margin-bottom:12px;grid-template-columns:repeat(4,1fr);gap:8px">
+      ${card(t("carbon.scope1"), d.scope1_t, u.scope1)}
+      ${card(t("carbon.scope2"), d.scope2_t, u.scope2)}
+      ${card(t("carbon.scope3"), d.scope3_t, u.scope3)}
+      <div><div class="muted" style="font-size:11px">${t("carbon.total")}</div><div style="font-size:22px;font-weight:800">${d.total_t}<span style="font-size:11px"> tCO₂e</span></div><div class="muted" style="font-size:10px">${band(u.total)}</div></div>
+    </div>
+    <table><thead><tr><th>范围</th><th>项目</th><th>用量</th><th>因子</th><th>不确定度</th><th>tCO₂e</th></tr></thead><tbody>${rows}</tbody></table>
+    ${intensity.length ? `<p style="margin-top:8px">${t("carbon.intensity")}：${intensity.join(" · ")} <span class="muted" style="font-size:11px">（按范围一+二计）</span></p>` : ""}
+    <p style="margin-top:10px;font-size:11.5px;line-height:1.7">
+      ${d.items.map(i => `· ${esc(i.name)}：${esc(i.factor_source)}`).join("<br>")}
+    </p>
+    <p style="margin-top:10px;font-size:11.5px"><b>${t("carbon.hkex")}</b><br>
+      ${Object.entries(d.hkex || {}).map(([, v]) => `· ${esc(v)}`).join("<br>")}</p>
+    <p class="muted" style="margin-top:8px;font-size:11px">${(d.notes || []).map(n => esc(n)).join(" ")}</p>`;
+}
+
+/* 通用下载：fetch → blob → 触发保存。
+   - 兼容内嵌浏览器对 Content-Disposition 附件导航的拦截
+   - 延后回收 blob，避免下载被中断后报「文件未找到」 */
+async function downloadUrl(url, filename, fallbackEvent) {
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const blob = await res.blob();
+    const u = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = u;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { a.remove(); URL.revokeObjectURL(u); }, 3000);
+    return true;
+  } catch (e) {
+    toast("下载失败：" + e.message, true);
+    if (fallbackEvent) return false;  // 交由浏览器按原链接下载
+    return false;
+  }
+}
+
+function downloadTemplate(e) {
+  if (e) e.preventDefault();
+  downloadUrl("/client/template", "ESG数据采集表模板.xlsx", e);
+  return false;
+}
+
+async function exportCarbonCollection() {
+  const d = window._lastCarbon;
+  if (!d) return toast("请先计算排放量", true);
+  try {
+    const res = await fetch("/api/carbon/export", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(d),
+    });
+    if (!res.ok) throw new Error(res.statusText);
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "esg采集表_已填碳排.xlsx";
+    document.body.appendChild(a);
+    a.click();
+    // 延后回收：立即 revoke 会让部分浏览器中断下载，报「文件未找到」
+    setTimeout(() => { a.remove(); URL.revokeObjectURL(url); }, 3000);
+    toast(t("carbon.export.done") || "已生成采集表，E 表已填入范围一/二/三排放");
+  } catch (e) {
+    toast("导出失败：" + e.message, true);
+  }
+}
+
+async function runCarbonBatch() {
+  const fileInput = $("#c-batch-file");
+  const file = fileInput?.files?.[0];
+  if (!file) return toast("请先选择文件", true);
+  const grid = $("#c-grid")?.value || "CN_AVG";
+  const msg = $("#c-batch-msg");
+  msg.innerHTML = `<span class="muted">上传解析中…</span>`;
+  try {
+    const fd = new FormData();
+    fd.append("file", file);
+    const res = await fetch("/api/carbon/calculate/batch?grid=" + encodeURIComponent(grid), { method: "POST", body: fd });
+    if (!res.ok) throw new Error(res.statusText);
+    const d = await res.json();
+    window._lastCarbon = d;
+    // 回填到输入框
+    const fuelMap = { "天然气": "c-natural_gas", "液化石油气": "c-lpg", "柴油": "c-diesel", "汽油": "c-petrol", "煤油": "c-kerosene", "煤炭": "c-coal" };
+    const fuelKeyMap = { "natural_gas": "c-natural_gas", "lpg": "c-lpg", "diesel": "c-diesel", "petrol": "c-petrol", "kerosene": "c-kerosene", "coal": "c-coal" };
+    const s3Map = { "类别1 采购商品与服务": "c-s3-purchased_goods", "类别4 上游运输配送": "c-s3-upstream_transport", "类别6 商务差旅": "c-s3-business_travel", "类别7 员工通勤": "c-s3-employee_commute" };
+    const rf = d.refill || {};
+    if (rf.electricity_kwh > 0 && $("#c-kwh")) $("#c-kwh").value = Math.round(rf.electricity_kwh);
+    Object.entries(rf.fuels || {}).forEach(([k, v]) => {
+      const el = $("#" + (fuelKeyMap[k] || ""));
+      if (el) el.value = v;
+    });
+    (d.items || []).forEach(i => {
+      if (i.scope === "范围一" && fuelMap[i.name]) $("#" + fuelMap[i.name]).value = i.activity;
+      if (i.scope === "范围三" && s3Map[i.name]) $("#" + s3Map[i.name]).value = i.activity;
+    });
+    const rec = (d.recognized || []).map(r => `✓ ${esc(r.column)}`).join("、");
+    const unrec = (d.unrecognized || []).map(c => esc(c)).join("、");
+    if (d.source === "collection_sheet") {
+      const gv = $("#c-grid")?.value;
+      const tip = (gv === "CLP" || gv === "HKE")
+        ? `<br><span style="color:var(--mid)">当前按香港电网因子计算；内地企业请把「供电来源」改为「内地电网」后重新上传。</span>`
+        : "";
+      msg.innerHTML = `<span style="color:var(--green)">已从采集表读取：${rec || "（无可算数据）"}</span>` +
+        (unrec ? `<br><span class="muted">未识别列：${unrec}</span>` : "") + tip;
+    } else {
+      msg.innerHTML = `<span style="color:var(--green)">已识别：${rec || "（无）"}</span>` +
+        (unrec ? `<br><span class="muted">未识别列：${unrec}（不影响其他列计算，可在左侧手动补填）</span>` : "");
+    }
+    renderCarbonResult(d);
+  } catch (e) {
+    msg.innerHTML = `<span style="color:var(--red)">上传失败：${esc(e.message)}</span>`;
   }
 }
 
@@ -2005,6 +2253,13 @@ function initV3() {
     });
   }
   $("#c-run")?.addEventListener("click", runCarbon);
+  $("#c-batch-pick")?.addEventListener("click", () => $("#c-batch-file")?.click());
+  $("#c-batch-file")?.addEventListener("change", e => {
+    const f = e.target.files?.[0];
+    const nm = $("#c-batch-name");
+    if (nm) nm.textContent = f ? f.name : "";
+  });
+  $("#c-batch-run")?.addEventListener("click", runCarbonBatch);
   $("#btn-print")?.addEventListener("click", openPrint);
   $("#btn-print2")?.addEventListener("click", openPrint);
   $("#btn-share")?.addEventListener("click", createShareLink);
@@ -2573,11 +2828,13 @@ function parseGaps(md) {  const start = md.indexOf("## 七、");
 
 function download(name, text, type) {
   const blob = new Blob([text], { type: type || "text/markdown;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
+  a.href = url;
   a.download = name;
+  document.body.appendChild(a);
   a.click();
-  URL.revokeObjectURL(a.href);
+  setTimeout(() => { a.remove(); URL.revokeObjectURL(url); }, 3000);
 }
 $("#dl-md").addEventListener("click", () => lastMd ? download("ESG报告.md", lastMd) : toast("暂无报告", true));
 $("#dl-md2").addEventListener("click", () => lastMd ? download("ESG报告.md", lastMd) : toast("暂无报告", true));

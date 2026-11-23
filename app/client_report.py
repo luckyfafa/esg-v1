@@ -58,6 +58,7 @@ S_TABLE = [
     ("S13", "损工事故起数", "起"), ("S14", "百万工时损工事故率", "LTIR"),
     ("S15", "人均培训时长", "小时"), ("S18", "供应商总数", "家"),
     ("S19_COV", "供应商 ESG 评估覆盖率", "%"),
+    ("S24", "公益捐赠金额", "万元"),
 ]
 
 G_TABLE = [
@@ -327,18 +328,77 @@ def build_client_report(
             narrative=narr.get("materiality", "按行业特征确定的重点议题。"),
         ))
 
-    # 4 环境绩效
-    md = "## 四、环境绩效\n\n"
+    # 4 利益相关方参与
+    sh_rows = [
+        ["主要利益相关方", p.stakeholders or "未填写"],
+        ["沟通方式与频次", p.stakeholder_communication or "未填写"],
+    ]
+    md = "## 四、利益相关方参与\n\n" + _table(["项目", "内容"], sh_rows)
+    md += (
+        "\n> 利益相关方的识别与沟通是实质性议题评估的重要输入。"
+        "建议留存沟通记录（会议纪要、问卷、投诉与反馈处理台账），作为对外披露的证据。\n"
+    )
+    parts.append(md)
+    sections.append(ReportSection(
+        title="利益相关方参与",
+        narrative="识别主要利益相关方并说明沟通机制。",
+    ))
+
+    # 5 可持续发展战略与目标
+    g15 = client.metric("G15")
+    g16 = client.metric("G16")
+    g15_val = str(g15.value) if (g15 and g15.value is not None) else "未填写"
+    g16_val = str(g16.value) if (g16 and g16.value is not None) else "未填写"
+    ops_total = derived.get("OPS_TOTAL")
+    strat_rows = [
+        ["ESG 战略与愿景", p.esg_strategy or "未填写"],
+        ["气候相关风险识别", g15_val],
+        ["减排目标设定", g16_val],
+        ["基准年", p.baseline_year or "未填写"],
+        ["本期范围一+二排放 (tCO2e)", _fmt(ops_total) if ops_total is not None else "未计算"],
+    ]
+    md = "## 五、可持续发展战略与目标\n\n" + _table(["维度", "现状"], strat_rows)
+    if g15 and g15.note:
+        md += f"\n- 气候风险识别说明：{g15.note}\n"
+    if g16 and g16.note:
+        md += f"\n- 减排目标说明：{g16.note}\n"
+    md += (
+        "\n> 建议在战略章节明确可持续发展愿景、量化目标（含基准年与目标年）及考核机制，"
+        "并与实质性议题结果相呼应。已识别气候风险但未设定减排目标的，可优先补齐目标管理。\n"
+    )
+    parts.append(md)
+    sections.append(ReportSection(
+        title="可持续发展战略与目标",
+        narrative="ESG 战略、气候风险识别与减排目标设定情况。",
+    ))
+
+    # 6 环境绩效
+    md = "## 六、环境绩效\n\n"
     md += _table(["指标", "单位", "本期", "状态"], _kpi_rows(client, derived, E_TABLE))
     scope3_rows = []
+    scope3_total = 0.0
+    scope3_has = False
     for code, label in E_SCOPE3:
         m = client.metric(code)
         val = m.value if m else None
+        if isinstance(val, (int, float)):
+            scope3_total += float(val)
+            scope3_has = True
         scope3_rows.append([label, _fmt(val) if val is not None else _status_text(m), m.note if m else ""])
     md += "\n**范围三排放结构**\n\n" + _table(["类别", "排放量 (tCO2e)", "备注"], scope3_rows)
+    from . import carbon
+    s1 = _client_value(client, derived, "E08")
+    s2 = _client_value(client, derived, "E09")
+    if scope3_has:
+        u3 = carbon.estimate_uncertainty(s1, s2, scope3_total)["scope3"]
+        md += (f"\n范围三合计 **{_fmt(u3['t'])} tCO2e**，估算不确定度 ±{u3['pct']}%，"
+               f"区间 [{_fmt(u3['low'])}, {_fmt(u3['high'])}] tCO2e"
+               f"（行业平均参考值，正式披露需向供应商核实实际因子）。\n")
     ops = derived.get("OPS_TOTAL")
     if ops:
-        md += f"\n范围一与范围二（市场法）合计运营排放 **{_fmt(ops)} tCO2e**。\n"
+        u_ops = carbon.estimate_uncertainty(s1, s2, None)["total"]
+        md += (f"\n范围一与范围二（市场法）合计运营排放 **{_fmt(ops)} tCO2e**，"
+               f"不确定度 ±{u_ops['pct']}%，区间 [{_fmt(u_ops['low'])}, {_fmt(u_ops['high'])}] tCO2e。\n")
     intensity = _client_value(client, derived, "E15")
     if intensity is not None and p.revenue_million:
         md += (f"以 {_fmt(p.revenue_million)} 百万元营业收入计，排放强度为 "
@@ -346,8 +406,8 @@ def build_client_report(
     parts.append(md)
     sections.append(ReportSection(title="环境绩效", narrative="能耗、排放、水与废弃物。"))
 
-    # 5 社会绩效
-    md = "## 五、社会绩效\n\n"
+    # 7 社会绩效
+    md = "## 七、社会绩效\n\n"
     md += _table(["指标", "单位", "本期", "状态"], _kpi_rows(client, derived, S_TABLE))
     fatal = _client_value(client, derived, "S12")
     if fatal == 0:
@@ -355,14 +415,14 @@ def build_client_report(
     parts.append(md)
     sections.append(ReportSection(title="社会绩效", narrative="员工、安全、培训与供应链。"))
 
-    # 6 治理绩效
-    md = "## 六、治理绩效\n\n"
+    # 8 治理绩效
+    md = "## 八、治理绩效\n\n"
     md += _table(["指标", "单位", "本期", "状态"], _kpi_rows(client, derived, G_TABLE))
     parts.append(md)
     sections.append(ReportSection(title="治理绩效", narrative="董事会、反腐败与制度。"))
 
-    # 7 差距分析与路线图
-    md = "## 七、差距分析与改进路线图\n\n"
+    # 9 差距分析与路线图
+    md = "## 九、差距分析与改进路线图\n\n"
     if analysis.gaps:
         md += "以下指标统一采用比率或强度口径，可与同行业中位水平直接比较。\n\n"
         md += _table(["指标", "单位", "本企业", "行业中位", "行业领先 (P75)", "与中位差异", "位置"],
@@ -373,11 +433,11 @@ def build_client_report(
             md += f"\n{narr['gap_summary']}\n"
         quick, mid, long = _roadmap(analysis.gaps)
         if quick:
-            md += "\n### 7.1 可立即推进\n\n" + _table(["议题", "现状", "建议"], quick)
+            md += "\n### 9.1 可立即推进\n\n" + _table(["议题", "现状", "建议"], quick)
         if mid:
-            md += "\n### 7.2 一年内推进\n\n" + _table(["议题", "现状", "建议"], mid)
+            md += "\n### 9.2 一年内推进\n\n" + _table(["议题", "现状", "建议"], mid)
         if long:
-            md += "\n### 7.3 需要投入或跨部门协同\n\n" + _table(["议题", "现状", "建议"], long)
+            md += "\n### 9.3 需要投入或跨部门协同\n\n" + _table(["议题", "现状", "建议"], long)
     else:
         md += "_本次填报数据不足以完成对标，建议先补齐排放强度、清洁能源占比、流失率等核心指标。_\n"
     parts.append(md)
@@ -389,7 +449,7 @@ def build_client_report(
     # 7.5 目标评级路径（可选）
     path = build_rating_path(analysis, target_rating) if target_rating else None
     if path:
-        md = f"## 八、评级提升路径（目标：{path.target_rating}）\n\n"
+        md = f"## 十、评级提升路径（目标：{path.target_rating}）\n\n"
         md += f"> {path.baseline_note}{path.disclaimer}\n\n"
         md += f"**可达性判断**：{path.verdict}\n\n"
 
@@ -453,9 +513,11 @@ def build_client_report(
         available.append("injury_rate")
     if _has_metric("S15"):
         available.append("training_hours")
+    if _has_metric("S24"):
+        available.append("community")
 
     coverage = standards.check(available)
-    cov_no = "九" if path else "八"
+    cov_no = "十一" if path else "十"
     md = f"## {cov_no}、披露覆盖与标准映射\n\n"
     md += (
         "下表把本次填报的数据对照港交所《ESG 报告守则》与 IFRS S2 的披露要求，"
@@ -469,7 +531,7 @@ def build_client_report(
         narrative="港交所守则与 IFRS S2 的数据覆盖情况。",
     ))
 
-    appendix_no = "十" if path else "九"
+    appendix_no = "十二" if path else "十一"
 
     # 8 数据附录
     md = f"## {appendix_no}、数据附录\n\n### {appendix_no}.1 缺失项清单\n\n"

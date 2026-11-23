@@ -108,9 +108,18 @@ hr { border: 0; border-top: 1px solid #e2e3d8; margin: 5mm 0; }
 
 
 def print_page(title: str, subtitle: str, body_md: str) -> str:
+    _desc = (subtitle or "ESG 智能报告系统生成的只读报告").strip()[:120]
     return f"""<!DOCTYPE html>
 <html lang="zh-HK"><head><meta charset="UTF-8">
-<title>{html.escape(title)}</title><style>{PRINT_STYLE}</style></head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>{html.escape(title)}</title>
+<meta name="description" content="{html.escape(_desc)}">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="ESG 智能报告系统">
+<meta property="og:title" content="{html.escape(title)}">
+<meta property="og:description" content="{html.escape(_desc)}">
+<style>{PRINT_STYLE}</style></head>
 <body>
 <div class="toolbar"><button onclick="window.print()">打印 / 另存为 PDF</button></div>
 <div class="page">

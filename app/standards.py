@@ -27,7 +27,7 @@ REQUIREMENTS: list[dict] = [
     {"framework": "HKEX", "code": "B3.2", "name": "人均培训时数", "fields": ["training_hours"], "kind": "quant"},
     {"framework": "HKEX", "code": "B5.2", "name": "供应链环境与社会风险管理", "fields": [], "kind": "qual"},
     {"framework": "HKEX", "code": "B7.1", "name": "贪污诉讼案件", "fields": [], "kind": "qual"},
-    {"framework": "HKEX", "code": "B8.2", "name": "社区投资资源", "fields": [], "kind": "qual"},
+    {"framework": "HKEX", "code": "B8.2", "name": "社区投资资源", "fields": ["community"], "kind": "qual"},
     {"framework": "IFRS S2", "code": "治理", "name": "气候相关治理与监督", "fields": [], "kind": "qual"},
     {"framework": "IFRS S2", "code": "策略", "name": "气候风险与机遇及财务影响", "fields": [], "kind": "qual"},
     {"framework": "IFRS S2", "code": "风险管理", "name": "气候风险识别与评估流程", "fields": [], "kind": "qual"},
@@ -50,6 +50,7 @@ FIELD_LABELS = {
     "lost_days": "损失工作日",
     "training_ratio": "受训比例",
     "training_hours": "人均培训时数",
+    "community": "公益捐赠金额",
 }
 
 
@@ -59,18 +60,23 @@ def check(available: Iterable[str]) -> dict:
     rows = []
     for req in REQUIREMENTS:
         fields = req["fields"]
-        if req["kind"] != "quant":
-            status = "需企业补充"
-        elif not fields:
-            status = "需企业补充"
-        else:
-            got = [f for f in fields if f in have]
-            if len(got) == len(fields):
+        got = [f for f in fields if f in have]
+        if req["kind"] == "quant":
+            if not fields:
+                status = "需企业补充"
+            elif len(got) == len(fields):
                 status = "已覆盖"
             elif got:
                 status = "部分覆盖"
             else:
                 status = "缺失"
+        else:
+            # 定性/目标条款：若映射了量化字段且已全部取得，视为已覆盖；
+            # 否则仍需企业补充文字说明（不把缺字数误报为"缺失"）。
+            if fields and len(got) == len(fields):
+                status = "已覆盖"
+            else:
+                status = "需企业补充"
         rows.append({
             "framework": req["framework"],
             "code": req["code"],

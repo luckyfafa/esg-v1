@@ -283,6 +283,9 @@ class ClientProfile(BaseModel):
     report_purpose: Optional[str] = None
     reporting_basis: Optional[str] = None
     contact: Optional[str] = None
+    stakeholders: Optional[str] = None          # 主要利益相关方（投资者/员工/客户/供应商/社区/监管等）
+    stakeholder_communication: Optional[str] = None  # 利益相关方沟通方式与频次
+    esg_strategy: Optional[str] = None         # ESG 战略与愿景（可持续发展战略表述）
 
 
 class ClientMetric(BaseModel):

@@ -44,6 +44,9 @@ PROFILE_LABELS: dict[str, str] = {
     "报告用途": "report_purpose",
     "编制依据": "reporting_basis",
     "数据联系人": "contact",
+    "主要利益相关方": "stakeholders",
+    "利益相关方沟通": "stakeholder_communication",
+    "ESG 战略": "esg_strategy",
 }
 
 # 文本型指标（不参与数值计算）
@@ -117,6 +120,9 @@ def _build_profile(raw: dict[str, Any], fallback_year: int) -> ClientProfile:
         report_purpose=_text(raw.get("report_purpose")),
         reporting_basis=_text(raw.get("reporting_basis")),
         contact=_text(raw.get("contact")),
+        stakeholders=_text(raw.get("stakeholders")),
+        stakeholder_communication=_text(raw.get("stakeholder_communication")),
+        esg_strategy=_text(raw.get("esg_strategy")),
     )
 
 
