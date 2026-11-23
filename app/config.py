@@ -50,8 +50,9 @@ class Settings(BaseSettings):
     lead_webhook_url: str = ""
 
     # 统计：Google tag。GTM 容器 ID 与 GA4 衡量 ID 可只配一个，也可都配
+    # 两者同时配置时：页面浏览由 GTM 容器统计，GA4 直连只发自定义事件，避免重复计数
     gtm_id: str = "GTM-PW52WWDX"
-    ga4_id: str = ""
+    ga4_id: str = "G-2J8SWCVZS4"
 
     # HTTP
     user_agent: str = "ESG-Report-Bot/0.1 contact@example.com"

@@ -129,7 +129,7 @@ def _with_analytics(html: str) -> str:
         tags.append(
             f'<script async src="https://www.googletagmanager.com/gtm.js?id={gtm}"></script>'
         )
-    elif ga4:
+    if ga4:
         tags.append(
             f'<script async src="https://www.googletagmanager.com/gtag/js?id={ga4}"></script>'
         )
@@ -139,7 +139,9 @@ def _with_analytics(html: str) -> str:
         "gtag('js',new Date());"
     )
     if ga4:
-        js += f"gtag('config','{ga4}');"
+        # GTM 已在统计页面浏览时，GA4 直连只发事件，避免重复计数
+        spv = "false" if gtm else "true"
+        js += f"gtag('config','{ga4}',{{send_page_view:{spv}}});"
     tags.append(f"<script>{js}</script>")
     return html.replace("</head>", "".join(tags) + "</head>", 1)
 
