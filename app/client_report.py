@@ -224,6 +224,61 @@ def generate_client_narrative(analysis: ClientAnalysis) -> dict[str, str]:
     return out
 
 
+def _exec_summary(analysis: ClientAnalysis, client: ClientData) -> str:
+    """自动生成诊断报告 executive summary：最落后指标 + 立即可做 + 政策覆盖度。"""
+    p = client.profile
+    lines = [f"## Executive Summary ｜ {p.company_name}（{p.industry or analysis.industry_key}）\n"]
+
+    # 核心对标结论
+    if analysis.gaps:
+        behind = [g for g in analysis.gaps if g.position == "落后"]
+        ahead = [g for g in analysis.gaps if g.position == "领先"]
+        close = [g for g in analysis.gaps if g.position == "接近"]
+        lines.append(f"**对标结论**：共 {len(analysis.gaps)} 项指标可对标。"
+                     f"落后 {len(behind)} 项 / 领先 {len(ahead)} 项 / 接近 {len(close)} 项。")
+        if behind:
+            top3 = sorted(behind, key=lambda g: abs(g.gap_pct or 0), reverse=True)[:3]
+            lines.append("")
+            lines.append("**最需关注的 3 项**：")
+            for g in top3:
+                arrow = "↑" if (g.direction == "lower_better") else "↓"
+                lines.append(f"- **{g.name}**：{_fmt(g.client_value)} {g.unit}，行业中位 {_fmt(g.median)} {g.unit}，差距 {g.gap_pct:+.1f}% {arrow}（{g.position}）")
+        if ahead:
+            lines.append("")
+            lines.append("**做得好的**：")
+            for g in ahead:
+                lines.append(f"- {g.name}：{_fmt(g.client_value)} {g.unit}，优于行业 P75 {_fmt(g.p75)} {g.unit}")
+
+    # 港府政策覆盖度
+    gov_rows = [m for m in client.metrics if m.code and len(m.code) > 2 and m.code.startswith("G") and m.value in ("是", "否")]
+    if gov_rows:
+        yes = sum(1 for m in gov_rows if m.value == "是")
+        total = len(gov_rows)
+        pct = yes / total * 100
+        lines.append("")
+        tag = "较好" if pct >= 70 else "需加强" if pct >= 50 else "明显不足"
+        lines.append(f"**港府政策覆盖度**：{yes}/{total}（{pct:.0f}%）—— {tag}")
+
+    # 数据完整度
+    lines.append("")
+    lines.append(f"**填报完整度**：{analysis.completeness * 100:.0f}%")
+
+    # 立即可做
+    quick, mid, long = _roadmap(analysis.gaps) if analysis.gaps else ([], [], [])
+    if quick:
+        lines.append("")
+        lines.append("**立即可推进**：")
+        for g in quick[:3]:
+            lines.append(f"- {g[0]}：{g[2]}")
+
+    if analysis.data_quality_notes:
+        lines.append("")
+        lines.append(f"> 数据质量：{analysis.data_quality_notes[0]}")
+
+    lines.append("")
+    return "\n".join(lines)
+
+
 def build_client_report(
     analysis: ClientAnalysis,
     use_llm_narrative: bool = False,
@@ -239,13 +294,16 @@ def build_client_report(
     today = date.today()
     narr = generate_client_narrative(analysis) if use_llm_narrative else {}
 
-    title = f"{p.company_name} ESG 报告 {p.report_year}"
-    parts: list[str] = [f"# {title}\n"]
+    title = f"{p.company_name} ESG 诊断报告 {p.report_year}"
     src_name = Path(client.source_file).name if client.source_file else "采集表"
-    parts.append(
-        f"> 本报告基于企业填报数据（{src_name}）与行业公开披露基线生成，"
-        f"为分析底稿，不构成审计意见或评级结论。生成日期：{today.isoformat()}。\n"
+    header_line = [f"# {title}\n"]
+    header_line.append(
+        f"> 基于企业填报数据（{src_name}）与行业基线生成，"
+        f"定位差距与行动，不构成审计或评级。生成日期：{today.isoformat()}。\n"
     )
+    exec_summary = _exec_summary(analysis, client)
+    header_line.append(exec_summary)
+    parts: list[str] = header_line
 
     sections: list[ReportSection] = []
 
@@ -418,6 +476,16 @@ def build_client_report(
     # 8 治理绩效
     md = "## 八、治理绩效\n\n"
     md += _table(["指标", "单位", "本期", "状态"], _kpi_rows(client, derived, G_TABLE))
+
+    # 港府问卷政策覆盖度统计（自动扫描 G20-G67 的是/否）
+    gov_rows = [m for m in client.metrics if m.code and m.code.startswith("G") and len(m.code) > 2 and m.value in ("是", "否")]
+    if gov_rows:
+        yes_count = sum(1 for m in gov_rows if m.value == "是")
+        total = len(gov_rows)
+        md += f"\n**港府 ESG 问卷政策覆盖度：{yes_count}/{total}（{yes_count/total*100:.0f}%）**\n\n"
+        md += "> 以上基于港府 ESG 免费评估问卷的 8 个政策模块共 48 条是/否题自动统计，"
+        md += "仅作快速自评参考。完整题目见采集表 G-治理 表尾部。\n"
+
     parts.append(md)
     sections.append(ReportSection(title="治理绩效", narrative="董事会、反腐败与制度。"))
 
@@ -518,10 +586,10 @@ def build_client_report(
 
     coverage = standards.check(available)
     cov_no = "十一" if path else "十"
-    md = f"## {cov_no}、披露覆盖与标准映射\n\n"
+    md = f"## {cov_no}、合规风险提示（港交所/IFRS S2）\n\n"
     md += (
-        "下表把本次填报的数据对照港交所《ESG 报告守则》与 IFRS S2 的披露要求，"
-        "用于快速看出哪些条款已有数据支撑、哪些仍需补充。本表只核对数据是否存在，"
+        "下表对照港交所《ESG 报告守则》与 IFRS S2 的披露要求，"
+        "快速识别哪些条款已有数据支撑、哪些仍需补充。仅核对数据是否存在，"
         "不评价披露质量，也不构成合规意见。\n\n"
     )
     md += standards.to_markdown(coverage)
