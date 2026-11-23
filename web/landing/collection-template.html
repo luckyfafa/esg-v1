@@ -193,7 +193,7 @@
     <p id="lead-msg" style="font-size:13px;color:var(--muted);margin:10px 0 0"></p>
     <p style="font-size:13px;color:var(--muted);margin:12px 0 0">
       也可以直接联系：
-      <a href="https://wa.me/85270135587" target="_blank" rel="noopener">WhatsApp +852 7013 5587</a>
+      <a href="https://wa.me/85270135587?text=%E4%BD%A0%E5%A5%BD%EF%BC%8C%E6%88%91%E6%83%B3%E4%BA%86%E8%A7%A3ESG%E6%8A%A5%E5%91%8A%E6%9C%8D%E5%8A%A1" target="_blank" rel="noopener">WhatsApp +852 7013 5587</a>
       ·
       <a href="mailto:webmarinda@gmail.com">webmarinda@gmail.com</a>
     </p>
@@ -214,7 +214,7 @@
     <a href="/tools/carbon-guide">碳核算指南</a>
   </div>
   <div style="margin-bottom:8px">
-    <a href="https://wa.me/85270135587" target="_blank" rel="noopener">WhatsApp +852 7013 5587</a>
+    <a href="https://wa.me/85270135587?text=%E4%BD%A0%E5%A5%BD%EF%BC%8C%E6%88%91%E6%83%B3%E4%BA%86%E8%A7%A3ESG%E6%8A%A5%E5%91%8A%E6%9C%8D%E5%8A%A1" target="_blank" rel="noopener">WhatsApp +852 7013 5587</a>
     <a href="mailto:webmarinda@gmail.com">webmarinda@gmail.com</a>
   </div>
   模板仅供内部填报与底稿整理，不构成审计或鉴证意见。数值请对照原始单据复核。
@@ -252,11 +252,17 @@ if (lf) {
     var msg = document.getElementById('lead-msg');
     var fd = new FormData(lf);
     fd.append('source', 'landing-collection');
+    var qs = new URLSearchParams(location.search);
+    ['utm_source', 'utm_medium', 'utm_campaign'].forEach(function (k) {
+      if (qs.get(k)) fd.append(k, qs.get(k));
+    });
     msg.textContent = '提交中…';
     try {
       var res = await fetch('/api/leads', { method: 'POST', body: fd });
       if (!res.ok) throw new Error('HTTP ' + res.status);
-      msg.textContent = '已收到，我们会在 24 小时内联系你并发送资料。';
+      msg.innerHTML = '已收到，我们会在 24 小时内联系你。资料可先下载：' +
+        '<a href="/client/template">采集表模板</a> · ' +
+        '<a href="/tools/carbon-guide">碳核算指南</a>';
       lf.reset();
       if (window.gtag) gtag('event', 'lead_submit', { source: 'landing-collection' });
     } catch (e) {

@@ -54,6 +54,15 @@ class Settings(BaseSettings):
     gtm_id: str = "GTM-PW52WWDX"
     ga4_id: str = "G-2J8SWCVZS4"
 
+    # 邮件：留资自动回信 + 负责人通知
+    # Gmail 需要先开启两步验证，再生成「应用专用密码」填入 smtp_pass
+    smtp_host: str = "smtp.gmail.com"
+    smtp_port: int = 587
+    smtp_user: str = ""
+    smtp_pass: str = ""
+    smtp_from: str = ""
+    notify_email: str = "webmarinda@gmail.com"
+
     # HTTP
     user_agent: str = "ESG-Report-Bot/0.1 contact@example.com"
 

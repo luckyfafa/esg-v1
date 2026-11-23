@@ -791,6 +791,9 @@ async def save_lead(
     industry: str = Form("", description="所属行业"),
     source: str = Form("web", description="来源渠道"),
     note: str = Form("", description="备注或问题"),
+    utm_source: str = Form("", description="广告或渠道来源"),
+    utm_medium: str = Form("", description="渠道类型"),
+    utm_campaign: str = Form("", description="活动名称"),
 ):
     """保存留资信息到 /tmp/esg/leads/（云环境唯一可写目录）。
 
@@ -807,6 +810,11 @@ async def save_lead(
         "industry": industry.strip(),
         "source": source.strip(),
         "note": note.strip(),
+        "utm": {
+            "source": utm_source.strip(),
+            "medium": utm_medium.strip(),
+            "campaign": utm_campaign.strip(),
+        },
         "created_at": datetime.utcnow().isoformat() + "Z",
     }
     fname = f"lead_{datetime.utcnow().strftime('%Y%m%d_%H%M%S_%f')[:-3]}.json"
@@ -819,7 +827,85 @@ async def save_lead(
     if settings.lead_webhook_url:
         _notify_lead_webhook(settings.lead_webhook_url, lead)
 
+    # 自动回信 + 负责人通知（未配置 SMTP 时跳过）
+    if settings.smtp_user and settings.smtp_pass:
+        _send_lead_flow(lead)
+
     return {"status": "ok", "message": "留资成功，24 小时内会有专人联系"}
+
+
+def _send_lead_flow(lead: dict) -> None:
+    """后台线程发信，不阻塞用户提交。"""
+    import threading
+
+    threading.Thread(target=_send_lead_emails, args=(lead,), daemon=True).start()
+
+
+def _send_lead_emails(lead: dict) -> None:
+    from .config import settings
+
+    base = "https://esg-v1-0uyh.onrender.com"
+    to = (lead.get("email") or "").strip()
+
+    if "@" in to:
+        html = f"""<div style="font-family:-apple-system,'Microsoft YaHei',sans-serif;font-size:14px;line-height:1.8;color:#161A17">
+<p>你好，{lead.get('contact') or lead.get('company')}：</p>
+<p>已收到你的信息。这是你需要的资料：</p>
+<ul>
+  <li><a href="{base}/client/template">非上市企业 ESG 数据采集表模板（.xlsx）</a></li>
+  <li><a href="{base}/tools/carbon-guide">碳核算指南：范围一/二/三怎么算</a></li>
+  <li><a href="{base}/">在线试用：上传采集表自动诊断并出报告</a></li>
+</ul>
+<p>如果需要我帮你判断贵司该从哪里开始，直接回复这封邮件，或加 WhatsApp
+<a href="https://wa.me/85270135587">+852 7013 5587</a>。</p>
+<p style="color:#6B726C;font-size:12px">ESG 智能报告系统 · 本邮件由系统自动发送</p>
+</div>"""
+        _send_mail(to, "你的 ESG 采集表模板与碳核算指南", html)
+
+    if settings.notify_email:
+        utm = lead.get("utm") or {}
+        html = f"""<div style="font-family:-apple-system,'Microsoft YaHei',sans-serif;font-size:14px;line-height:1.8">
+<h3 style="margin:0 0 8px">新留资</h3>
+<p>公司：{lead.get('company')}<br>
+联系人：{lead.get('contact') or '—'}<br>
+邮箱：{lead.get('email') or '—'}<br>
+行业：{lead.get('industry') or '—'}<br>
+港股代码：{lead.get('stock_code') or '—'}<br>
+来源：{lead.get('source')}<br>
+渠道：{utm.get('source') or '—'} / {utm.get('medium') or '—'} / {utm.get('campaign') or '—'}<br>
+备注：{lead.get('note') or '—'}<br>
+时间：{lead.get('created_at')}</p>
+</div>"""
+        _send_mail(settings.notify_email, f"新留资：{lead.get('company')}", html)
+
+
+def _send_mail(to: str, subject: str, html: str) -> None:
+    """SMTP 发信。失败只记日志，不影响留资主流程。"""
+    import smtplib
+    import ssl
+    from email.message import EmailMessage
+
+    from .config import settings
+
+    msg = EmailMessage()
+    msg["Subject"] = subject
+    msg["From"] = settings.smtp_from or settings.smtp_user
+    msg["To"] = to
+    msg.set_content("请使用支持 HTML 的邮件客户端查看。")
+    msg.add_alternative(html, subtype="html")
+    try:
+        if settings.smtp_port == 465:
+            with smtplib.SMTP_SSL(settings.smtp_host, settings.smtp_port, timeout=20) as s:
+                s.login(settings.smtp_user, settings.smtp_pass)
+                s.send_message(msg)
+        else:
+            with smtplib.SMTP(settings.smtp_host, settings.smtp_port, timeout=20) as s:
+                s.starttls(context=ssl.create_default_context())
+                s.login(settings.smtp_user, settings.smtp_pass)
+                s.send_message(msg)
+        logging.info("Mail sent: %s", to)
+    except Exception as e:  # noqa: BLE001
+        logging.warning("Mail failed %s: %s", to, e)
 
 
 def _notify_lead_webhook(url: str, lead: dict) -> None:
@@ -832,6 +918,9 @@ def _notify_lead_webhook(url: str, lead: dict) -> None:
         f"港股代码：{lead['stock_code'] or '—'}\n"
         f"行业：{lead['industry'] or '—'}\n"
         f"来源：{lead['source']}\n"
+        f"渠道：{(lead.get('utm') or {}).get('source') or '—'} / "
+        f"{(lead.get('utm') or {}).get('medium') or '—'} / "
+        f"{(lead.get('utm') or {}).get('campaign') or '—'}\n"
         f"备注：{lead['note'] or '—'}\n"
         f"时间：{lead['created_at']}"
     )
