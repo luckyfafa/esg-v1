@@ -69,7 +69,7 @@ def demo_ui():
     index = WEB_DIR / "index.html"
     if not index.exists():
         raise HTTPException(status_code=404, detail="演示界面未部署（缺少 web/index.html）")
-    return HTMLResponse(_with_ga4(index.read_text(encoding="utf-8")))
+    return HTMLResponse(_with_analytics(index.read_text(encoding="utf-8")))
 
 
 @app.get("/robots.txt", include_in_schema=False)
@@ -110,24 +110,38 @@ def _landing_page(filename: str) -> HTMLResponse:
     page = LANDING_DIR / filename
     if not page.exists():
         raise HTTPException(status_code=404, detail="页面不存在")
-    return HTMLResponse(_with_ga4(page.read_text(encoding="utf-8")))
+    return HTMLResponse(_with_analytics(page.read_text(encoding="utf-8")))
 
 
-def _with_ga4(html: str) -> str:
-    """把 GA4 统计代码注入 </head>；未配置 GA4_ID 时原样返回。"""
+def _with_analytics(html: str) -> str:
+    """把 Google tag 注入 </head>；GTM 容器与 GA4 均可，未配置时原样返回。"""
     from .config import settings
 
-    gid = settings.ga4_id.strip()
-    if not gid or "</head>" not in html:
+    gtm = settings.gtm_id.strip()
+    ga4 = settings.ga4_id.strip()
+    if not gtm and not ga4:
         return html
-    snippet = (
-        f'<script async src="https://www.googletagmanager.com/gtag/js?id={gid}"></script>'
-        "<script>window.dataLayer=window.dataLayer||[];"
+    if "</head>" not in html:
+        return html
+
+    tags = []
+    if gtm:
+        tags.append(
+            f'<script async src="https://www.googletagmanager.com/gtm.js?id={gtm}"></script>'
+        )
+    elif ga4:
+        tags.append(
+            f'<script async src="https://www.googletagmanager.com/gtag/js?id={ga4}"></script>'
+        )
+    js = (
+        "window.dataLayer=window.dataLayer||[];"
         "function gtag(){dataLayer.push(arguments);}"
         "gtag('js',new Date());"
-        f"gtag('config','{gid}');</script>"
     )
-    return html.replace("</head>", snippet + "</head>", 1)
+    if ga4:
+        js += f"gtag('config','{ga4}');"
+    tags.append(f"<script>{js}</script>")
+    return html.replace("</head>", "".join(tags) + "</head>", 1)
 
 
 @app.get("/sitemap.xml/BingSiteAuth.xml", include_in_schema=False)

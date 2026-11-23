@@ -49,7 +49,8 @@ class Settings(BaseSettings):
     # Zapier、n8n 等均可）。/tmp 会被清空，webhook 是线索不丢失的可靠方式。
     lead_webhook_url: str = ""
 
-    # 统计：GA4 衡量 ID（G-XXXXXXXXXX），为空则不注入统计代码
+    # 统计：Google tag。GTM 容器 ID 与 GA4 衡量 ID 可只配一个，也可都配
+    gtm_id: str = "GTM-PW52WWDX"
     ga4_id: str = ""
 
     # HTTP
