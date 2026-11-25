@@ -47,7 +47,6 @@ def layout(
     published: str | None = None,
 ) -> str:
     nav_items = [
-        ("home", "/", "工具首页"),
         ("learn", "/learn", "学习中心"),
         ("daily", "/daily", "报告拆解"),
     ]
@@ -90,7 +89,7 @@ def layout(
 <a class="skip" href="#main">跳到正文</a>
 <header class="site-header">
   <div class="wrap header-inner">
-    <a class="brand" href="/">
+    <a class="brand" href="/learn">
       <strong>ESG 智能报告系统</strong>
       <span>V2 · 港股报告与评级</span>
     </a>
@@ -107,7 +106,6 @@ def layout(
       <p>{esc(SITE_TAGLINE)}。报告取自港交所披露易，评级只引用公开数据，不构成投资或合规建议。</p>
     </div>
     <div class="footer-links">
-      <a href="/">工具首页</a>
       <a href="/learn">学习中心</a>
       <a href="/daily">报告拆解</a>
       <a href="/daily/feed.xml">RSS 订阅</a>
