@@ -1,0 +1,164 @@
+{
+  "slug": "2026-11-20-01093",
+  "date": "2026-11-20",
+  "code": "01093",
+  "company": "石药集团",
+  "industry": "医药",
+  "angle": "董事会声明在第 5 页：医药报告怎么读治理",
+  "hook": "石药这份报告第 5 页就是 Board ESG Statement，比很多公司都靠前。对医药企业来说，治理与产品责任是硬约束，董事会声明不是形式，而是责任的起点。",
+  "why": "医药行业的环境影响集中在生产环节，社会影响集中在产品质量与可及性。学这份报告，练习 B-13 逐条对照，以及「产品责任章节为什么占大篇幅」。",
+  "reading_map": [
+    {
+      "section": "报告说明",
+      "locator": "PDF p3",
+      "look_for": "期间、范围、标准、鉴证",
+      "clause": "B-15"
+    },
+    {
+      "section": "董事会 ESG 声明",
+      "locator": "PDF p5 Board ESG Statement",
+      "look_for": "董事会监管、策略、目标检讨",
+      "clause": "B-13"
+    },
+    {
+      "section": "ESG 治理",
+      "locator": "PDF p9",
+      "look_for": "委员会、执行层、责任分工",
+      "clause": "B-13 / D-19"
+    },
+    {
+      "section": "质量与研发",
+      "locator": "PDF p20 质量；p29 研发；p38 供应管理",
+      "look_for": "质量管理体系、产品安全、供应商",
+      "clause": "C-B6 / C-B5"
+    },
+    {
+      "section": "环境与气候",
+      "locator": "PDF p43 气候；p48 环境管理；p52 资源；p54 绿色运营",
+      "look_for": "排放、能耗、水、废弃物、气候目标",
+      "clause": "C-A1 / C-A2 / D-19"
+    }
+  ],
+  "observations": [
+    "董事会 ESG 声明在 PDF 第 5 页，是相对靠前的位置。可以拿 B-13 的三个动作（监管、策略、检讨）逐条对照，看哪些有、哪些只有原则性表述。",
+    "质量与研发章节从 p20 开始，篇幅明显大于环境章节。医药行业的产品责任权重高，这是行业属性，不是报告偏好。",
+    "环境部分拆成气候（p43）、环境管理（p48）、资源节约（p52）、绿色运营（p54）四块，读的时候要先把边界对齐，避免重复计算。",
+    "数据表与索引在报告结尾。医药企业的排放与废弃物数据，要结合产品类型与生产地点看。"
+  ],
+  "rating_read": "本期快照中，MSCI 为 AA（2026-11-17），中诚信 A+，联合赤道 AA-，秩鼎 76.69(AA)，商道融绿 A-，妙盈 A，但华证给 BBB；标普为 30+，日期是 2025-11-17，已过去一年。这里有两个学习点：一是同一公司国内外机构分档差异明显；二是引用评级必须看日期，跨年的分值只能作为历史参考。",
+  "questions": [
+    "医药公司的范围三，最相关的是采购、运输还是产品使用后的处置？",
+    "产品责任可以用什么指标量化？不良事件、召回、质量认证各说明什么？",
+    "标普分值日期较旧，写分析时应该怎样处理？"
+  ],
+  "skills": [
+    {
+      "name": "董事会声明对照",
+      "how": "把 B-13 拆成监管、策略、检讨三段，逐句找证据"
+    },
+    {
+      "name": "行业产品责任分析",
+      "how": "从质量体系、安全事件、可及性三条线建立指标"
+    },
+    {
+      "name": "数据时效处理",
+      "how": "每条评级都标日期，超过 12 个月的在文中提示"
+    }
+  ],
+  "takeaway": "重资产、高监管行业，产品责任章节不能跳；治理声明要逐条对照，不能只看标题。",
+  "report": {
+    "title": "2025 ENVIRONMENTAL, SOCIAL AND GOVERNANCE REPORT",
+    "release_date": "2026-04-28",
+    "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0428/2026042803429.pdf",
+    "source": "港交所披露易"
+  },
+  "ratings": [
+    {
+      "agency": "MSCI",
+      "rating": "AA",
+      "rating_date": "2026-11-17",
+      "environmental": "7.99",
+      "social": "5.8",
+      "governance": "4.75",
+      "stale": false
+    },
+    {
+      "agency": "标普",
+      "rating": "30+",
+      "rating_date": "2025-11-17",
+      "environmental": null,
+      "social": null,
+      "governance": null,
+      "stale": true
+    },
+    {
+      "agency": "商道融绿",
+      "rating": "A-",
+      "rating_date": "2026Q3",
+      "environmental": null,
+      "social": null,
+      "governance": null,
+      "stale": false
+    },
+    {
+      "agency": "联合赤道",
+      "rating": "AA-",
+      "rating_date": "2026Q4",
+      "environmental": null,
+      "social": null,
+      "governance": null,
+      "stale": false
+    },
+    {
+      "agency": "中诚信",
+      "rating": "A+",
+      "rating_date": "2026Q2",
+      "environmental": null,
+      "social": null,
+      "governance": null,
+      "stale": false
+    },
+    {
+      "agency": "秩鼎",
+      "rating": "76.69(AA)",
+      "rating_date": "2026Q4",
+      "environmental": "80.73(AAA)",
+      "social": "70.25(AA)",
+      "governance": "78.53(AA)",
+      "stale": false
+    },
+    {
+      "agency": "华证",
+      "rating": "BBB",
+      "rating_date": "2026Q3",
+      "environmental": null,
+      "social": null,
+      "governance": null,
+      "stale": false
+    },
+    {
+      "agency": "妙盈",
+      "rating": "A",
+      "rating_date": "2026Q3",
+      "environmental": null,
+      "social": null,
+      "governance": null,
+      "stale": false
+    }
+  ],
+  "rating_meta": {
+    "count": 8,
+    "stale_count": 1,
+    "msci": {
+      "rating": "AA",
+      "date": "2026-11-17"
+    },
+    "fetched_at": "2026-11-25",
+    "source": "新浪财经 ESG 公开数据",
+    "source_url": "https://finance.sina.com.cn/",
+    "note": "仅保留接口返回的机构与结果；未覆盖的机构不补值。不同机构口径不同，分数不可横向比较。"
+  },
+  "issue": 6,
+  "prev": "2026-11-19-00303",
+  "next": "2026-11-23-00883"
+}

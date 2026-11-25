@@ -1,0 +1,76 @@
+{
+  "code": "01093",
+  "symbol": "hk01093",
+  "company": "石药集团",
+  "fetched_at": "2026-11-25",
+  "source": "新浪财经 ESG 公开数据",
+  "source_url": "https://finance.sina.com.cn/",
+  "api": "https://global.finance.sina.com.cn/api/openapi.php/EsgService.getEsgStockInfo",
+  "note": "仅保留接口返回的机构与结果；未覆盖的机构不补值。不同机构口径不同，分数不可横向比较。",
+  "ratings": [
+    {
+      "agency": "MSCI",
+      "rating": "AA",
+      "rating_date": "2026-11-17",
+      "environmental": "7.99",
+      "social": "5.8",
+      "governance": "4.75"
+    },
+    {
+      "agency": "标普",
+      "rating": "30+",
+      "rating_date": "2025-11-17",
+      "environmental": null,
+      "social": null,
+      "governance": null
+    },
+    {
+      "agency": "商道融绿",
+      "rating": "A-",
+      "rating_date": "2026Q3",
+      "environmental": null,
+      "social": null,
+      "governance": null
+    },
+    {
+      "agency": "联合赤道",
+      "rating": "AA-",
+      "rating_date": "2026Q4",
+      "environmental": null,
+      "social": null,
+      "governance": null
+    },
+    {
+      "agency": "中诚信",
+      "rating": "A+",
+      "rating_date": "2026Q2",
+      "environmental": null,
+      "social": null,
+      "governance": null
+    },
+    {
+      "agency": "秩鼎",
+      "rating": "76.69(AA)",
+      "rating_date": "2026Q4",
+      "environmental": "80.73(AAA)",
+      "social": "70.25(AA)",
+      "governance": "78.53(AA)"
+    },
+    {
+      "agency": "华证",
+      "rating": "BBB",
+      "rating_date": "2026Q3",
+      "environmental": null,
+      "social": null,
+      "governance": null
+    },
+    {
+      "agency": "妙盈",
+      "rating": "A",
+      "rating_date": "2026Q3",
+      "environmental": null,
+      "social": null,
+      "governance": null
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "code": "00002",
+  "symbol": "hk00002",
+  "company": "中电控股",
+  "fetched_at": "2026-11-25",
+  "source": "新浪财经 ESG 公开数据",
+  "source_url": "https://finance.sina.com.cn/",
+  "api": "https://global.finance.sina.com.cn/api/openapi.php/EsgService.getEsgStockInfo",
+  "note": "仅保留接口返回的机构与结果；未覆盖的机构不补值。不同机构口径不同，分数不可横向比较。",
+  "ratings": [
+    {
+      "agency": "MSCI",
+      "rating": "AA",
+      "rating_date": "2026-11-18",
+      "environmental": "7.8",
+      "social": "5.89",
+      "governance": "6.41"
+    },
+    {
+      "agency": "标普",
+      "rating": "60+",
+      "rating_date": "2026-09-11",
+      "environmental": null,
+      "social": null,
+      "governance": null
+    },
+    {
+      "agency": "商道融绿",
+      "rating": "A-",
+      "rating_date": "2026Q3",
+      "environmental": null,
+      "social": null,
+      "governance": null
+    },
+    {
+      "agency": "联合赤道",
+      "rating": "BBB+",
+      "rating_date": "2026Q4",
+      "environmental": null,
+      "social": null,
+      "governance": null
+    },
+    {
+      "agency": "中诚信",
+      "rating": "BBB+",
+      "rating_date": "2026Q2",
+      "environmental": null,
+      "social": null,
+      "governance": null
+    },
+    {
+      "agency": "秩鼎",
+      "rating": "71.04(AA)",
+      "rating_date": "2026Q4",
+      "environmental": "71.25(AA)",
+      "social": "61.2(A)",
+      "governance": "80.04(AAA)"
+    },
+    {
+      "agency": "华证",
+      "rating": "A",
+      "rating_date": "2026Q3",
+      "environmental": null,
+      "social": null,
+      "governance": null
+    },
+    {
+      "agency": "妙盈",
+      "rating": "A",
+      "rating_date": "2026Q3",
+      "environmental": null,
+      "social": null,
+      "governance": null
+    },
+    {
+      "agency": "中财绿金院",
+      "rating": "A+",
+      "rating_date": "2019Q2",
+      "environmental": null,
+      "social": null,
+      "governance": null
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "code": "00700",
+  "symbol": "hk00700",
+  "company": "腾讯控股",
+  "fetched_at": "2026-11-25",
+  "source": "新浪财经 ESG 公开数据",
+  "source_url": "https://finance.sina.com.cn/",
+  "api": "https://global.finance.sina.com.cn/api/openapi.php/EsgService.getEsgStockInfo",
+  "note": "仅保留接口返回的机构与结果；未覆盖的机构不补值。不同机构口径不同，分数不可横向比较。",
+  "ratings": [
+    {
+      "agency": "MSCI",
+      "rating": "A",
+      "rating_date": "2026-11-16",
+      "environmental": "10",
+      "social": "5.46",
+      "governance": "4.92"
+    },
+    {
+      "agency": "标普",
+      "rating": "50+",
+      "rating_date": "2026-11-20",
+      "environmental": null,
+      "social": null,
+      "governance": null
+    },
+    {
+      "agency": "商道融绿",
+      "rating": "A",
+      "rating_date": "2026Q3",
+      "environmental": null,
+      "social": null,
+      "governance": null
+    },
+    {
+      "agency": "联合赤道",
+      "rating": "A",
+      "rating_date": "2026Q4",
+      "environmental": null,
+      "social": null,
+      "governance": null
+    },
+    {
+      "agency": "中诚信",
+      "rating": "A",
+      "rating_date": "2026Q4",
+      "environmental": null,
+      "social": null,
+      "governance": null
+    },
+    {
+      "agency": "秩鼎",
+      "rating": "69.03(A)",
+      "rating_date": "2026Q4",
+      "environmental": "57.89(BBB)",
+      "social": "67.41(A)",
+      "governance": "79.02(AA)"
+    },
+    {
+      "agency": "华证",
+      "rating": "A",
+      "rating_date": "2026Q3",
+      "environmental": null,
+      "social": null,
+      "governance": null
+    },
+    {
+      "agency": "妙盈",
+      "rating": "A",
+      "rating_date": "2026Q3",
+      "environmental": null,
+      "social": null,
+      "governance": null
+    }
+  ]
+}

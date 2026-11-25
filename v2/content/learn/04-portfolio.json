@@ -1,0 +1,95 @@
+{
+  "slug": "portfolio",
+  "order": 4,
+  "title": "作品集：拆一份真报告，做一个小分析",
+  "subtitle": "没有 ESG 工作经验时，作品集就是你的工作经验",
+  "goal": "用公开报告与开源数据集，做出四件可展示、可追问、可复现的作品，形成一套完整的转行证据链。",
+  "audience": "准备面试、需要证明能力的人；已有分析能力但缺 ESG 场景的人。",
+  "duration": "5 周，每周 8 小时",
+  "outcomes": [
+    "完成一份 1500 字以上的单公司 ESG 报告深度拆解",
+    "完成一个基于公开数据的迷你分析项目，附代码与限制说明",
+    "能做一页 TCFD 四支柱对照图，指出披露缺口",
+    "把作品发布到 GitHub 与个人页面，形成可分享链接"
+  ],
+  "modules": [
+    {
+      "name": "作品集四件套",
+      "why": "招聘方不缺「学过 ESG」的人，缺能拿出交付物的人。四件套覆盖阅读、分析、表达、复现四种能力。",
+      "learn": [
+        "深度拆解：一家公司、一份报告、一个明确问题",
+        "数据集：公开来源、可复现的清洗过程",
+        "可视化：一页看板或三张关键图",
+        "方法论笔记：为什么这样取数、这样判断、哪里不确定"
+      ],
+      "practice": "先列目录：四件套各自的标题、问题、数据来源、预期产物，再开始做。",
+      "resources": [
+        {"title": "港交所披露易", "url": "https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=zh", "note": "报告原件来源"},
+        {"title": "GRI 内容索引示例", "url": "https://www.globalreporting.org/standards/", "note": "看企业如何用索引回应标准"}
+      ],
+      "pitfalls": ["四件套做成四份互不相关的作业", "只做美化不做分析", "没有明确问题"]
+    },
+    {
+      "name": "深度拆解：用 TCFD 四支柱做骨架",
+      "why": "TCFD 四支柱是最通用的拆解框架，既能评报告，也能评公司气候治理成熟度。",
+      "learn": [
+        "治理：董事会与管理层职责、监督频率、能力建设",
+        "策略：短中长期风险与机遇、情景分析、财务影响",
+        "风险管理：识别、评估、排序、纳入整体风控",
+        "指标与目标：范围一/二/三、行业指标、目标基准与进度"
+      ],
+      "practice": "选一家公司，做一张四支柱对照表：每条要求 → 报告页码 → 披露质量（充分/部分/缺失）→ 一句点评。",
+      "resources": [
+        {"title": "IFRS S2 与 TCFD 对照", "url": "https://www.ifrs.org/issued-standards/ifrs-sustainability-standards-navigator/", "note": "S2 基本吸收 TCFD 四支柱，可用于核对"}
+      ],
+      "pitfalls": ["把四支柱写成四段读后感", "只说缺失不说影响", "不标页码无法核对"]
+    },
+    {
+      "name": "开源数据集：做一个真问题",
+      "why": "单公司拆解证明阅读能力，数据集项目证明分析能力。两者结合，才像完整的研究者。",
+      "learn": [
+        "选题要窄：例如「同一行业内 9 家公司范围一强度与营收的关系」",
+        "来源要稳：世界银行、Our World in Data、Climate Watch、港交所报告",
+        "处理要留痕：原始文件、清洗脚本、字段说明、缺失值处理",
+        "结论要克制：相关不等于因果，样本小就说样本小"
+      ],
+      "practice": "用 9–20 个样本做一个对比分析，输出一张图、一张表、一段 300 字结论与三条限制。",
+      "resources": [
+        {"title": "World Bank Open Data", "url": "https://data.worldbank.org/", "note": "免费 API 与 CSV，适合国家层面背景数据"},
+        {"title": "Climate Watch", "url": "https://www.climatewatchdata.org/", "note": "排放与NDC 数据，可下载"},
+        {"title": "Our World in Data", "url": "https://ourworldindata.org/", "note": "图表与数据均可复用，注意引用"}
+      ],
+      "pitfalls": ["数据来源不可下载", "样本太小却下强结论", "不写缺失值怎么处理"]
+    },
+    {
+      "name": "发布：GitHub 与个人页面",
+      "why": "作品只有能被打开才有价值。结构清晰的仓库本身就是能力证明。",
+      "learn": [
+        "仓库结构：data/、notebooks/、src/、outputs/、README",
+        "README 写清问题、数据、方法、结论、限制、如何复现",
+        "notebook 只保留关键步骤，输出图表要能直接看",
+        "用 GitHub Pages 或现成静态托管发布一页摘要"
+      ],
+      "practice": "把一个项目整理成仓库，找一位非 ESG 朋友按 README 复现，记录他卡住的地方并修正。",
+      "resources": [
+        {"title": "GitHub Docs", "url": "https://docs.github.com/zh", "note": "仓库、Pages、README 写法"},
+        {"title": "GitHub Pages", "url": "https://pages.github.com/", "note": "免费发布静态页面"}
+      ],
+      "pitfalls": ["把大文件 PDF 直接提交进仓库", "README 只有一句简介", "没有许可证与引用说明"]
+    }
+  ],
+  "week_plan": [
+    {"week": "第 1 周", "focus": "选题与目录", "deliverable": "四件套清单"},
+    {"week": "第 2 周", "focus": "单公司拆解", "deliverable": "1500 字拆解 + 四支柱表"},
+    {"week": "第 3 周", "focus": "数据取数与清洗", "deliverable": "数据集 + 清洗脚本"},
+    {"week": "第 4 周", "focus": "分析与可视化", "deliverable": "三张图 + 结论"},
+    {"week": "第 5 周", "focus": "发布与复盘", "deliverable": "GitHub 仓库 + 一页摘要"}
+  ],
+  "checklist": [
+    "每个结论都能指回数据或原文页码",
+    "仓库里有可运行的清洗脚本",
+    "作品里写清了限制与不确定性",
+    "陌生人能按 README 复现主要结果"
+  ],
+  "related_daily_codes": ["00016", "01093", "01919"]
+}

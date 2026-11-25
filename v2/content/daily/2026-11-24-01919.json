@@ -1,0 +1,173 @@
+{
+  "slug": "2026-11-24-01919",
+  "date": "2026-11-24",
+  "code": "01919",
+  "company": "中远海控",
+  "industry": "航运物流",
+  "angle": "三套标准、三份索引：跨境报告的合规结构",
+  "hook": "中远海控这份报告同时回应港交所附录 C2、上交所指引第 14 号和 GRI。目录第 2 页直接列出三套索引的页码：港交所 p109、上交所 p118、GRI p119。跨境上市公司的报告，先看合规结构。",
+  "why": "航运是高排放行业，替代燃料与气候转型是主线。学这份报告，练习「多标准并行时，如何判断披露是否完整」，以及「MSCI CCC 与国内 AAA 的差异怎么讲」。",
+  "reading_map": [
+    {
+      "section": "报告说明",
+      "locator": "目录 p2 标注 About This Report p.02",
+      "look_for": "三套标准、范围、期间",
+      "clause": "B-15"
+    },
+    {
+      "section": "董事长致辞",
+      "locator": "目录标注 p.04",
+      "look_for": "行业背景与战略，不当作绩效数据",
+      "clause": "B-13"
+    },
+    {
+      "section": "重要性",
+      "locator": "目录标注 Material Topics p.12",
+      "look_for": "议题识别与持份者参与",
+      "clause": "B-14"
+    },
+    {
+      "section": "气候与绿色产品",
+      "locator": "目录章节 Responding to Climate Change；Green Products and Services",
+      "look_for": "船队排放、替代燃料、能效",
+      "clause": "C-A1.1 / D-19"
+    },
+    {
+      "section": "数据、鉴证与索引",
+      "locator": "目录标注 Sustainability Data p.102；鉴证 p.123；港交所 p.109；GRI p.119",
+      "look_for": "指标口径、鉴证范围、三套索引的缺口",
+      "clause": "B-14"
+    }
+  ],
+  "observations": [
+    "报告同时按港交所附录 C2、上交所指引第 14 号与 GRI 编制，目录第 2 页把三套索引页码并列。跨境上市公司的第一课，是先把合规地图画出来。",
+    "董事长致辞（p.04）提到 IMO 净零框架投票延迟、甲醇与 LNG 进入规模化应用。这是行业背景，不是公司绩效，阅读时要区分。",
+    "气候、绿色产品与服务、生态保护三章并列，航运的排放与替代燃料是主线。",
+    "可持续发展数据在 p.102、独立鉴证在 p.123。先看数据表与鉴证范围，再判断叙述章节的含金量。"
+  ],
+  "rating_read": "本期快照的对比最极端：MSCI 为 CCC（2026-11-23，落后档），标普 30+；但国内机构给得很高：秩鼎 82.62(AAA)、中诚信 AA-、联合赤道 A+、商道融绿 A、华证 A、妙盈 A。同一家公司，CCC 与 AAA 同时存在。原因可能包括行业调整、数据覆盖、指标权重与年份差异，但仅凭字母无法判断，必须回到方法论与原始披露。",
+  "questions": [
+    "三套标准并行时，如何判断披露是否真正完整，而不是「每套都提了一点」？",
+    "航运公司的范围一排放应该按船队、航次还是货运周转量来强度化？",
+    "MSCI CCC 与国内 AAA 同时存在，面试时你会怎么回答「这家公司 ESG 好不好」？"
+  ],
+  "skills": [
+    {
+      "name": "多标准合规地图",
+      "how": "把港交所、上交所、GRI 的索引页码并列，逐项找交叉与缺口"
+    },
+    {
+      "name": "航运排放强度",
+      "how": "区分总量与强度，确认分母是营收、货运量还是周转量"
+    },
+    {
+      "name": "评级分歧表达",
+      "how": "先反问「用谁的尺子」，再并列呈现，不替机构下结论"
+    }
+  ],
+  "takeaway": "跨境报告先看合规结构；评级分歧先看方法，再看结论。",
+  "report": {
+    "title": "2025 Sustainability Report",
+    "release_date": "2026-04-24",
+    "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0424/2026042402026.pdf",
+    "source": "港交所披露易"
+  },
+  "ratings": [
+    {
+      "agency": "MSCI",
+      "rating": "CCC",
+      "rating_date": "2026-11-23",
+      "environmental": "4.14",
+      "social": "4.37",
+      "governance": "4.27",
+      "stale": false
+    },
+    {
+      "agency": "标普",
+      "rating": "30+",
+      "rating_date": "2026-10-12",
+      "environmental": null,
+      "social": null,
+      "governance": null,
+      "stale": false
+    },
+    {
+      "agency": "商道融绿",
+      "rating": "A",
+      "rating_date": "2026Q3",
+      "environmental": null,
+      "social": null,
+      "governance": null,
+      "stale": false
+    },
+    {
+      "agency": "联合赤道",
+      "rating": "A+",
+      "rating_date": "2026Q4",
+      "environmental": null,
+      "social": null,
+      "governance": null,
+      "stale": false
+    },
+    {
+      "agency": "中诚信",
+      "rating": "AA-",
+      "rating_date": "2026Q4",
+      "environmental": null,
+      "social": null,
+      "governance": null,
+      "stale": false
+    },
+    {
+      "agency": "秩鼎",
+      "rating": "82.62(AAA)",
+      "rating_date": "2026Q4",
+      "environmental": "75.66(AA)",
+      "social": "75.64(AA)",
+      "governance": "93.39(AAA)",
+      "stale": false
+    },
+    {
+      "agency": "华证",
+      "rating": "A",
+      "rating_date": "2026Q3",
+      "environmental": null,
+      "social": null,
+      "governance": null,
+      "stale": false
+    },
+    {
+      "agency": "妙盈",
+      "rating": "A",
+      "rating_date": "2026Q3",
+      "environmental": null,
+      "social": null,
+      "governance": null,
+      "stale": false
+    },
+    {
+      "agency": "中财绿金院",
+      "rating": "B+",
+      "rating_date": "2021Q4",
+      "environmental": null,
+      "social": null,
+      "governance": null,
+      "stale": true
+    }
+  ],
+  "rating_meta": {
+    "count": 9,
+    "stale_count": 1,
+    "msci": {
+      "rating": "CCC",
+      "date": "2026-11-23"
+    },
+    "fetched_at": "2026-11-25",
+    "source": "新浪财经 ESG 公开数据",
+    "source_url": "https://finance.sina.com.cn/",
+    "note": "仅保留接口返回的机构与结果；未覆盖的机构不补值。不同机构口径不同，分数不可横向比较。"
+  },
+  "issue": 8,
+  "prev": "2026-11-23-00883",
+  "next": "2026-11-25-01299"
+}

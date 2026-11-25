@@ -1,0 +1,32 @@
+{
+  "company": "示例精密制造有限公司",
+  "industry": "制造业",
+  "industry_key": "manufacturing",
+  "pack": "制造业",
+  "year": 2024,
+  "completeness_pct": 100.0,
+  "gaps": 9,
+  "positions": {
+    "领先": 0,
+    "接近": 4,
+    "落后": 5
+  },
+  "materiality_counts": {
+    "双重重大": 12,
+    "影响重大": 0,
+    "财务重大": 10,
+    "观察项": 2
+  },
+  "source_file": "非上市企业ESG数据采集表-填写示例.xlsx",
+  "generated_at": "2026-11-25",
+  "sections": 16,
+  "draft_chars": 11998,
+  "polished_chars": 38352,
+  "verify_ok": true,
+  "verify": {
+    "ok": true,
+    "numbers_checked": 206,
+    "unmatched": [],
+    "missing_core_values": []
+  }
+}

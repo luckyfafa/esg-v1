@@ -1,0 +1,131 @@
+{
+  "slug": "esg-core",
+  "order": 1,
+  "title": "核心 ESG 知识：从 GRI 到 MSCI",
+  "subtitle": "把「听过名词」变成「能读懂一份报告、能回答一个追问」",
+  "goal": "四周内建立一套可复用的知识骨架：知道每套框架解决什么问题、彼此怎么衔接，看到一份港股 ESG 报告时能定位章节、核对口径。",
+  "audience": "零背景转行、需要面试或做作品集的人；已经做数据采集但缺方法论的人。",
+  "duration": "4 周，每周 6–8 小时",
+  "outcomes": [
+    "能说清 GRI、港交所附录 C2、ISSB/IFRS S1 S2、TCFD 各自管什么，不再混用",
+    "能独立完成一家公司的范围一/二/三盘点，并说明排放因子来源",
+    "能读懂 CDP 问卷的问法逻辑，知道企业为什么这样答",
+    "能解释 MSCI 评级为什么是「行业调整后的相对结论」，不把字母当绝对好坏"
+  ],
+  "modules": [
+    {
+      "name": "先搭地图：四套框架的分工",
+      "why": "初学者最常见的错误，是把 GRI、TCFD、ISSB、港交所守则当成四选一。它们其实是不同层级：谁规定必须披露、谁提供披露语言、谁定义气候财务信息。",
+      "learn": [
+        "GRI：影响导向，回答「企业对环境和社会做了什么」，用议题标准组织内容",
+        "港交所附录 C2：香港上市规则的一部分，规定必须披露什么、不披露要解释什么",
+        "TCFD / IFRS S2：财务导向，四支柱为治理、策略、风险管理、指标与目标",
+        "ISSB：把 TCFD 建议收编为可强制采用的准则，S1 管通用，S2 管气候"
+      ],
+      "practice": "拿一份港股报告，把目录里的章节分别标注它服务于哪套框架，做成一页对照表。",
+      "resources": [
+        {"title": "GRI 标准总览", "url": "https://www.globalreporting.org/standards/", "note": "先看 Universal Standards 的结构，不必逐条读完"},
+        {"title": "港交所 ESG 规则与指引", "url": "https://www.hkex.com.hk/Listing/Rules-and-Guidance/Environmental-Social-and-Governance?sc_lang=zh-HK", "note": "附录 C2 原文与常见问题都在这里"},
+        {"title": "IFRS 可持续披露准则", "url": "https://www.ifrs.org/issued-standards/ifrs-sustainability-standards-navigator/", "note": "S1/S2 的官方导航页，免费注册后可读全文"}
+      ],
+      "pitfalls": [
+        "把 GRI 当成「国际认证」，它本身不是认证，也不打分",
+        "以为 IFRS S2 只适用于金融机构，实际按司法管辖区逐步铺开",
+        "只看中文二手解读，不回原文核对条款编号"
+      ]
+    },
+    {
+      "name": "碳核算：范围一、二、三到底怎么分",
+      "why": "碳是 ESG 里最容易被追问、也最容易算错的部分。面试官问「范围三怎么盘」，考的不是定义，而是边界、数据来源和估算方法。",
+      "learn": [
+        "范围一：自有或受控源的直接排放，如燃料燃烧、工艺过程、公司车辆",
+        "范围二：外购电力、蒸汽、热力的间接排放，区分 location-based 与 market-based",
+        "范围三：价值链其他间接排放，共 15 类，先做重要性筛选再盘",
+        "活动数据 × 排放因子 = 排放量；因子来源、版本、单位换算必须留痕"
+      ],
+      "practice": "选一家公司，只做范围一与范围二：列出活动数据、因子来源、计算公式，写清假设。范围三先做一张「15 类中哪几类相关」的筛选表。",
+      "resources": [
+        {"title": "GHG Protocol 标准与计算工具", "url": "https://ghgprotocol.org/", "note": "企业核算与范围三标准均免费下载"},
+        {"title": "IPCC 排放因子数据库", "url": "https://www.ipcc-nggip.iges.or.jp/EFDB/main.php", "note": "查因子来源时用，注意版本与适用条件"},
+        {"title": "香港机电工程署 温室气体排放系数", "url": "https://www.emsd.gov.hk/tc/energy_efficiency/energy_and_climate_change/greenhouse_gas_emission_factors/index.html", "note": "香港本地电力排放因子，做港股公司时常用"}
+      ],
+      "pitfalls": [
+        "把范围二写成「所有用电」，却不区分地区电网因子与绿电采购",
+        "范围三只报一类就宣称「已覆盖价值链」",
+        "因子单位混用（kg 与 t、GJ 与 kWh）导致数量级错误"
+      ]
+    },
+    {
+      "name": "CDP 问卷：它到底在问什么",
+      "why": "CDP 不是考试，而是把投资者想知道的事标准化。理解问法背后的意图，比背评分规则有用。",
+      "learn": [
+        "气候问卷的主线：治理 → 风险与机遇 → 情景与策略 → 排放数据 → 目标与行动",
+        "水与森林是独立问卷，按行业相关性触发",
+        "评分看披露完整度、意识、管理、领导力四个层级",
+        "企业常见策略：先保证数据可追溯，再谈目标与情景"
+      ],
+      "practice": "下载一份 CDP 公开问卷模板，把问题按「事实型 / 判断型 / 前瞻型」分类，各挑三题写出企业可能的答法。",
+      "resources": [
+        {"title": "CDP 披露指引与问卷", "url": "https://www.cdp.net/en/guidance", "note": "公开指引可免费获取，评分方法学也在其中"}
+      ],
+      "pitfalls": [
+        "把 CDP 分数当成 ESG 总分，它只反映问卷披露质量",
+        "没有数据就写定性描述，结果在「管理」层级拿不到分",
+        "忽略行业差异，照抄其他行业的答案"
+      ]
+    },
+    {
+      "name": "MSCI 评级：字母背后的相对逻辑",
+      "why": "MSCI 是港股公司最常被引用的评级之一。理解它的行业调整与关键议题权重，才能解释「为什么同一家公司不同机构差很多」。",
+      "learn": [
+        "七档：AAA、AA 为领先；A、BBB、BB 为平均；B、CCC 为落后",
+        "先定行业，再选关键议题，按暴露程度与应对能力打分",
+        "E/S/G 三个支柱分数是行业调整后的 0–10 分，越高越好",
+        "评级是相对同行的结论，不是绝对道德评判；数据截止日决定时效"
+      ],
+      "practice": "找一家公司，把 MSCI 的行业归属、关键议题、E/S/G 三项分数抄下来，再写一段「这个结果不能说明什么」。",
+      "resources": [
+        {"title": "MSCI ESG Ratings 方法说明", "url": "https://www.msci.com/our-solutions/esg-investing/esg-ratings", "note": "先读方法论摘要，再看评级分布"},
+        {"title": "MSCI ESG Ratings & Climate Search Tool", "url": "https://www.msci.com/our-solutions/esg-investing/esg-ratings-climate-search-tool", "note": "可查部分公司的公开评级，免费"}
+      ],
+      "pitfalls": [
+        "把 AAA 当成「零风险」或「最道德」",
+        "拿 MSCI 的 AA 去和中诚信的 AA 直接对比",
+        "引用评级不写日期，用三年前的结论讨论今天的公司"
+      ]
+    },
+    {
+      "name": "串起来：一份报告的阅读顺序",
+      "why": "知识只有变成阅读动作才有用。固定的阅读顺序能让你在半小时内判断一份报告的质量。",
+      "learn": [
+        "第一步看报告说明：范围、期间、编制标准、鉴证情况",
+        "第二步看董事会声明：谁负责、怎么监督、目标有没有检讨",
+        "第三步看重要性：议题怎么来的、持份者怎么参与",
+        "第四步看数据表：口径、单位、同比、异常值",
+        "第五步看索引：披露有没有缺项，缺项怎么解释"
+      ],
+      "practice": "用这个顺序拆一份报告，限时 30 分钟，产出半页笔记：三条事实、两个疑问、一个可复用方法。",
+      "resources": [
+        {"title": "港交所披露易", "url": "https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=zh", "note": "按公司代号检索年报与 ESG 报告，免费无需登录"}
+      ],
+      "pitfalls": [
+        "从第一页读到最后一页，读完仍不知道重点",
+        "只看宣传性章节，不看数据表与索引",
+        "把报告里的目标当成已完成的事实"
+      ]
+    }
+  ],
+  "week_plan": [
+    {"week": "第 1 周", "focus": "框架地图 + 报告说明", "deliverable": "一页框架对照表"},
+    {"week": "第 2 周", "focus": "范围一/二核算", "deliverable": "一家公司的排放计算底稿"},
+    {"week": "第 3 周", "focus": "范围三筛选 + CDP 问卷", "deliverable": "范围三相关性筛选表"},
+    {"week": "第 4 周", "focus": "MSCI 方法与报告阅读", "deliverable": "一篇 800 字报告拆解笔记"}
+  ],
+  "checklist": [
+    "能不查资料说出四套框架各自解决什么问题",
+    "能独立完成范围一/二计算并写清假设",
+    "能解释 MSCI 七档与「行业调整」的含义",
+    "能在 30 分钟内定位一份报告的关键章节"
+  ],
+  "related_daily_codes": ["00002", "00883", "01919", "01299"]
+}

@@ -1,0 +1,164 @@
+{
+  "slug": "2026-11-16-00700",
+  "date": "2026-11-16",
+  "code": "00700",
+  "company": "腾讯控股",
+  "industry": "科技",
+  "angle": "平台公司的环境章节，为什么排在产品和治理之后",
+  "hook": "腾讯这份报告的目录顺序是：ESG 治理、公司治理、产品治理、环境保护、员工、数字包容、科技向善、附录。环境不是第一章。这个顺序本身就是一次重要性判断。",
+  "why": "科技公司的直接排放通常集中在数据中心与办公，价值链排放才是大头。学这份报告，重点是理解「章节顺序」和「范围三边界」的关系。",
+  "reading_map": [
+    {
+      "section": "ESG 治理",
+      "locator": "PDF p5",
+      "look_for": "董事会与委员会的职责、监督机制",
+      "clause": "B-13"
+    },
+    {
+      "section": "产品治理",
+      "locator": "PDF p21",
+      "look_for": "产品责任、数据与内容治理",
+      "clause": "C-B6"
+    },
+    {
+      "section": "环境保护",
+      "locator": "PDF p41 起",
+      "look_for": "范围一/二、数据中心能效、可再生能源",
+      "clause": "C-A1.1 / C-A2.1"
+    },
+    {
+      "section": "范围三",
+      "locator": "PDF p43 起",
+      "look_for": "价值链排放类别、边界、估算方法",
+      "clause": "D-17 / B-14"
+    },
+    {
+      "section": "附录",
+      "locator": "PDF p81 起",
+      "look_for": "指标表、索引、鉴证说明",
+      "clause": "B-14"
+    }
+  ],
+  "observations": [
+    "报告把 ESG 治理放在 p5、产品治理放在 p21，环境章节从 p41 才开始。章节顺序反映了公司对议题优先级的判断，不是随手排列。",
+    "范围三内容在 PDF 第 43 页起出现。对平台公司来说，员工通勤、数据中心电力、采购与投资都可能落在价值链里，报告怎样划边界要回原文核对。",
+    "附录从 p81 开始，指标表与索引集中在那里。先看附录能快速判断哪些指标有数据、哪些只有叙述。",
+    "产品治理单独成章，说明在科技行业，「产品对社会的影响」与「环境足迹」至少同等重要。"
+  ],
+  "rating_read": "本期快照中，MSCI 为 A（2026-11-16），E 10 / S 5.46 / G 4.92；标普 50+；商道融绿、中诚信、华证、妙盈均为 A，秩鼎 69.03(A)。多数机构结论接近，但「接近」不等于「可比」：MSCI 的 E 分项是行业调整后的 0–10 分，国内字母评级各有自己的分档。MSCI 的 A 属于平均档，不是领先档，这一点常被误读。",
+  "questions": [
+    "范围三 15 类里，平台公司最相关的是哪几类？报告有没有逐类说明？",
+    "产品治理为什么被放在环境章节之前？这和行业关键议题有什么关系？",
+    "MSCI 的 E 分项为 10，能说明什么、不能说明什么？"
+  ],
+  "skills": [
+    {
+      "name": "价值链排放筛选",
+      "how": "先用 15 类清单做相关性筛选，再逐类找数据来源"
+    },
+    {
+      "name": "章节与议题映射",
+      "how": "把目录章节逐条对应到 HKEX 条款，找出覆盖与缺口"
+    },
+    {
+      "name": "评级分项阅读",
+      "how": "先看 E/S/G 三项，再看总分档位，避免只看字母"
+    }
+  ],
+  "takeaway": "报告的结构顺序，是公司对「什么最重要」的一次公开表态。",
+  "report": {
+    "title": "ENVIRONMENTAL, SOCIAL AND GOVERNANCE REPORT 2025",
+    "release_date": "2026-04-09",
+    "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0409/2026040901285.pdf",
+    "source": "港交所披露易"
+  },
+  "ratings": [
+    {
+      "agency": "MSCI",
+      "rating": "A",
+      "rating_date": "2026-11-16",
+      "environmental": "10",
+      "social": "5.46",
+      "governance": "4.92",
+      "stale": false
+    },
+    {
+      "agency": "标普",
+      "rating": "50+",
+      "rating_date": "2026-11-20",
+      "environmental": null,
+      "social": null,
+      "governance": null,
+      "stale": false
+    },
+    {
+      "agency": "商道融绿",
+      "rating": "A",
+      "rating_date": "2026Q3",
+      "environmental": null,
+      "social": null,
+      "governance": null,
+      "stale": false
+    },
+    {
+      "agency": "联合赤道",
+      "rating": "A",
+      "rating_date": "2026Q4",
+      "environmental": null,
+      "social": null,
+      "governance": null,
+      "stale": false
+    },
+    {
+      "agency": "中诚信",
+      "rating": "A",
+      "rating_date": "2026Q4",
+      "environmental": null,
+      "social": null,
+      "governance": null,
+      "stale": false
+    },
+    {
+      "agency": "秩鼎",
+      "rating": "69.03(A)",
+      "rating_date": "2026Q4",
+      "environmental": "57.89(BBB)",
+      "social": "67.41(A)",
+      "governance": "79.02(AA)",
+      "stale": false
+    },
+    {
+      "agency": "华证",
+      "rating": "A",
+      "rating_date": "2026Q3",
+      "environmental": null,
+      "social": null,
+      "governance": null,
+      "stale": false
+    },
+    {
+      "agency": "妙盈",
+      "rating": "A",
+      "rating_date": "2026Q3",
+      "environmental": null,
+      "social": null,
+      "governance": null,
+      "stale": false
+    }
+  ],
+  "rating_meta": {
+    "count": 8,
+    "stale_count": 0,
+    "msci": {
+      "rating": "A",
+      "date": "2026-11-16"
+    },
+    "fetched_at": "2026-11-25",
+    "source": "新浪财经 ESG 公开数据",
+    "source_url": "https://finance.sina.com.cn/",
+    "note": "仅保留接口返回的机构与结果；未覆盖的机构不补值。不同机构口径不同，分数不可横向比较。"
+  },
+  "issue": 2,
+  "prev": "2026-11-13-00002",
+  "next": "2026-11-17-09633"
+}

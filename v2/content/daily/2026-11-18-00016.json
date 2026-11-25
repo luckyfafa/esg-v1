@@ -1,0 +1,164 @@
+{
+  "slug": "2026-11-18-00016",
+  "date": "2026-11-18",
+  "code": "00016",
+  "company": "新鸿基地产",
+  "industry": "房地产",
+  "angle": "附录里的四套索引，才是这份报告的骨架",
+  "hook": "新鸿基这份报告最值得学的不是正文，而是附录：港交所索引、GRI 索引、SASB 索引、TNFD 索引，再加一份独立鉴证声明。四套尺子同时摆出来，正好练习「同一件事，不同框架怎么问」。",
+  "why": "房地产的 ESG 难点在资产边界：哪些楼、哪些租户、哪些在建项目算进来。索引和鉴证声明，是判断边界是否说清的最佳入口。",
+  "reading_map": [
+    {
+      "section": "报告方法",
+      "locator": "PDF p3 Our Reporting Approach",
+      "look_for": "范围、边界、编制标准",
+      "clause": "B-15"
+    },
+    {
+      "section": "环境价值",
+      "locator": "PDF p19 Value Created for the Environment",
+      "look_for": "绿色建筑、能耗、碳排放、气候韧性",
+      "clause": "C-A1.1 / C-A2.1 / D-19"
+    },
+    {
+      "section": "供应链与社区",
+      "locator": "PDF p68 供应链；p78 社区",
+      "look_for": "承包商管理、社区投入",
+      "clause": "C-B5 / C-B8"
+    },
+    {
+      "section": "绩效数据",
+      "locator": "PDF p92 Appendix III Performance Tables",
+      "look_for": "指标、单位、同比、边界说明",
+      "clause": "B-14"
+    },
+    {
+      "section": "四套索引与鉴证",
+      "locator": "PDF p102 港交所；p105 GRI；p111 SASB；p112 TNFD；p114 鉴证",
+      "look_for": "披露缺口、行业指标、鉴证覆盖范围",
+      "clause": "B-14 / D-19"
+    }
+  ],
+  "observations": [
+    "正文用 Value Created for... 组织：环境 p19、人 p44、客户 p55、供应链 p68、社区 p78。环境放在最前，符合地产行业的资产属性。",
+    "附录是学习重点：p102 港交所 ESG 索引、p105 GRI、p111 SASB、p112 TNFD、p114 独立鉴证声明。四套索引对应的读者不同。",
+    "TNFD 索引单独出现，说明自然与生物多样性披露开始被单列。地产项目对土地与生态的影响，不能只看碳排放。",
+    "鉴证声明在 p114。读的时候先看它覆盖哪些指标、用什么保证等级，再看结论措辞。"
+  ],
+  "rating_read": "本期快照的分歧很典型：MSCI 为 AA（2026-11-17），标普 70+，华证 AA，秩鼎 77.68(AA)，但联合赤道给 BB-、中诚信给 BB。同一家公司，国内机构之间从 BB 到 AA。这不是数据错误，而是方法、权重、覆盖范围不同。写分析时应该并列呈现，并说明「不可直接平均」。",
+  "questions": [
+    "港交所、GRI、SASB、TNFD 四套索引，分别主要回应谁的期待？",
+    "独立鉴证覆盖了哪些指标？没有覆盖的指标说明了什么？",
+    "房地产公司的范围三，应该包含租户能耗和建材隐含碳吗？"
+  ],
+  "skills": [
+    {
+      "name": "多索引对照",
+      "how": "同一议题在四套索引里各找一行，比较问法与披露深度"
+    },
+    {
+      "name": "鉴证范围识别",
+      "how": "先看保证等级与覆盖指标清单，再看结论"
+    },
+    {
+      "name": "自然资本披露",
+      "how": "用 TNFD 的四个支柱检查土地、水、生物多样性披露"
+    }
+  ],
+  "takeaway": "附录不是装饰，是判断披露完整度和边界的入口。",
+  "report": {
+    "title": "Sustainability Report 2025&#x2f;26",
+    "release_date": "2026-10-08",
+    "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/1008/2026100800435.pdf",
+    "source": "港交所披露易"
+  },
+  "ratings": [
+    {
+      "agency": "MSCI",
+      "rating": "AA",
+      "rating_date": "2026-11-17",
+      "environmental": "5.76",
+      "social": "8.12",
+      "governance": "5.35",
+      "stale": false
+    },
+    {
+      "agency": "标普",
+      "rating": "70+",
+      "rating_date": "2026-10-23",
+      "environmental": null,
+      "social": null,
+      "governance": null,
+      "stale": false
+    },
+    {
+      "agency": "商道融绿",
+      "rating": "A",
+      "rating_date": "2026Q3",
+      "environmental": null,
+      "social": null,
+      "governance": null,
+      "stale": false
+    },
+    {
+      "agency": "联合赤道",
+      "rating": "BB-",
+      "rating_date": "2026Q4",
+      "environmental": null,
+      "social": null,
+      "governance": null,
+      "stale": false
+    },
+    {
+      "agency": "中诚信",
+      "rating": "BB",
+      "rating_date": "2026Q4",
+      "environmental": null,
+      "social": null,
+      "governance": null,
+      "stale": false
+    },
+    {
+      "agency": "秩鼎",
+      "rating": "77.68(AA)",
+      "rating_date": "2026Q4",
+      "environmental": "86.79(AAA)",
+      "social": "57.9(BBB)",
+      "governance": "86.97(AAA)",
+      "stale": false
+    },
+    {
+      "agency": "华证",
+      "rating": "AA",
+      "rating_date": "2026Q3",
+      "environmental": null,
+      "social": null,
+      "governance": null,
+      "stale": false
+    },
+    {
+      "agency": "妙盈",
+      "rating": "A",
+      "rating_date": "2026Q3",
+      "environmental": null,
+      "social": null,
+      "governance": null,
+      "stale": false
+    }
+  ],
+  "rating_meta": {
+    "count": 8,
+    "stale_count": 0,
+    "msci": {
+      "rating": "AA",
+      "date": "2026-11-17"
+    },
+    "fetched_at": "2026-11-25",
+    "source": "新浪财经 ESG 公开数据",
+    "source_url": "https://finance.sina.com.cn/",
+    "note": "仅保留接口返回的机构与结果；未覆盖的机构不补值。不同机构口径不同，分数不可横向比较。"
+  },
+  "issue": 4,
+  "prev": "2026-11-17-09633",
+  "next": "2026-11-19-00303"
+}

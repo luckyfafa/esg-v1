@@ -1,0 +1,76 @@
+{
+  "code": "01299",
+  "symbol": "hk01299",
+  "company": "友邦保险",
+  "fetched_at": "2026-11-25",
+  "source": "新浪财经 ESG 公开数据",
+  "source_url": "https://finance.sina.com.cn/",
+  "api": "https://global.finance.sina.com.cn/api/openapi.php/EsgService.getEsgStockInfo",
+  "note": "仅保留接口返回的机构与结果；未覆盖的机构不补值。不同机构口径不同，分数不可横向比较。",
+  "ratings": [
+    {
+      "agency": "MSCI",
+      "rating": "AAA",
+      "rating_date": "2026-11-16",
+      "environmental": "10",
+      "social": "6.75",
+      "governance": "5.31"
+    },
+    {
+      "agency": "标普",
+      "rating": "50+",
+      "rating_date": "2026-01-05",
+      "environmental": null,
+      "social": null,
+      "governance": null
+    },
+    {
+      "agency": "商道融绿",
+      "rating": "A",
+      "rating_date": "2026Q3",
+      "environmental": null,
+      "social": null,
+      "governance": null
+    },
+    {
+      "agency": "联合赤道",
+      "rating": "AA-",
+      "rating_date": "2026Q4",
+      "environmental": null,
+      "social": null,
+      "governance": null
+    },
+    {
+      "agency": "中诚信",
+      "rating": "B",
+      "rating_date": "2026Q4",
+      "environmental": null,
+      "social": null,
+      "governance": null
+    },
+    {
+      "agency": "秩鼎",
+      "rating": "69.08(A)",
+      "rating_date": "2026Q4",
+      "environmental": "70.85(AA)",
+      "social": "46.15(B)",
+      "governance": "85.54(AAA)"
+    },
+    {
+      "agency": "华证",
+      "rating": "BBB",
+      "rating_date": "2026Q3",
+      "environmental": null,
+      "social": null,
+      "governance": null
+    },
+    {
+      "agency": "妙盈",
+      "rating": "AA",
+      "rating_date": "2026Q3",
+      "environmental": null,
+      "social": null,
+      "governance": null
+    }
+  ]
+}

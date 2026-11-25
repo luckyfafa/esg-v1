@@ -1,0 +1,164 @@
+{
+  "slug": "2026-11-17-09633",
+  "date": "2026-11-17",
+  "code": "09633",
+  "company": "农夫山泉",
+  "industry": "快消零售",
+  "angle": "水与包装：快消报告的两个核心环境议题",
+  "hook": "农夫山泉的环境章节里，水资源和包装材料各自单独成节。对快消企业来说，这两件事既是成本，也是社会许可。读这份报告，练习从「行业议题」倒推「该看哪几页」。",
+  "why": "很多人读报告从气候章节开始，但快消行业的水与包装往往更直接、更可量化。先建立行业议题清单，再定位章节，效率会高很多。",
+  "reading_map": [
+    {
+      "section": "报告说明",
+      "locator": "PDF p3",
+      "look_for": "期间、范围、编制标准",
+      "clause": "B-15"
+    },
+    {
+      "section": "重要性议题",
+      "locator": "PDF p15",
+      "look_for": "议题清单、识别过程、持份者参与",
+      "clause": "B-14"
+    },
+    {
+      "section": "环境管理",
+      "locator": "PDF p42",
+      "look_for": "环境管理体系、合规、目标",
+      "clause": "C-A1"
+    },
+    {
+      "section": "气候、水、包装",
+      "locator": "PDF p45 气候；p48 水；p50 包装与废弃物",
+      "look_for": "取水量、水风险、包装用量与回收",
+      "clause": "C-A2.2 / C-A2.5 / C-A1.3–1.4"
+    },
+    {
+      "section": "数据与索引",
+      "locator": "PDF p73 GRI 索引；p75 可持续发展指标",
+      "look_for": "指标口径、单位、同比",
+      "clause": "B-14"
+    }
+  ],
+  "observations": [
+    "重要性议题在 p15，环境章节从 p41 才开始。议题识别在前、章节展开在后，这是比较标准的报告逻辑。",
+    "水资源（p48）与包装材料及废弃物回收（p50）各自成节，对应快消行业最直接的两类环境外部性。",
+    "指标表在 p75、GRI 索引在 p73。先看指标表，能在一两页内判断披露的完整度，再回到叙述章节找解释。",
+    "气候章节（p45）与水资源、包装并列，说明公司把气候视为环境议题之一，而不是唯一主轴。"
+  ],
+  "rating_read": "本期快照中，MSCI 为 A（2026-11-16）；标普 70+；商道融绿 A、中诚信 A、华证 A、妙盈 A，联合赤道 AA-，秩鼎 76.89(AA)。表面上多数机构一致偏正面，但标普的展示是区间值，国内机构的分档标准也各不相同。一致的结论仍然要回到指标与目标：水耗强度、包装减量、回收比例有没有基准年和进度。",
+  "questions": [
+    "水资源议题应该用什么指标衡量？取水量、水耗强度还是水风险暴露？",
+    "包装回收目标有没有基准年？进度是按什么口径算的？",
+    "当多家评级机构结论一致时，还需要怀疑什么？"
+  ],
+  "skills": [
+    {
+      "name": "行业议题识别",
+      "how": "先列行业前三大外部性，再去目录找对应章节"
+    },
+    {
+      "name": "指标表优先阅读",
+      "how": "先读数据表判断完整度，再读叙述找原因"
+    },
+    {
+      "name": "目标基准年核对",
+      "how": "每个目标都要问：基准年、范围、口径、进度"
+    }
+  ],
+  "takeaway": "快消报告先看水与包装，再看气候；行业议题决定阅读顺序。",
+  "report": {
+    "title": "2025 SUSTAINABILITY REPORT",
+    "release_date": "2026-04-17",
+    "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0417/2026041701451.pdf",
+    "source": "港交所披露易"
+  },
+  "ratings": [
+    {
+      "agency": "MSCI",
+      "rating": "A",
+      "rating_date": "2026-11-16",
+      "environmental": "3.93",
+      "social": "5.85",
+      "governance": "6.65",
+      "stale": false
+    },
+    {
+      "agency": "标普",
+      "rating": "70+",
+      "rating_date": "2026-08-18",
+      "environmental": null,
+      "social": null,
+      "governance": null,
+      "stale": false
+    },
+    {
+      "agency": "商道融绿",
+      "rating": "A",
+      "rating_date": "2026Q3",
+      "environmental": null,
+      "social": null,
+      "governance": null,
+      "stale": false
+    },
+    {
+      "agency": "联合赤道",
+      "rating": "AA-",
+      "rating_date": "2026Q4",
+      "environmental": null,
+      "social": null,
+      "governance": null,
+      "stale": false
+    },
+    {
+      "agency": "中诚信",
+      "rating": "A",
+      "rating_date": "2026Q4",
+      "environmental": null,
+      "social": null,
+      "governance": null,
+      "stale": false
+    },
+    {
+      "agency": "秩鼎",
+      "rating": "76.89(AA)",
+      "rating_date": "2026Q4",
+      "environmental": "84.93(AAA)",
+      "social": "66.77(A)",
+      "governance": "78.14(AA)",
+      "stale": false
+    },
+    {
+      "agency": "华证",
+      "rating": "A",
+      "rating_date": "2026Q3",
+      "environmental": null,
+      "social": null,
+      "governance": null,
+      "stale": false
+    },
+    {
+      "agency": "妙盈",
+      "rating": "A",
+      "rating_date": "2026Q3",
+      "environmental": null,
+      "social": null,
+      "governance": null,
+      "stale": false
+    }
+  ],
+  "rating_meta": {
+    "count": 8,
+    "stale_count": 0,
+    "msci": {
+      "rating": "A",
+      "date": "2026-11-16"
+    },
+    "fetched_at": "2026-11-25",
+    "source": "新浪财经 ESG 公开数据",
+    "source_url": "https://finance.sina.com.cn/",
+    "note": "仅保留接口返回的机构与结果；未覆盖的机构不补值。不同机构口径不同，分数不可横向比较。"
+  },
+  "issue": 3,
+  "prev": "2026-11-16-00700",
+  "next": "2026-11-18-00016"
+}

@@ -10,3 +10,15 @@ services:
         value: 3.11.10
       - key: PYTHONUNBUFFERED
         value: "1"
+  - type: web
+    name: esg-learn
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn v2.app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /daily
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.10
+      - key: PYTHONUNBUFFERED
+        value: "1"

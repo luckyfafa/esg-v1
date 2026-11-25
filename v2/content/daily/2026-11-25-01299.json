@@ -1,0 +1,164 @@
+{
+  "slug": "2026-11-25-01299",
+  "date": "2026-11-25",
+  "code": "01299",
+  "company": "友邦保险",
+  "industry": "保险",
+  "angle": "保险的范围三是投资组合：AAA 与 B 同框",
+  "hook": "友邦这份报告里，气候行动在 p33，独立鉴证在 p35，监管披露从 p39 开始，数据书在 p61。而公开评级中，MSCI 给 AAA，中诚信给 B。一个领先档，一个落后档，正好作为这个系列的收尾：评级是尺子，不是判决书。",
+  "why": "保险公司的范围三主要来自投资组合与承保组合，盘法与传统制造业完全不同。学这份报告，重点理解「金融业范围三」和「鉴证等级」两件事。",
+  "reading_map": [
+    {
+      "section": "重要性",
+      "locator": "PDF p21 Materiality",
+      "look_for": "保险业议题、持份者参与",
+      "clause": "B-14"
+    },
+    {
+      "section": "气候行动",
+      "locator": "PDF p33 Climate Action",
+      "look_for": "投资组合排放、承保、气候风险",
+      "clause": "D-19 / D-20"
+    },
+    {
+      "section": "独立鉴证",
+      "locator": "PDF p35 Independent Practitioner's Limited Assurance Report",
+      "look_for": "保证等级、覆盖指标、结论措辞",
+      "clause": "B-14"
+    },
+    {
+      "section": "监管披露",
+      "locator": "PDF p39 Regulatory and Mandatory Disclosures",
+      "look_for": "港交所与其他监管要求的对应",
+      "clause": "B / C / D 部分"
+    },
+    {
+      "section": "数据书",
+      "locator": "PDF p61 Sustainability Data Book",
+      "look_for": "投资、运营、员工、社区指标",
+      "clause": "B-14"
+    }
+  ],
+  "observations": [
+    "保险公司的范围三重点是投资组合与承保组合，不是员工通勤或办公用电。报告在 p33 气候行动与 p61 数据书中分别呈现，读的时候要先把两类边界分开。",
+    "鉴证在 p35，标题写明是 Limited Assurance（有限保证），不是 Reasonable Assurance。引用结论时不能省略这个限定。",
+    "监管披露从 p39 开始，数据书从 p61 开始。先看监管披露能确认条款覆盖，再看数据书核对指标。",
+    "重要性在 p21。保险业的议题结构与制造业差异很大，不能套用同一张重要性清单。"
+  ],
+  "rating_read": "本期快照同框呈现：MSCI 为 AAA（2026-11-16，领先档），标普 50+，妙盈 AA，联合赤道 AA-，商道融绿 A，秩鼎 69.08(A)；但中诚信给 B，华证给 BBB。AAA 与 B 同时存在，说明评级结果高度依赖方法、权重与数据来源。面试里遇到「这家公司 ESG 好不好」，更好的回答是先问「用哪家机构的尺子、看哪个年份、覆盖什么边界」。",
+  "questions": [
+    "保险公司的范围三应该怎样划分投资组合排放与承保组合排放？",
+    "Limited assurance 与 reasonable assurance 的区别是什么？对引用数据有什么影响？",
+    "MSCI AAA 与中诚信 B 同时存在，你会怎样向客户解释？"
+  ],
+  "skills": [
+    {
+      "name": "金融业范围三",
+      "how": "先分投资与承保，再确认资产类别与数据可得性"
+    },
+    {
+      "name": "鉴证等级识别",
+      "how": "看标题与结论措辞，区分 limited 与 reasonable"
+    },
+    {
+      "name": "评级分歧表达",
+      "how": "并列、标注日期、说明方法与边界，不替机构下结论"
+    }
+  ],
+  "takeaway": "评级是尺子，不是判决书；能解释分歧，才是咨询师的价值。",
+  "report": {
+    "title": "Sustainability Report 2025",
+    "release_date": "2026-03-19",
+    "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0319/2026031900009.pdf",
+    "source": "港交所披露易"
+  },
+  "ratings": [
+    {
+      "agency": "MSCI",
+      "rating": "AAA",
+      "rating_date": "2026-11-16",
+      "environmental": "10",
+      "social": "6.75",
+      "governance": "5.31",
+      "stale": false
+    },
+    {
+      "agency": "标普",
+      "rating": "50+",
+      "rating_date": "2026-01-05",
+      "environmental": null,
+      "social": null,
+      "governance": null,
+      "stale": false
+    },
+    {
+      "agency": "商道融绿",
+      "rating": "A",
+      "rating_date": "2026Q3",
+      "environmental": null,
+      "social": null,
+      "governance": null,
+      "stale": false
+    },
+    {
+      "agency": "联合赤道",
+      "rating": "AA-",
+      "rating_date": "2026Q4",
+      "environmental": null,
+      "social": null,
+      "governance": null,
+      "stale": false
+    },
+    {
+      "agency": "中诚信",
+      "rating": "B",
+      "rating_date": "2026Q4",
+      "environmental": null,
+      "social": null,
+      "governance": null,
+      "stale": false
+    },
+    {
+      "agency": "秩鼎",
+      "rating": "69.08(A)",
+      "rating_date": "2026Q4",
+      "environmental": "70.85(AA)",
+      "social": "46.15(B)",
+      "governance": "85.54(AAA)",
+      "stale": false
+    },
+    {
+      "agency": "华证",
+      "rating": "BBB",
+      "rating_date": "2026Q3",
+      "environmental": null,
+      "social": null,
+      "governance": null,
+      "stale": false
+    },
+    {
+      "agency": "妙盈",
+      "rating": "AA",
+      "rating_date": "2026Q3",
+      "environmental": null,
+      "social": null,
+      "governance": null,
+      "stale": false
+    }
+  ],
+  "rating_meta": {
+    "count": 8,
+    "stale_count": 0,
+    "msci": {
+      "rating": "AAA",
+      "date": "2026-11-16"
+    },
+    "fetched_at": "2026-11-25",
+    "source": "新浪财经 ESG 公开数据",
+    "source_url": "https://finance.sina.com.cn/",
+    "note": "仅保留接口返回的机构与结果；未覆盖的机构不补值。不同机构口径不同，分数不可横向比较。"
+  },
+  "issue": 9,
+  "prev": "2026-11-24-01919",
+  "next": null
+}

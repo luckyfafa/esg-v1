@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ESG 系统 V2 · 碳核算与披露检查</title>
+<meta name="description" content="ESG 系统 V2：港交所附录 C2 披露检查、采集表结构校验与上市公司风格报告润色。">
+<link rel="canonical" href="/">
+<meta name="robots" content="index,follow">
+<style>
+  :root{
+    --bg:#0f1720; --panel:#16212c; --line:#24333f;
+    --text:#e7eef4; --muted:#8fa3b3; --accent:#3ccf91; --warn:#f0b849;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+       font-family:"Segoe UI","Microsoft YaHei",system-ui,sans-serif;line-height:1.6}
+  .wrap{max-width:1080px;margin:0 auto;padding:36px 20px 64px}
+  header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  .badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;
+         background:rgba(60,207,145,.14);color:var(--accent);border:1px solid rgba(60,207,145,.35)}
+  h1{font-size:26px;margin:10px 0 6px}
+  .lead{color:var(--muted);max-width:640px;margin:0}
+  .frozen{font-size:13px;color:var(--muted);border:1px solid var(--line);
+          border-radius:8px;padding:8px 12px;background:var(--panel);white-space:nowrap}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:26px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+  .card .k{font-size:12px;color:var(--muted);letter-spacing:.04em}
+  .card .v{font-size:24px;font-weight:600;margin-top:6px}
+  .card .s{font-size:12px;color:var(--muted);margin-top:4px}
+  h2{font-size:17px;margin:34px 0 12px}
+  .row{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end}
+  label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+  select,input{background:#101a23;border:1px solid var(--line);color:var(--text);
+               border-radius:8px;padding:9px 11px;font-size:14px;min-width:150px}
+  button{background:var(--accent);color:#08130d;border:0;border-radius:8px;
+         padding:10px 18px;font-size:14px;font-weight:600;cursor:pointer}
+  button:disabled{opacity:.6;cursor:default}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:14px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--muted);font-weight:500;font-size:12px}
+  .tag{display:inline-block;padding:1px 8px;border-radius:999px;font-size:11px;white-space:nowrap}
+  .mandatory{background:rgba(240,184,73,.15);color:var(--warn)}
+  .comply_or_explain{background:rgba(143,163,179,.16);color:#b9c9d6}
+  .voluntary{background:rgba(60,207,145,.12);color:var(--accent)}
+  .draft{color:var(--muted);font-size:11px}
+  .notice{margin-top:28px;border:1px solid var(--line);border-left:3px solid var(--warn);
+          border-radius:8px;padding:12px 16px;color:var(--muted);font-size:13px;background:var(--panel)}
+  .muted{color:var(--muted)}
+  .hide{display:none}
+  .btn-link{display:inline-block;background:transparent;border:1px solid var(--line);
+            color:var(--text);border-radius:8px;padding:9px 14px;font-size:14px;text-decoration:none}
+  .btn-link:hover{border-color:var(--accent);color:var(--accent)}
+  .topnav{display:flex;gap:14px;align-items:center;margin:22px 0 4px;padding-bottom:14px;
+          border-bottom:1px solid var(--line);font-size:13px;flex-wrap:wrap}
+  .topnav a{color:var(--accent);text-decoration:none;border:1px solid rgba(60,207,145,.35);
+            padding:5px 13px;border-radius:999px}
+  .topnav a:hover{background:rgba(60,207,145,.12)}
+  .topnav span{color:var(--muted);margin-left:auto}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <span class="badge">V2 · SKELETON</span>
+      <h1>碳核算与港交所披露检查</h1>
+      <p class="lead">按附录 C2 规则库判断适用性，后续接入碳核算、气候披露与合规检查。</p>
+    </div>
+    <div class="frozen">V1 版本已冻结 · 本页不读写 V1 数据</div>
+  </header>
+
+  <nav class="topnav" aria-label="站点导航">
+    <a href="/">工具首页</a>
+    <a href="/learn">学习中心</a>
+    <a href="/daily">报告拆解</a>
+    <a href="/daily/feed.xml">RSS</a>
+    <span>从一份真实港股报告开始学 ESG</span>
+  </nav>
+
+  <div class="grid">
+    <div class="card"><div class="k">规则总数</div><div class="v" id="s-total">—</div>
+      <div class="s" id="s-version">读取中</div></div>
+    <div class="card"><div class="k">条文覆盖</div><div class="v" id="s-part">—</div>
+      <div class="s">B 强制 · C 不遵守就解释 · D 气候</div></div>
+    <div class="card"><div class="k">模块就绪</div><div class="v" id="s-mod">—</div>
+      <div class="s">其余模块按里程碑逐步接入</div></div>
+    <div class="card"><div class="k">规则状态</div><div class="v" id="s-status">—</div>
+      <div class="s">draft：需专业复核后方可对外交付</div></div>
+  </div>
+
+  <h2>适用性检查</h2>
+  <div class="row">
+    <div>
+      <label for="f-type">发行人类型</label>
+      <select id="f-type">
+        <option value="main_board">主板</option>
+        <option value="gem">GEM</option>
+      </select>
+    </div>
+    <div>
+      <label for="f-fy">财政年度起始年</label>
+      <input id="f-fy" type="number" value="2026" min="2020" max="2035">
+    </div>
+    <div>
+      <label for="f-cap">恒生综合大型股</label>
+      <select id="f-cap">
+        <option value="false">否</option>
+        <option value="true">是</option>
+      </select>
+    </div>
+    <button id="btn">查询适用规则</button>
+  </div>
+
+  <div id="result" class="hide">
+    <p class="muted" id="summary" style="margin-top:16px"></p>
+    <table>
+      <thead>
+        <tr><th>编号</th><th>条文</th><th>要求</th><th>披露责任</th><th>状态</th></tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+  <h2>采集表与数据模型</h2>
+  <div class="card">
+    <p class="muted" style="margin-top:0">
+      V2 模板共 11 个填报页（另附使用说明）：基础信息、E／S／G／行业指标、披露清单、气候风险与机遇、目标与行动、碳活动数据、排放因子、证据索引。
+      指标已自动标注关联规则，碳活动只填用量，排放量由后续核算引擎计算。
+    </p>
+    <div class="row">
+      <a class="btn-link" href="/api/template">下载 V2 采集表模板</a>
+      <div style="flex:1;min-width:220px">
+        <label for="f-file">校验已填写的采集表</label>
+        <input id="f-file" type="file" accept=".xlsx,.xlsm" style="width:100%">
+      </div>
+      <button id="btn-validate">上传校验</button>
+    </div>
+    <div id="val-result" style="margin-top:14px"></div>
+  </div>
+
+  <h2>报告润色：底稿 → 上市公司风格</h2>
+  <div class="card">
+    <p class="muted" style="margin-top:0">
+      上传非上市企业采集表，系统同时产出两份文件：<strong>底稿</strong>（原有诊断报告，原文保留）与
+      <strong>润色版</strong>（参照港股上市公司 ESG 报告的章节结构与写法重写，含封面、目录、管理层致辞、
+      ESG 治理、双重重要性、环境／社会／治理专章、关键绩效数据表与披露索引）。
+      润色版只使用底稿中已核实的数字，生成后自动做一遍数字溯源校验。
+    </p>
+    <div class="row">
+      <div style="flex:1;min-width:240px">
+        <label for="p-file">选择采集表（.xlsx）</label>
+        <input id="p-file" type="file" accept=".xlsx,.xlsm" style="width:100%">
+      </div>
+      <div>
+        <label for="p-industry">行业覆盖（留空自动识别）</label>
+        <select id="p-industry">
+          <option value="">自动识别</option>
+          <option value="manufacturing">制造业</option>
+          <option value="retail">零售</option>
+          <option value="technology">科技</option>
+          <option value="logistics">物流</option>
+          <option value="real_estate">房地产</option>
+          <option value="banking">银行</option>
+          <option value="services">服务业</option>
+        </select>
+      </div>
+      <button id="btn-polish">生成润色版</button>
+      <button id="btn-demo" class="btn-link">用内置示例生成</button>
+    </div>
+    <div id="p-result" style="margin-top:14px"></div>
+    <div id="p-samples" class="muted" style="margin-top:16px;font-size:12px">正在读取写作样本…</div>
+  </div>
+
+  <h2>上市公司 ESG 报告拆解：最新一期</h2>
+  <div class="card">
+    <p class="muted" style="margin-top:0">
+      每天拆解一家港股上市公司的最新 ESG 报告与公开评级，并把可直接发布的分发文案放在同一页。
+      报告取自港交所披露易，评级只引用公开接口返回的结果；往期发布后不再改写。
+    </p>
+    <div id="daily-latest" class="muted">读取中…</div>
+    <div class="row" style="margin-top:12px">
+      <a class="btn-link" href="/daily">全部拆解</a>
+      <a class="btn-link" href="/daily/feed.xml">RSS 订阅</a>
+      <a class="btn-link" href="/learn">五条学习路径</a>
+    </div>
+  </div>
+
+  <div class="notice">
+    本页为 V2 骨架演示：规则库内容取自港交所公开条文，状态均为 draft，尚未经过专业复核；
+    不构成合规意见，也不代表报告已满足港交所要求。
+  </div>
+</div>
+
+<script>
+const OBLIGATION = {mandatory: "强制", comply_or_explain: "不遵守就解释", voluntary: "自愿"};
+
+function statCard(id, text) { document.getElementById(id).textContent = text; }
+
+async function loadStats() {
+  try {
+    const [stats, meta] = await Promise.all([
+      fetch("/api/rules/stats").then(r => r.json()),
+      fetch("/api/meta").then(r => r.json()),
+    ]);
+    statCard("s-total", stats.total);
+    statCard("s-version", stats.version);
+    statCard("s-part", Object.entries(stats.by_part).map(([k, v]) => `${k} ${v}`).join(" · "));
+    const ready = meta.modules.filter(m => m.status === "ready").length;
+    statCard("s-mod", `${ready}/${meta.modules.length}`);
+    statCard("s-status", Object.entries(stats.by_status).map(([k, v]) => `${k} ${v}`).join(" · "));
+  } catch (e) {
+    statCard("s-version", "读取失败");
+  }
+}
+
+async function query() {
+  const btn = document.getElementById("btn");
+  btn.disabled = true;
+  try {
+    const type = document.getElementById("f-type").value;
+    const fy = document.getElementById("f-fy").value;
+    const cap = document.getElementById("f-cap").value;
+    const url = `/api/rules/applicable?issuer_type=${type}&fy=${fy}&is_largecap=${cap}`;
+    const data = await fetch(url).then(r => r.json());
+    if (data.detail) throw new Error(data.detail);
+
+    document.getElementById("summary").textContent =
+      `共 ${data.total} 条适用规则：` +
+      Object.entries(data.by_obligation).map(([k, v]) => `${OBLIGATION[k]} ${v}`).join("，");
+    const tbody = document.getElementById("tbody");
+    tbody.innerHTML = data.rules.map(r => `
+      <tr>
+        <td>${r.id}</td>
+        <td>${r.paragraph}<div class="draft">${r.title}</div></td>
+        <td>${r.requirement}</td>
+        <td><span class="tag ${r.effective_obligation}">${OBLIGATION[r.effective_obligation]}</span></td>
+        <td class="draft">${r.status}</td>
+      </tr>`).join("");
+    document.getElementById("result").classList.remove("hide");
+  } catch (e) {
+    alert("查询失败：" + e.message);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+document.getElementById("btn").addEventListener("click", query);
+
+document.getElementById("btn-validate").addEventListener("click", async () => {
+  const input = document.getElementById("f-file");
+  const box = document.getElementById("val-result");
+  if (!input.files.length) { alert("请先选择采集表文件"); return; }
+  const fd = new FormData();
+  fd.append("file", input.files[0]);
+  box.innerHTML = '<span class="muted">校验中…</span>';
+  try {
+    const res = await fetch("/api/dataset/validate", {method: "POST", body: fd});
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || ("HTTP " + res.status));
+    const counts = Object.entries(data.disclosure_counts || {}).map(([k, v]) => `${k} ${v}`).join("，");
+    const missing = (data.missing_required || []).join("、");
+    box.innerHTML = `
+      <div class="card" style="background:#101a23">
+        <div><strong>${data.company}</strong> · ${data.issuer_type} · 财政年度 ${data.fy_start_year ?? "未填"}</div>
+        <div class="muted" style="margin-top:8px">
+          指标 ${data.metrics} 项 · 必填完整度 ${(data.completeness * 100).toFixed(1)}% ·
+          披露 ${data.disclosures} 条（${counts || "未填写"}）·
+          气候 ${data.climate_items} 项 · 目标 ${data.targets} 项 ·
+          碳活动 ${data.activities} 行 · 可用因子 ${data.factors_ready} 条
+        </div>
+        ${missing ? `<div class="muted" style="margin-top:8px">待补必填：${missing}</div>` : ""}
+        ${(data.warnings || []).length ? `<div class="muted" style="margin-top:8px">提示：${data.warnings.join("；")}</div>` : ""}
+      </div>`;
+  } catch (e) {
+    box.innerHTML = `<span style="color:var(--warn)">校验失败：${e.message}</span>`;
+  }
+});
+
+function esc(s) {
+  return String(s ?? "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+const FILE_LABELS = {draft: "底稿 Markdown", polished: "润色版 Markdown",
+                     html: "润色版 HTML（打印 PDF）", meta: "校验报告 JSON"};
+
+function renderPolish(box, data) {
+  const v = data.verify || {};
+  const links = Object.entries(data.downloads || {}).map(([k, u]) =>
+    `<a class="btn-link" href="${u}">${FILE_LABELS[k] || k}</a>`).join(" ");
+  const meta = data.meta || {};
+  box.innerHTML = `
+    <div class="card" style="background:#101a23">
+      <div><strong>${esc(data.company)}</strong> · ${esc(meta.industry)} · ${esc(data.year)} 年度</div>
+      <div class="muted" style="margin-top:8px">
+        必填完整度 ${esc(meta.completeness_pct)}% · 行业对标 ${esc(meta.gaps)} 项 ·
+        章节 ${data.sections.length} 个 · 底稿 ${esc(meta.draft_chars)} 字 → 润色版 ${esc(meta.polished_chars)} 字
+      </div>
+      <div style="margin-top:8px;color:${v.ok ? "var(--accent)" : "var(--warn)"}">
+        ${v.ok
+          ? `数字校验通过：润色版 ${v.numbers_checked} 个数字均可追溯到填报数据或底稿`
+          : `数字校验未通过：${esc((v.unmatched || []).join("、"))}`}
+      </div>
+      <div class="row" style="margin-top:12px">${links}</div>
+      <div class="muted" style="margin-top:8px;font-size:12px">
+        HTML 版已按 A4 排版，浏览器打开后点击「打印 / 另存为 PDF」即可导出。
+      </div>
+    </div>`;
+}
+
+async function generatePolish(useDemo) {
+  const box = document.getElementById("p-result");
+  const btn = document.getElementById(useDemo ? "btn-demo" : "btn-polish");
+  const industry = document.getElementById("p-industry").value;
+  const qs = industry ? `?industry=${encodeURIComponent(industry)}` : "";
+  btn.disabled = true;
+  box.innerHTML = '<span class="muted">正在生成润色版（读取采集表、重组章节、校验数字）…</span>';
+  try {
+    let res;
+    if (useDemo) {
+      res = await fetch(`/api/polish/sample${qs}`, {method: "POST"});
+    } else {
+      const input = document.getElementById("p-file");
+      if (!input.files.length) { alert("请先选择采集表文件"); return; }
+      const fd = new FormData();
+      fd.append("file", input.files[0]);
+      res = await fetch(`/api/polish/report${qs}`, {method: "POST", body: fd});
+    }
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || ("HTTP " + res.status));
+    renderPolish(box, data);
+  } catch (e) {
+    box.innerHTML = `<span style="color:var(--warn)">生成失败：${esc(e.message)}</span>`;
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+document.getElementById("btn-polish").addEventListener("click", () => generatePolish(false));
+document.getElementById("btn-demo").addEventListener("click", () => generatePolish(true));
+
+async function loadSamples() {
+  const box = document.getElementById("p-samples");
+  try {
+    const data = await fetch("/api/polish/samples").then(r => r.json());
+    if (!data.samples || !data.samples.length) {
+      box.textContent = data.note || "暂无写作样本。";
+      return;
+    }
+    box.innerHTML = `已下载 ${data.count} 个行业的港股 ESG 报告作为写作样本：` +
+      data.samples.map(s => `${esc(s.name_cn)}（${esc(s.code)} · ${esc(s.release_date)}）`).join("、");
+  } catch (e) {
+    box.textContent = "";
+  }
+}
+
+async function loadDaily() {
+  const box = document.getElementById("daily-latest");
+  if (!box) return;
+  try {
+    const data = await fetch("/api/daily/latest?limit=3").then(r => r.json());
+    if (!data.items || !data.items.length) {
+      box.textContent = "今日拆解尚未生成。";
+      return;
+    }
+    box.innerHTML = data.items.map(it => `
+      <a href="${it.url}" style="display:block;padding:10px 0;border-bottom:1px solid var(--line);color:var(--text);text-decoration:none">
+        <div style="font-size:12px;color:var(--muted)">
+          ${esc(it.date)} · ${esc(it.industry)} · ${esc(it.code)}${it.msci ? ` · MSCI ${esc(it.msci.rating)}` : ""}
+        </div>
+        <div style="margin-top:4px;font-weight:600">${esc(it.company)}｜${esc(it.angle)}</div>
+        <div class="muted" style="margin-top:4px;font-size:12px">${esc((it.hook || "").slice(0, 80))}…</div>
+      </a>`).join("");
+  } catch (e) {
+    box.textContent = "最新拆解读取失败。";
+  }
+}
+
+loadStats();
+loadSamples();
+loadDaily();
+
+</script>
+</body>
+</html>

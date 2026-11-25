@@ -1,0 +1,543 @@
+{
+  "standard": "HKEX 附录C2《环境、社会及管治报告守则》",
+  "version": "2026.1-draft",
+  "source_url": "https://sc.hkex.com.hk/TuniS/cn-rules.hkex.com.hk/%E8%A6%8F%E5%89%87%E6%89%8B%E5%86%8A/%E9%99%84%E9%8C%84c2-%E3%80%8A%E7%92%B0%E5%A2%83%E3%80%81%E7%A4%BE%E6%9C%83%E5%8F%8A%E7%AE%A1%E6%B2%BB%E5%A0%B1%E5%91%8A%E5%AE%88%E5%89%87%E3%80%8B",
+  "coverage_note": "B 部分与 C 部分已按官方条文逐项录入；D 部分当前仅收录已核对段落（17、19、20），其余段落待补。全部规则状态为 draft，正式对外交付前须经专业复核。",
+  "rules": [
+    {
+      "id": "B-13",
+      "part": "B",
+      "paragraph": "13",
+      "title": "董事会声明",
+      "requirement": "由董事会发出声明，载明董事会对 ESG 事宜的监管、ESG 管理方针及策略（含评估及优次排列重要议题的过程），以及董事会如何按 ESG 目标检讨进度并解释其与业务的关系。",
+      "applicability": [
+        {"issuer_type": "main_board", "fy_from": null, "obligation": "mandatory"},
+        {"issuer_type": "gem", "fy_from": null, "obligation": "mandatory"}
+      ],
+      "required_fields": ["board_statement", "board_oversight", "esg_strategy_process", "target_review"],
+      "evidence": ["董事会决议", "ESG 报告正文"]
+    },
+    {
+      "id": "B-14",
+      "part": "B",
+      "paragraph": "14",
+      "title": "汇报原则（重要性／量化／一致性）",
+      "requirement": "描述编制报告时如何应用重要性、量化及一致性原则：识别重要因素的过程与准则、持份者参与过程与结果、排放与能耗的计算方法及转换因素来源、统计方法或 KPI 变更的说明。",
+      "applicability": [
+        {"issuer_type": "main_board", "fy_from": null, "obligation": "mandatory"},
+        {"issuer_type": "gem", "fy_from": null, "obligation": "mandatory"}
+      ],
+      "required_fields": ["materiality_process", "stakeholder_engagement", "quantification_method", "emission_factor_source", "consistency_statement"],
+      "evidence": ["制度文件", "方法说明"]
+    },
+    {
+      "id": "B-15",
+      "part": "B",
+      "paragraph": "15",
+      "title": "汇报范围",
+      "requirement": "解释报告范围及挑选纳入实体或业务的过程；若汇报范围有所改变，说明不同之处及变动原因。",
+      "applicability": [
+        {"issuer_type": "main_board", "fy_from": null, "obligation": "mandatory"},
+        {"issuer_type": "gem", "fy_from": null, "obligation": "mandatory"}
+      ],
+      "required_fields": ["boundary", "boundary_entities", "boundary_change_note"],
+      "evidence": ["组织架构文件", "ESG 报告正文"]
+    },
+    {
+      "id": "C-A1.1",
+      "part": "C",
+      "paragraph": "A1.1",
+      "title": "排放物种类及相关排放数据",
+      "requirement": "披露排放物种类及相关排放数据，包括温室气体排放。",
+      "applicability": [
+        {"issuer_type": "main_board", "fy_from": null, "obligation": "comply_or_explain"},
+        {"issuer_type": "gem", "fy_from": null, "obligation": "comply_or_explain"}
+      ],
+      "required_fields": ["E08", "E09", "E10", "E11"],
+      "evidence": ["采集表", "碳核算底稿"]
+    },
+    {
+      "id": "C-A1.3",
+      "part": "C",
+      "paragraph": "A1.3",
+      "title": "有害废弃物总量及密度",
+      "requirement": "披露所产生有害废弃物总量（吨）及密度（如以每产量单位或每项设施计算）。",
+      "applicability": [
+        {"issuer_type": "main_board", "fy_from": null, "obligation": "comply_or_explain"},
+        {"issuer_type": "gem", "fy_from": null, "obligation": "comply_or_explain"}
+      ],
+      "required_fields": ["E20"],
+      "evidence": ["采集表", "处置凭证"]
+    },
+    {
+      "id": "C-A1.4",
+      "part": "C",
+      "paragraph": "A1.4",
+      "title": "无害废弃物总量及密度",
+      "requirement": "披露所产生无害废弃物总量（吨）及密度（如以每产量单位或每项设施计算）。",
+      "applicability": [
+        {"issuer_type": "main_board", "fy_from": null, "obligation": "comply_or_explain"},
+        {"issuer_type": "gem", "fy_from": null, "obligation": "comply_or_explain"}
+      ],
+      "required_fields": ["E19"],
+      "evidence": ["采集表", "清运记录"]
+    },
+    {
+      "id": "C-A1.5",
+      "part": "C",
+      "paragraph": "A1.5",
+      "title": "排放量目标及达至目标的步骤",
+      "requirement": "描述所订立的排放量目标及为达到目标所采取的步骤。",
+      "applicability": [
+        {"issuer_type": "main_board", "fy_from": null, "obligation": "comply_or_explain"},
+        {"issuer_type": "gem", "fy_from": null, "obligation": "comply_or_explain"}
+      ],
+      "required_fields": ["G16", "E08", "E09"],
+      "evidence": ["目标文件", "行动记录"]
+    },
+    {
+      "id": "C-A1.6",
+      "part": "C",
+      "paragraph": "A1.6",
+      "title": "废弃物处理方法与减废目标",
+      "requirement": "描述处理有害及无害废弃物的方法，以及所订立的减废目标及达至目标的步骤。",
+      "applicability": [
+        {"issuer_type": "main_board", "fy_from": null, "obligation": "comply_or_explain"},
+        {"issuer_type": "gem", "fy_from": null, "obligation": "comply_or_explain"}
+      ],
+      "required_fields": ["E21"],
+      "evidence": ["处置流程文件", "目标文件"]
+    },
+    {
+      "id": "C-A2.1",
+      "part": "C",
+      "paragraph": "A2.1",
+      "title": "按类型划分的能源总耗量及密度",
+      "requirement": "披露按类型划分的直接及／或间接能源（如电、气或油）总耗量（千个千瓦时）及密度。",
+      "applicability": [
+        {"issuer_type": "main_board", "fy_from": null, "obligation": "comply_or_explain"},
+        {"issuer_type": "gem", "fy_from": null, "obligation": "comply_or_explain"}
+      ],
+      "required_fields": ["E01", "E06"],
+      "evidence": ["采集表", "电费及燃气账单"]
+    },
+    {
+      "id": "C-A2.2",
+      "part": "C",
+      "paragraph": "A2.2",
+      "title": "总耗水量及密度",
+      "requirement": "披露总耗水量及密度（如以每产量单位或每项设施计算）。",
+      "applicability": [
+        {"issuer_type": "main_board", "fy_from": null, "obligation": "comply_or_explain"},
+        {"issuer_type": "gem", "fy_from": null, "obligation": "comply_or_explain"}
+      ],
+      "required_fields": ["E16"],
+      "evidence": ["采集表", "水费账单"]
+    },
+    {
+      "id": "C-A2.3",
+      "part": "C",
+      "paragraph": "A2.3",
+      "title": "能源使用效益目标及步骤",
+      "requirement": "描述所订立的能源使用效益目标及为达到目标所采取的步骤。",
+      "applicability": [
+        {"issuer_type": "main_board", "fy_from": null, "obligation": "comply_or_explain"},
+        {"issuer_type": "gem", "fy_from": null, "obligation": "comply_or_explain"}
+      ],
+      "required_fields": ["E01"],
+      "evidence": ["节能计划", "项目记录"]
+    },
+    {
+      "id": "C-A2.4",
+      "part": "C",
+      "paragraph": "A2.4",
+      "title": "适用水源问题及用水效益目标",
+      "requirement": "描述求取适用水源上可有任何问题，以及所订立的用水效益目标及达至目标的步骤。",
+      "applicability": [
+        {"issuer_type": "main_board", "fy_from": null, "obligation": "comply_or_explain"},
+        {"issuer_type": "gem", "fy_from": null, "obligation": "comply_or_explain"}
+      ],
+      "required_fields": ["E16"],
+      "evidence": ["水资源评估", "目标文件"]
+    },
+    {
+      "id": "C-A2.5",
+      "part": "C",
+      "paragraph": "A2.5",
+      "title": "包装材料总量及每生产单位占量",
+      "requirement": "披露制成品所用包装材料的总量（吨）及（如适用）每生产单位占量。",
+      "applicability": [
+        {"issuer_type": "main_board", "fy_from": null, "obligation": "comply_or_explain"},
+        {"issuer_type": "gem", "fy_from": null, "obligation": "comply_or_explain"}
+      ],
+      "required_fields": [],
+      "evidence": ["采购记录", "包装清单"]
+    },
+    {
+      "id": "C-A3.1",
+      "part": "C",
+      "paragraph": "A3.1",
+      "title": "业务活动对环境及天然资源的重大影响",
+      "requirement": "描述业务活动对环境及天然资源的重大影响，以及已采取管理有关影响的行动。",
+      "applicability": [
+        {"issuer_type": "main_board", "fy_from": null, "obligation": "comply_or_explain"},
+        {"issuer_type": "gem", "fy_from": null, "obligation": "comply_or_explain"}
+      ],
+      "required_fields": [],
+      "evidence": ["环境评估文件"]
+    },
+    {
+      "id": "C-A4.1",
+      "part": "C",
+      "paragraph": "A4.1",
+      "title": "重大气候相关事宜及应对行动",
+      "requirement": "描述已经及可能会对发行人产生影响的重大气候相关事宜，及应对行动。",
+      "applicability": [
+        {"issuer_type": "main_board", "fy_from": null, "obligation": "comply_or_explain"},
+        {"issuer_type": "gem", "fy_from": null, "obligation": "comply_or_explain"}
+      ],
+      "required_fields": ["G15"],
+      "evidence": ["气候风险评估"]
+    },
+    {
+      "id": "C-B1.1",
+      "part": "C",
+      "paragraph": "B1.1",
+      "title": "按性别、雇佣类型、年龄组别及地区划分的雇员总数",
+      "requirement": "披露按性别、雇佣类型（如全职或兼职）、年龄组别及地区划分的雇员总数。",
+      "applicability": [
+        {"issuer_type": "main_board", "fy_from": null, "obligation": "comply_or_explain"},
+        {"issuer_type": "gem", "fy_from": null, "obligation": "comply_or_explain"}
+      ],
+      "required_fields": ["S01", "S02", "S03"],
+      "evidence": ["人事台账"]
+    },
+    {
+      "id": "C-B1.2",
+      "part": "C",
+      "paragraph": "B1.2",
+      "title": "按性别、年龄组别及地区划分的雇员流失比率",
+      "requirement": "披露按性别、年龄组别及地区划分的雇员流失比率。",
+      "applicability": [
+        {"issuer_type": "main_board", "fy_from": null, "obligation": "comply_or_explain"},
+        {"issuer_type": "gem", "fy_from": null, "obligation": "comply_or_explain"}
+      ],
+      "required_fields": ["S07"],
+      "evidence": ["人事台账"]
+    },
+    {
+      "id": "C-B2.1",
+      "part": "C",
+      "paragraph": "B2.1",
+      "title": "过去三年因工亡故人数及比率",
+      "requirement": "披露过去三年（包括汇报年度）每年因工亡故的人数及比率。",
+      "applicability": [
+        {"issuer_type": "main_board", "fy_from": null, "obligation": "comply_or_explain"},
+        {"issuer_type": "gem", "fy_from": null, "obligation": "comply_or_explain"}
+      ],
+      "required_fields": ["S12"],
+      "evidence": ["事故记录", "三年台账"]
+    },
+    {
+      "id": "C-B2.2",
+      "part": "C",
+      "paragraph": "B2.2",
+      "title": "因工伤损失工作日数",
+      "requirement": "披露因工伤损失工作日数。",
+      "applicability": [
+        {"issuer_type": "main_board", "fy_from": null, "obligation": "comply_or_explain"},
+        {"issuer_type": "gem", "fy_from": null, "obligation": "comply_or_explain"}
+      ],
+      "required_fields": ["S13"],
+      "evidence": ["工伤记录"]
+    },
+    {
+      "id": "C-B2.3",
+      "part": "C",
+      "paragraph": "B2.3",
+      "title": "职业健康与安全措施及监察方法",
+      "requirement": "描述所采纳的职业健康与安全措施，以及相关执行及监察方法。",
+      "applicability": [
+        {"issuer_type": "main_board", "fy_from": null, "obligation": "comply_or_explain"},
+        {"issuer_type": "gem", "fy_from": null, "obligation": "comply_or_explain"}
+      ],
+      "required_fields": ["S14"],
+      "evidence": ["安全制度", "检查记录"]
+    },
+    {
+      "id": "C-B3.1",
+      "part": "C",
+      "paragraph": "B3.1",
+      "title": "受训雇员百分比",
+      "requirement": "披露按性别及雇员类别（如高级管理层、中级管理层）划分的受训雇员百分比。",
+      "applicability": [
+        {"issuer_type": "main_board", "fy_from": null, "obligation": "comply_or_explain"},
+        {"issuer_type": "gem", "fy_from": null, "obligation": "comply_or_explain"}
+      ],
+      "required_fields": ["S15"],
+      "evidence": ["培训台账"]
+    },
+    {
+      "id": "C-B3.2",
+      "part": "C",
+      "paragraph": "B3.2",
+      "title": "每名雇员平均受训时数",
+      "requirement": "披露按性别及雇员类别划分，每名雇员完成受训的平均时数。",
+      "applicability": [
+        {"issuer_type": "main_board", "fy_from": null, "obligation": "comply_or_explain"},
+        {"issuer_type": "gem", "fy_from": null, "obligation": "comply_or_explain"}
+      ],
+      "required_fields": ["S15"],
+      "evidence": ["培训台账"]
+    },
+    {
+      "id": "C-B4.1",
+      "part": "C",
+      "paragraph": "B4.1",
+      "title": "避免童工及强制劳工的招聘惯例",
+      "requirement": "描述检讨招聘惯例的措施以避免童工及强制劳工。",
+      "applicability": [
+        {"issuer_type": "main_board", "fy_from": null, "obligation": "comply_or_explain"},
+        {"issuer_type": "gem", "fy_from": null, "obligation": "comply_or_explain"}
+      ],
+      "required_fields": [],
+      "evidence": ["招聘制度", "用工审核"]
+    },
+    {
+      "id": "C-B4.2",
+      "part": "C",
+      "paragraph": "B4.2",
+      "title": "发现违规时消除有关情况的步骤",
+      "requirement": "描述在发现违规情况时消除有关情况所采取的步骤。",
+      "applicability": [
+        {"issuer_type": "main_board", "fy_from": null, "obligation": "comply_or_explain"},
+        {"issuer_type": "gem", "fy_from": null, "obligation": "comply_or_explain"}
+      ],
+      "required_fields": [],
+      "evidence": ["整改记录"]
+    },
+    {
+      "id": "C-B5.1",
+      "part": "C",
+      "paragraph": "B5.1",
+      "title": "按地区划分的供应商数目",
+      "requirement": "披露按地区划分的供应商数目。",
+      "applicability": [
+        {"issuer_type": "main_board", "fy_from": null, "obligation": "comply_or_explain"},
+        {"issuer_type": "gem", "fy_from": null, "obligation": "comply_or_explain"}
+      ],
+      "required_fields": ["S18"],
+      "evidence": ["供应商清单"]
+    },
+    {
+      "id": "C-B5.2",
+      "part": "C",
+      "paragraph": "B5.2",
+      "title": "供应商聘用惯例及执行情况",
+      "requirement": "描述有关聘用供应商的惯例，向其执行有关惯例的供应商数目，以及相关执行及监察方法。",
+      "applicability": [
+        {"issuer_type": "main_board", "fy_from": null, "obligation": "comply_or_explain"},
+        {"issuer_type": "gem", "fy_from": null, "obligation": "comply_or_explain"}
+      ],
+      "required_fields": ["S19", "S19_COV"],
+      "evidence": ["供应商评估记录"]
+    },
+    {
+      "id": "C-B5.3",
+      "part": "C",
+      "paragraph": "B5.3",
+      "title": "供应链环境及社会风险识别",
+      "requirement": "描述有关识别供应链每个环节的环境及社会风险的惯例，以及相关执行及监察方法。",
+      "applicability": [
+        {"issuer_type": "main_board", "fy_from": null, "obligation": "comply_or_explain"},
+        {"issuer_type": "gem", "fy_from": null, "obligation": "comply_or_explain"}
+      ],
+      "required_fields": [],
+      "evidence": ["风险清单", "审核报告"]
+    },
+    {
+      "id": "C-B5.4",
+      "part": "C",
+      "paragraph": "B5.4",
+      "title": "推动供应商采用环保产品及服务",
+      "requirement": "描述在拣选供应商时促使多用环保产品及服务的惯例，以及相关执行及监察方法。",
+      "applicability": [
+        {"issuer_type": "main_board", "fy_from": null, "obligation": "comply_or_explain"},
+        {"issuer_type": "gem", "fy_from": null, "obligation": "comply_or_explain"}
+      ],
+      "required_fields": [],
+      "evidence": ["采购制度"]
+    },
+    {
+      "id": "C-B6.1",
+      "part": "C",
+      "paragraph": "B6.1",
+      "title": "因安全与健康理由须回收的百分比",
+      "requirement": "披露已售或已运送产品总数中因安全与健康理由而须回收的百分比。",
+      "applicability": [
+        {"issuer_type": "main_board", "fy_from": null, "obligation": "comply_or_explain"},
+        {"issuer_type": "gem", "fy_from": null, "obligation": "comply_or_explain"}
+      ],
+      "required_fields": [],
+      "evidence": ["回收记录"]
+    },
+    {
+      "id": "C-B6.2",
+      "part": "C",
+      "paragraph": "B6.2",
+      "title": "产品及服务投诉数目及应对方法",
+      "requirement": "披露接获关于产品及服务的投诉数目以及应对方法。",
+      "applicability": [
+        {"issuer_type": "main_board", "fy_from": null, "obligation": "comply_or_explain"},
+        {"issuer_type": "gem", "fy_from": null, "obligation": "comply_or_explain"}
+      ],
+      "required_fields": [],
+      "evidence": ["投诉台账"]
+    },
+    {
+      "id": "C-B6.3",
+      "part": "C",
+      "paragraph": "B6.3",
+      "title": "维护及保障知识产权的惯例",
+      "requirement": "描述与维护及保障知识产权有关的惯例。",
+      "applicability": [
+        {"issuer_type": "main_board", "fy_from": null, "obligation": "comply_or_explain"},
+        {"issuer_type": "gem", "fy_from": null, "obligation": "comply_or_explain"}
+      ],
+      "required_fields": [],
+      "evidence": ["知识产权制度"]
+    },
+    {
+      "id": "C-B6.4",
+      "part": "C",
+      "paragraph": "B6.4",
+      "title": "质量检定过程及产品回收程序",
+      "requirement": "描述质量检定过程及产品回收程序。",
+      "applicability": [
+        {"issuer_type": "main_board", "fy_from": null, "obligation": "comply_or_explain"},
+        {"issuer_type": "gem", "fy_from": null, "obligation": "comply_or_explain"}
+      ],
+      "required_fields": [],
+      "evidence": ["质量手册"]
+    },
+    {
+      "id": "C-B6.5",
+      "part": "C",
+      "paragraph": "B6.5",
+      "title": "消费者资料保障及私隐",
+      "requirement": "描述消费者资料保障及私隐政策，以及相关执行及监察方法。",
+      "applicability": [
+        {"issuer_type": "main_board", "fy_from": null, "obligation": "comply_or_explain"},
+        {"issuer_type": "gem", "fy_from": null, "obligation": "comply_or_explain"}
+      ],
+      "required_fields": [],
+      "evidence": ["隐私政策"]
+    },
+    {
+      "id": "C-B7.1",
+      "part": "C",
+      "paragraph": "B7.1",
+      "title": "已审结贪污诉讼案件数目及结果",
+      "requirement": "披露于汇报期内对发行人或其雇员提出并已审结的贪污诉讼案件的数目及诉讼结果。",
+      "applicability": [
+        {"issuer_type": "main_board", "fy_from": null, "obligation": "comply_or_explain"},
+        {"issuer_type": "gem", "fy_from": null, "obligation": "comply_or_explain"}
+      ],
+      "required_fields": ["G10"],
+      "evidence": ["法务记录"]
+    },
+    {
+      "id": "C-B7.2",
+      "part": "C",
+      "paragraph": "B7.2",
+      "title": "防范措施及举报程序",
+      "requirement": "描述防范措施及举报程序，以及相关执行及监察方法。",
+      "applicability": [
+        {"issuer_type": "main_board", "fy_from": null, "obligation": "comply_or_explain"},
+        {"issuer_type": "gem", "fy_from": null, "obligation": "comply_or_explain"}
+      ],
+      "required_fields": [],
+      "evidence": ["反贪制度", "举报渠道说明"]
+    },
+    {
+      "id": "C-B7.3",
+      "part": "C",
+      "paragraph": "B7.3",
+      "title": "向董事及员工提供的反贪污培训",
+      "requirement": "描述向董事及员工提供的反贪污培训。",
+      "applicability": [
+        {"issuer_type": "main_board", "fy_from": null, "obligation": "comply_or_explain"},
+        {"issuer_type": "gem", "fy_from": null, "obligation": "comply_or_explain"}
+      ],
+      "required_fields": ["G09"],
+      "evidence": ["培训记录"]
+    },
+    {
+      "id": "C-B8.1",
+      "part": "C",
+      "paragraph": "B8.1",
+      "title": "社区专注贡献范畴",
+      "requirement": "披露专注贡献范畴（如教育、环境事宜、劳工需求、健康、文化、体育）。",
+      "applicability": [
+        {"issuer_type": "main_board", "fy_from": null, "obligation": "comply_or_explain"},
+        {"issuer_type": "gem", "fy_from": null, "obligation": "comply_or_explain"}
+      ],
+      "required_fields": [],
+      "evidence": ["公益项目清单"]
+    },
+    {
+      "id": "C-B8.2",
+      "part": "C",
+      "paragraph": "B8.2",
+      "title": "社区专注范畴所动用资源",
+      "requirement": "披露在专注范畴所动用的资源（如金钱或时间）。",
+      "applicability": [
+        {"issuer_type": "main_board", "fy_from": null, "obligation": "comply_or_explain"},
+        {"issuer_type": "gem", "fy_from": null, "obligation": "comply_or_explain"}
+      ],
+      "required_fields": [],
+      "evidence": ["公益支出记录"]
+    },
+    {
+      "id": "D-17",
+      "part": "D",
+      "paragraph": "17",
+      "title": "范围一及范围二温室气体排放（强制）",
+      "requirement": "发行人须强制披露其范围一温室气体排放及范围二温室气体排放。",
+      "applicability": [
+        {"issuer_type": "main_board", "fy_from": 2025, "obligation": "mandatory"},
+        {"issuer_type": "gem", "fy_from": 2025, "obligation": "mandatory"}
+      ],
+      "required_fields": ["E08", "E09", "E10"],
+      "evidence": ["碳核算底稿", "排放因子来源"]
+    },
+    {
+      "id": "D-19",
+      "part": "D",
+      "paragraph": "19",
+      "title": "气候相关管治",
+      "requirement": "披露负责监督气候相关风险和机遇的治理机构或个人、其技能与知情方式、在策略与风险管理中的考量、目标监督与薪酬关联，以及管理层在相关管治流程中的角色。",
+      "applicability": [
+        {"issuer_type": "main_board", "fy_from": 2025, "obligation": "comply_or_explain"},
+        {"issuer_type": "gem", "fy_from": 2025, "obligation": "voluntary"},
+        {"issuer_type": "largecap", "fy_from": 2026, "obligation": "mandatory"}
+      ],
+      "required_fields": ["G08", "G15"],
+      "evidence": ["治理架构文件", "董事会决议"]
+    },
+    {
+      "id": "D-20",
+      "part": "D",
+      "paragraph": "20",
+      "title": "气候相关风险和机遇",
+      "requirement": "描述合理预期可能在短期、中期或长期影响现金流量、融资渠道或资本成本的气候相关风险和机遇，区分物理风险与转型风险，并解释短中长期的定义。",
+      "applicability": [
+        {"issuer_type": "main_board", "fy_from": 2025, "obligation": "comply_or_explain"},
+        {"issuer_type": "gem", "fy_from": 2025, "obligation": "voluntary"},
+        {"issuer_type": "largecap", "fy_from": 2026, "obligation": "mandatory"}
+      ],
+      "required_fields": ["G15"],
+      "evidence": ["气候风险评估", "情景分析"]
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+name: 每日 ESG 报告拆解
+
+# 免费层（Render free / 临时文件系统）不保留运行时新文件，
+# 因此每天在 GitHub Actions 里生成一期，并提交回仓库；
+# Render 连着仓库时会在 push 后自动重新部署，内容随之进入线上。
+# 需要的话再加仓库 Secret：RENDER_DEPLOY_HOOK_URL（Render 服务的 Deploy Hook）。
+
+on:
+  schedule:
+    - cron: "0 0 * * *"   # UTC 00:00 = 北京时间 08:00
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-esg
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: 拉取仓库
+        uses: actions/checkout@v4
+
+      - name: 安装 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # 每日流程只用到 httpx（港交所/新浪）与 pypdf（解析报告），
+      # 不装 requirements.txt 里的 yfinance / pandas / openai，缩短运行时间。
+      - name: 安装依赖
+        run: pip install "httpx>=0.27" "pypdf>=4.8"
+
+      - name: 生成今日一期
+        id: daily
+        shell: bash
+        run: |
+          set +e
+          python -m v2.scripts.daily_update
+          code=$?
+          set -e
+          if [ "$code" -eq 0 ]; then
+            echo "daily 生成完成"
+          elif [ "$code" -eq 2 ]; then
+            echo "今日没有找到可用的新报告，跳过；不影响已有内容"
+          else
+            echo "daily 生成失败，退出码 $code" >&2
+            exit "$code"
+          fi
+
+      - name: 提交新内容
+        id: commit
+        shell: bash
+        run: |
+          git config user.name "esg-daily-bot"
+          git config user.email "esg-daily-bot@users.noreply.github.com"
+          git add -f v2/content
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "没有新文件，跳过提交"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            git commit -m "chore(daily): $(date -u +%F) 新增一期 ESG 报告拆解"
+            git push
+          fi
+
+      # Render 若已开启仓库自动部署，push 本身就会触发；这里兼容只配了 Deploy Hook 的情况。
+      - name: 触发 Render 部署
+        if: steps.commit.outputs.changed == 'true' && env.RENDER_DEPLOY_HOOK_URL != ''
+        env:
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: curl -fsS -X POST "$RENDER_DEPLOY_HOOK_URL" > /dev/null

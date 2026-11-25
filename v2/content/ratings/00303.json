@@ -1,0 +1,76 @@
+{
+  "code": "00303",
+  "symbol": "hk00303",
+  "company": "伟易达集团",
+  "fetched_at": "2026-11-25",
+  "source": "新浪财经 ESG 公开数据",
+  "source_url": "https://finance.sina.com.cn/",
+  "api": "https://global.finance.sina.com.cn/api/openapi.php/EsgService.getEsgStockInfo",
+  "note": "仅保留接口返回的机构与结果；未覆盖的机构不补值。不同机构口径不同，分数不可横向比较。",
+  "ratings": [
+    {
+      "agency": "MSCI",
+      "rating": "AA",
+      "rating_date": "2026-11-09",
+      "environmental": "3.43",
+      "social": "6.04",
+      "governance": "5.31"
+    },
+    {
+      "agency": "标普",
+      "rating": "40+",
+      "rating_date": "2026-10-16",
+      "environmental": null,
+      "social": null,
+      "governance": null
+    },
+    {
+      "agency": "商道融绿",
+      "rating": "A",
+      "rating_date": "2026Q3",
+      "environmental": null,
+      "social": null,
+      "governance": null
+    },
+    {
+      "agency": "联合赤道",
+      "rating": "A",
+      "rating_date": "2026Q4",
+      "environmental": null,
+      "social": null,
+      "governance": null
+    },
+    {
+      "agency": "中诚信",
+      "rating": "BBB",
+      "rating_date": "2026Q2",
+      "environmental": null,
+      "social": null,
+      "governance": null
+    },
+    {
+      "agency": "秩鼎",
+      "rating": "74.43(AA)",
+      "rating_date": "2026Q4",
+      "environmental": "75.57(AA)",
+      "social": "61.51(A)",
+      "governance": "86(AAA)"
+    },
+    {
+      "agency": "华证",
+      "rating": "BB",
+      "rating_date": "2026Q3",
+      "environmental": null,
+      "social": null,
+      "governance": null
+    },
+    {
+      "agency": "妙盈",
+      "rating": "A",
+      "rating_date": "2026Q3",
+      "environmental": null,
+      "social": null,
+      "governance": null
+    }
+  ]
+}

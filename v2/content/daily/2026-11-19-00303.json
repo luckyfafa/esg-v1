@@ -1,0 +1,164 @@
+{
+  "slug": "2026-11-19-00303",
+  "date": "2026-11-19",
+  "code": "00303",
+  "company": "伟易达集团",
+  "industry": "电子制造",
+  "angle": "目标、数据、鉴证：制造企业的三件套",
+  "hook": "伟易达把「目标与绩效」放在正文第 15 页，比大部分章节都早。先给目标和进度，再展开故事，这是制造企业应对审核型读者的常见写法。",
+  "why": "电子制造的价值链长、供应商多，范围三和供应链管理是核心。学这份报告，重点看目标怎么设、数据怎么核、鉴证覆盖到哪里。",
+  "reading_map": [
+    {
+      "section": "可持续发展基础",
+      "locator": "PDF p7",
+      "look_for": "治理、重要性、报告范围",
+      "clause": "B-13 / B-14"
+    },
+    {
+      "section": "目标与绩效",
+      "locator": "PDF p15",
+      "look_for": "目标、基准年、进度、未达成原因",
+      "clause": "C-A1.5 / D-20"
+    },
+    {
+      "section": "产品责任与价值链",
+      "locator": "PDF p30",
+      "look_for": "供应商审核、冲突矿物、产品合规",
+      "clause": "C-B5 / C-B6"
+    },
+    {
+      "section": "环境",
+      "locator": "PDF p42",
+      "look_for": "能耗、排放、废弃物、产品碳足迹",
+      "clause": "C-A1.1 / C-A2.1"
+    },
+    {
+      "section": "数据、鉴证与索引",
+      "locator": "PDF p78 绩效数据；p83 鉴证；p85 GRI；p89 港交所索引",
+      "look_for": "指标口径、鉴证范围、披露缺口",
+      "clause": "B-14"
+    }
+  ],
+  "observations": [
+    "目标与绩效在 p15 就出现，早于大部分议题章节。这种「先结论后论证」的结构，方便审核型读者快速判断进度。",
+    "产品责任与价值链管理从 p30 开始，环境章节在 p42。对电子制造来说，供应链议题的分量不低于工厂排放。",
+    "p78 是关键绩效数据、p83 是独立鉴证、p85 是 GRI 索引、p89 是港交所索引，四块连起来构成完整证据链。",
+    "产品碳足迹与范围三在报告中出现，但具体覆盖哪些产品、用什么方法，需要回原文核对。"
+  ],
+  "rating_read": "本期快照中，MSCI 为 AA（2026-11-09），秩鼎 74.43(AA)，商道融绿 A，联合赤道 A，妙盈 A，但华证给 BB、中诚信给 BBB，标普为 40+。同一个「A 附近」的印象下，实际分档跨度不小。制造业的评级尤其受供应链数据完整度影响，读评级时要问：机构拿到的价值链数据有多全？",
+  "questions": [
+    "目标与绩效放在正文前部，对读者判断公司有什么帮助？",
+    "电子制造的范围三里，采购商品与服务、运输、产品使用各占什么位置？",
+    "鉴证覆盖了哪些 KPI？未鉴证的数据在引用时要注意什么？"
+  ],
+  "skills": [
+    {
+      "name": "目标进度核对",
+      "how": "基准年、目标年、范围、口径、进度五项逐一确认"
+    },
+    {
+      "name": "供应链议题分析",
+      "how": "从供应商审核覆盖率、冲突矿物、产品合规三条线切入"
+    },
+    {
+      "name": "鉴证范围识别",
+      "how": "区分已鉴证与未鉴证指标，引用时标注"
+    }
+  ],
+  "takeaway": "制造企业先看供应链，再看工厂；先看目标与数据，再看故事。",
+  "report": {
+    "title": "Sustainability Report 2026",
+    "release_date": "2026-06-18",
+    "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0618/2026061800820.pdf",
+    "source": "港交所披露易"
+  },
+  "ratings": [
+    {
+      "agency": "MSCI",
+      "rating": "AA",
+      "rating_date": "2026-11-09",
+      "environmental": "3.43",
+      "social": "6.04",
+      "governance": "5.31",
+      "stale": false
+    },
+    {
+      "agency": "标普",
+      "rating": "40+",
+      "rating_date": "2026-10-16",
+      "environmental": null,
+      "social": null,
+      "governance": null,
+      "stale": false
+    },
+    {
+      "agency": "商道融绿",
+      "rating": "A",
+      "rating_date": "2026Q3",
+      "environmental": null,
+      "social": null,
+      "governance": null,
+      "stale": false
+    },
+    {
+      "agency": "联合赤道",
+      "rating": "A",
+      "rating_date": "2026Q4",
+      "environmental": null,
+      "social": null,
+      "governance": null,
+      "stale": false
+    },
+    {
+      "agency": "中诚信",
+      "rating": "BBB",
+      "rating_date": "2026Q2",
+      "environmental": null,
+      "social": null,
+      "governance": null,
+      "stale": false
+    },
+    {
+      "agency": "秩鼎",
+      "rating": "74.43(AA)",
+      "rating_date": "2026Q4",
+      "environmental": "75.57(AA)",
+      "social": "61.51(A)",
+      "governance": "86(AAA)",
+      "stale": false
+    },
+    {
+      "agency": "华证",
+      "rating": "BB",
+      "rating_date": "2026Q3",
+      "environmental": null,
+      "social": null,
+      "governance": null,
+      "stale": false
+    },
+    {
+      "agency": "妙盈",
+      "rating": "A",
+      "rating_date": "2026Q3",
+      "environmental": null,
+      "social": null,
+      "governance": null,
+      "stale": false
+    }
+  ],
+  "rating_meta": {
+    "count": 8,
+    "stale_count": 0,
+    "msci": {
+      "rating": "AA",
+      "date": "2026-11-09"
+    },
+    "fetched_at": "2026-11-25",
+    "source": "新浪财经 ESG 公开数据",
+    "source_url": "https://finance.sina.com.cn/",
+    "note": "仅保留接口返回的机构与结果；未覆盖的机构不补值。不同机构口径不同，分数不可横向比较。"
+  },
+  "issue": 5,
+  "prev": "2026-11-18-00016",
+  "next": "2026-11-20-01093"
+}
