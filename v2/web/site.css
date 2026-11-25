@@ -38,6 +38,8 @@ code{font-family:"Cascadia Code",Consolas,monospace;font-size:12px;background:va
 .site-nav a.is-active{color:var(--header-ink);border-bottom-color:#7fc7a8}
 .site-nav .rss{font-size:12px;border:1px solid rgba(243,239,228,.3);border-radius:999px;padding:3px 12px;letter-spacing:.08em}
 .site-nav .rss:hover{border-color:#7fc7a8}
+.site-nav .main-site{font-size:12px;border:1px solid rgba(127,199,168,.55);border-radius:999px;padding:3px 12px}
+.site-nav .main-site:hover{border-color:#7fc7a8;color:var(--header-ink)}
 
 /* hero */
 main{padding:0 0 72px;min-height:60vh}

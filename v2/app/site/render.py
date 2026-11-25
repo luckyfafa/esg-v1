@@ -10,6 +10,7 @@ from . import content, distribution
 
 SITE_NAME = "ESG 智能报告系统"
 SITE_TAGLINE = "港股 ESG 报告 · 公开评级 · 可复用方法"
+MAIN_SITE_URL = "https://esg-v1-0uyh.onrender.com/"  # V1 主站首页，学习页的「返回主站」指向这里
 
 
 def esc(value) -> str:
@@ -82,18 +83,18 @@ def layout(
 <meta name="twitter:description" content="{esc(description)}">
 <meta name="twitter:image" content="{esc(base)}/ui/og-default.png">
 <link rel="alternate" type="application/rss+xml" title="报告拆解 RSS" href="{esc(base)}/daily/feed.xml">
-<link rel="stylesheet" href="/ui/site.css?v=20261125b">{extra_meta}
+<link rel="stylesheet" href="/ui/site.css?v=20261125c">{extra_meta}
 {scripts}
 </head>
 <body>
 <a class="skip" href="#main">跳到正文</a>
 <header class="site-header">
   <div class="wrap header-inner">
-    <a class="brand" href="/learn">
+    <a class="brand" href="/learn" title="ESG 学习中心首页">
       <strong>ESG 智能报告系统</strong>
       <span>V2 · 港股报告与评级</span>
     </a>
-    <nav class="site-nav" aria-label="主导航">{nav}<a href="/daily/feed.xml" class="rss">RSS</a></nav>
+    <nav class="site-nav" aria-label="主导航">{nav}<a href="/daily/feed.xml" class="rss">RSS</a><a href="{esc(MAIN_SITE_URL)}" class="main-site" title="返回 ESG 智能报告系统主站首页">返回主站</a></nav>
   </div>
 </header>
 <main id="main" class="wrap">
@@ -106,6 +107,7 @@ def layout(
       <p>{esc(SITE_TAGLINE)}。报告取自港交所披露易，评级只引用公开数据，不构成投资或合规建议。</p>
     </div>
     <div class="footer-links">
+      <a href="{esc(MAIN_SITE_URL)}">返回主站</a>
       <a href="/learn">学习中心</a>
       <a href="/daily">报告拆解</a>
       <a href="/daily/feed.xml">RSS 订阅</a>
