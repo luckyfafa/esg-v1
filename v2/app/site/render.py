@@ -154,6 +154,20 @@ def _episode_toc(ep: dict) -> str:
 </a>"""
 
 
+def _episode_row(ep: dict) -> str:
+    """学习中心里的单期摘要行，统一指向单页里的锚点。"""
+    d = date.fromisoformat(ep["date"])
+    return f"""<a class="daily-row" href="/daily#{esc(ep['slug'])}">
+  <div class="date-block"><span class="month">{d.month} 月</span><span class="day">{d.day:02d}</span><span class="year">{d.year}</span></div>
+  <div class="row-main">
+    <span class="row-kicker">{esc(ep['company'])} · {esc(ep.get('industry') or '港股')}</span>
+    <h3>{esc(ep['angle'])}</h3>
+    <p>{esc(_short(ep['hook'], 96))}</p>
+  </div>
+  <div class="row-side">{_rating_chip(ep)}</div>
+</a>"""
+
+
 def render_learn_index(base: str) -> str:
     stats = content.site_stats()
     paths = content.learn_paths()
