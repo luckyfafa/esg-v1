@@ -44,7 +44,7 @@ from .schemas import (
     MultiAgencyESG,
     SBTiTarget,
 )
-from .site_learn import daily_paths, learn_paths, router as learn_router
+from .site_learn import router as learn_router, sitemap_entries
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 app = FastAPI(
@@ -100,11 +100,11 @@ def ads_txt():
 @app.get("/sitemap.xml", include_in_schema=False)
 def sitemap_xml(request: Request):
     base = str(request.base_url).rstrip("/")
-    pages = ["/", "/tools/collection-template", "/tools/carbon-guide"] + learn_paths() + daily_paths()
     urls = "\n".join(
-        f"  <url><loc>{base}{p}</loc><changefreq>weekly</changefreq>"
-        f"<priority>{'1.0' if p == '/' else '0.8'}</priority></url>"
-        for p in pages
+        f"  <url><loc>{base}{path}</loc>"
+        + (f"<lastmod>{lastmod}</lastmod>" if lastmod else "")
+        + f"<changefreq>{freq}</changefreq><priority>{priority}</priority></url>"
+        for path, lastmod, freq, priority in sitemap_entries()
     )
     body = (
         '<?xml version="1.0" encoding="UTF-8"?>\n'
@@ -112,7 +112,12 @@ def sitemap_xml(request: Request):
         f"{urls}\n"
         "</urlset>\n"
     )
-    return Response(content=body, media_type="application/xml; charset=utf-8")
+    return Response(
+        content=body,
+        media_type="application/xml; charset=utf-8",
+        # 免费实例冷启动可能让 Googlebot 超时；允许边缘缓存，冷启动期间也能返回
+        headers={"Cache-Control": "public, max-age=600, s-maxage=3600"},
+    )
 
 
 LANDING_DIR = WEB_DIR / "landing"

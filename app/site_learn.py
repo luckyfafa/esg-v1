@@ -81,13 +81,22 @@ def daily_detail(slug: str, request: Request):
     return HTMLResponse(site_render.render_daily_detail(ep, base))
 
 
-def learn_paths() -> list[str]:
-    """供主站 sitemap 合并使用的栏目路径。"""
-    paths = ["/learn", "/daily"]
-    paths += [f"/learn/{p['slug']}" for p in site_content.learn_paths()]
-    return paths
+def sitemap_entries() -> list[tuple[str, str, str, str]]:
+    """sitemap 条目：(路径, lastmod, changefreq, priority)。
 
-
-def daily_paths() -> list[str]:
-    """每期拆解独立成页，一并进 sitemap。"""
-    return [f"/daily/{ep['slug']}" for ep in site_content.daily_episodes()]
+    lastmod 只用能从内容里确定的日期；工具落地页没有可靠改动日期，留空不写。
+    """
+    latest = site_content.site_stats()["latest"]
+    entries: list[tuple[str, str, str, str]] = [
+        ("/", latest, "weekly", "1.0"),
+        ("/tools/collection-template", "", "monthly", "0.8"),
+        ("/tools/carbon-guide", "", "monthly", "0.8"),
+        ("/learn", latest, "weekly", "0.9"),
+        ("/daily", latest, "daily", "0.9"),
+    ]
+    entries += [(f"/learn/{p['slug']}", latest, "monthly", "0.8") for p in site_content.learn_paths()]
+    entries += [
+        (f"/daily/{ep['slug']}", ep["date"], "monthly", "0.7")
+        for ep in site_content.daily_episodes()
+    ]
+    return entries
