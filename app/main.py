@@ -45,6 +45,7 @@ from .schemas import (
     SBTiTarget,
 )
 from .site_learn import router as learn_router, sitemap_entries
+from v2.app.indexnow import KEY as INDEXNOW_KEY
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 app = FastAPI(
@@ -88,6 +89,12 @@ def robots_txt(request: Request):
         f"Sitemap: {base}/sitemap.xml\n"
     )
     return Response(content=body, media_type="text/plain; charset=utf-8")
+
+
+@app.get(f"/{INDEXNOW_KEY}.txt", include_in_schema=False)
+def indexnow_key_file():
+    """IndexNow 站点归属验证：文件名是 key，内容也是 key。"""
+    return Response(content=INDEXNOW_KEY, media_type="text/plain; charset=utf-8")
 
 
 @app.get("/ads.txt", include_in_schema=False)

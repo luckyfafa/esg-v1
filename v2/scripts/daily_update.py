@@ -28,6 +28,7 @@ from .build_daily import parse_rating_date
 from .fetch_esg_ratings import fetch_snapshot
 from .hkex_source import HkexSource, download_pdf, load_universe
 from .report_facts import READING_ORDER, extract_facts
+from ..app.indexnow import episode_url, submit_safely
 
 ROOT = Path(__file__).resolve().parents[2]
 DAILY_DIR = ROOT / "v2" / "content" / "daily"
@@ -561,6 +562,8 @@ def main(argv: list[str] | None = None) -> int:
         }
     )
     save_state(state)
+    # 通知 IndexNow（Bing 等）；失败只记日志，不中断发布
+    submit_safely([episode_url(episode["slug"])], label=f"新一期 {episode['slug']}")
     print(f"\n[OK] 已发布 {episode['slug']}：{company} · {industry} · {episode['angle']}")
     print(f"     报告：{report['title']}（{report['release']}）")
     print(f"     评级：{len(episode['ratings'])} 家；文件：{target}")
