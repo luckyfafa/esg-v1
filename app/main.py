@@ -90,6 +90,13 @@ def robots_txt(request: Request):
     return Response(content=body, media_type="text/plain; charset=utf-8")
 
 
+@app.get("/ads.txt", include_in_schema=False)
+def ads_txt():
+    """AdSense 授权文件：必须能从站点根路径直接访问。"""
+    body = f"google.com, pub-{ADSENSE_CLIENT.split('-')[-1]}, DIRECT, f08c47fec0942fa0\n"
+    return Response(content=body, media_type="text/plain; charset=utf-8")
+
+
 @app.get("/sitemap.xml", include_in_schema=False)
 def sitemap_xml(request: Request):
     base = str(request.base_url).rstrip("/")
@@ -109,6 +116,7 @@ def sitemap_xml(request: Request):
 
 
 LANDING_DIR = WEB_DIR / "landing"
+ADSENSE_CLIENT = "ca-pub-5427045772881306"
 
 
 def _landing_page(filename: str) -> HTMLResponse:
@@ -118,18 +126,26 @@ def _landing_page(filename: str) -> HTMLResponse:
     return HTMLResponse(_with_analytics(page.read_text(encoding="utf-8")))
 
 
+def _adsense_snippet() -> str:
+    """AdSense 加载脚本 + 账户元标记，统一放进 <head>。"""
+    return (
+        '<meta name="google-adsense-account" content="' + ADSENSE_CLIENT + '">'
+        '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js'
+        f'?client={ADSENSE_CLIENT}" crossorigin="anonymous"></script>'
+    )
+
+
 def _with_analytics(html: str) -> str:
-    """把 Google tag 注入 </head>；GTM 容器与 GA4 均可，未配置时原样返回。"""
+    """把 AdSense 与 Google tag 注入 </head>；GTM/GA4 未配置时只注入 AdSense。"""
     from .config import settings
 
-    gtm = settings.gtm_id.strip()
-    ga4 = settings.ga4_id.strip()
-    if not gtm and not ga4:
-        return html
     if "</head>" not in html:
         return html
 
-    tags = []
+    gtm = settings.gtm_id.strip()
+    ga4 = settings.ga4_id.strip()
+
+    tags = [_adsense_snippet()]
     if gtm:
         tags.append(
             f'<script async src="https://www.googletagmanager.com/gtm.js?id={gtm}"></script>'
@@ -138,16 +154,17 @@ def _with_analytics(html: str) -> str:
         tags.append(
             f'<script async src="https://www.googletagmanager.com/gtag/js?id={ga4}"></script>'
         )
-    js = (
-        "window.dataLayer=window.dataLayer||[];"
-        "function gtag(){dataLayer.push(arguments);}"
-        "gtag('js',new Date());"
-    )
-    if ga4:
-        # GTM 已在统计页面浏览时，GA4 直连只发事件，避免重复计数
-        spv = "false" if gtm else "true"
-        js += f"gtag('config','{ga4}',{{send_page_view:{spv}}});"
-    tags.append(f"<script>{js}</script>")
+    if gtm or ga4:
+        js = (
+            "window.dataLayer=window.dataLayer||[];"
+            "function gtag(){dataLayer.push(arguments);}"
+            "gtag('js',new Date());"
+        )
+        if ga4:
+            # GTM 已在统计页面浏览时，GA4 直连只发事件，避免重复计数
+            spv = "false" if gtm else "true"
+            js += f"gtag('config','{ga4}',{{send_page_view:{spv}}});"
+        tags.append(f"<script>{js}</script>")
     return html.replace("</head>", "".join(tags) + "</head>", 1)
 
 
@@ -184,6 +201,12 @@ def favicon():
         "fill='none' stroke-linecap='round'/></svg>"
     )
     return Response(content=svg, media_type="image/svg+xml")
+
+
+@app.get("/privacy", include_in_schema=False)
+def privacy_page():
+    """隐私政策与 Cookie 声明：AdSense 政策要求可公开访问。"""
+    return _landing_page("privacy.html")
 
 
 @app.get("/tools/collection-template", include_in_schema=False)

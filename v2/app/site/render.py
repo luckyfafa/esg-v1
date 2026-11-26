@@ -11,6 +11,7 @@ from . import content, distribution
 SITE_NAME = "ESG 智能报告系统"
 SITE_TAGLINE = "港股 ESG 报告 · 公开评级 · 可复用方法"
 MAIN_SITE_URL = "/"  # 学习页与主站同域，返回主站即首页；独立部署时也由旧域名 301 到主站
+ADSENSE_CLIENT = "ca-pub-5427045772881306"  # AdSense 发布商 ID，脚本必须放在 <head>
 CSS_HREF = "/ui/site.css?v=20261126"  # 独立部署时的样式地址；并入主站时用 set_css_href 改写
 
 
@@ -91,6 +92,8 @@ def layout(
 <meta name="twitter:image" content="{esc(base)}/ui/og-default.png">
 <link rel="alternate" type="application/rss+xml" title="报告拆解 RSS" href="{esc(base)}/daily/feed.xml">
 <link rel="stylesheet" href="{esc(CSS_HREF)}">{extra_meta}
+<meta name="google-adsense-account" content="{ADSENSE_CLIENT}">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={ADSENSE_CLIENT}" crossorigin="anonymous"></script>
 {scripts}
 </head>
 <body>
@@ -99,7 +102,7 @@ def layout(
   <div class="wrap header-inner">
     <a class="brand" href="/learn" title="ESG 学习中心首页">
       <strong>ESG 智能报告系统</strong>
-      <span>V2 · 港股报告与评级</span>
+      <span>港股报告 · 学习与拆解</span>
     </a>
     <nav class="site-nav" aria-label="主导航">{nav}<a href="/daily/feed.xml" class="rss">RSS</a><a href="{esc(MAIN_SITE_URL)}" class="main-site" title="返回 ESG 智能报告系统主站首页">返回主站</a></nav>
   </div>
@@ -119,6 +122,7 @@ def layout(
       <a href="/daily">报告拆解</a>
       <a href="/daily/feed.xml">RSS 订阅</a>
       <a href="/sitemap.xml">站点地图</a>
+      <a href="/privacy">隐私政策</a>
     </div>
   </div>
 </footer>
