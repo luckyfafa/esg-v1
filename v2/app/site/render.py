@@ -10,7 +10,14 @@ from . import content, distribution
 
 SITE_NAME = "ESG 智能报告系统"
 SITE_TAGLINE = "港股 ESG 报告 · 公开评级 · 可复用方法"
-MAIN_SITE_URL = "https://esg-v1-0uyh.onrender.com/"  # V1 主站首页，学习页的「返回主站」指向这里
+MAIN_SITE_URL = "/"  # 学习页与主站同域，返回主站即首页；独立部署时也由旧域名 301 到主站
+CSS_HREF = "/ui/site.css?v=20261126"  # 独立部署时的样式地址；并入主站时用 set_css_href 改写
+
+
+def set_css_href(href: str) -> None:
+    """切换样式表地址（主站下学习页用 /learn/site.css，避免与工具界面 /ui 冲突）。"""
+    global CSS_HREF
+    CSS_HREF = href
 
 
 def esc(value) -> str:
@@ -83,7 +90,7 @@ def layout(
 <meta name="twitter:description" content="{esc(description)}">
 <meta name="twitter:image" content="{esc(base)}/ui/og-default.png">
 <link rel="alternate" type="application/rss+xml" title="报告拆解 RSS" href="{esc(base)}/daily/feed.xml">
-<link rel="stylesheet" href="/ui/site.css?v=20261125c">{extra_meta}
+<link rel="stylesheet" href="{esc(CSS_HREF)}">{extra_meta}
 {scripts}
 </head>
 <body>

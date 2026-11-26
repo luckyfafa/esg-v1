@@ -44,6 +44,7 @@ from .schemas import (
     MultiAgencyESG,
     SBTiTarget,
 )
+from .site_learn import learn_paths, router as learn_router
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 app = FastAPI(
@@ -61,6 +62,10 @@ app.add_middleware(
 WEB_DIR = Path(__file__).resolve().parent.parent / "web"
 if WEB_DIR.exists():
     app.mount("/ui", StaticFiles(directory=WEB_DIR, html=True), name="ui")
+
+# 学习中心与每日拆解（/learn、/daily）：渲染复用 V2 的 site 模块，
+# 但路径挂在主站同域名下，权重在同一站点累积。
+app.include_router(learn_router)
 
 
 @app.get("/", include_in_schema=False)
@@ -88,7 +93,7 @@ def robots_txt(request: Request):
 @app.get("/sitemap.xml", include_in_schema=False)
 def sitemap_xml(request: Request):
     base = str(request.base_url).rstrip("/")
-    pages = ["/", "/tools/collection-template", "/tools/carbon-guide"]
+    pages = ["/", "/tools/collection-template", "/tools/carbon-guide"] + learn_paths()
     urls = "\n".join(
         f"  <url><loc>{base}{p}</loc><changefreq>weekly</changefreq>"
         f"<priority>{'1.0' if p == '/' else '0.8'}</priority></url>"

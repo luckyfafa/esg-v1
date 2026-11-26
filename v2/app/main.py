@@ -38,6 +38,24 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+MAIN_ORIGIN = "https://esg-v1-0uyh.onrender.com"
+LEGACY_HOST = "esg-learn.onrender.com"
+
+
+@app.middleware("http")
+async def redirect_legacy_host(request: Request, call_next):
+    """旧独立域名整体 301 到主站同路径，让已收录页面把权重交给 /learn、/daily。
+
+    /health 放行：Render 以健康检查路径的 2xx 判断实例可用，301 会被判为不健康。
+    """
+    host = (request.headers.get("host") or "").split(":")[0].lower()
+    if host.endswith(LEGACY_HOST) and request.url.path != "/health":
+        target = MAIN_ORIGIN + request.url.path
+        if request.url.query:
+            target += "?" + request.url.query
+        return RedirectResponse(target, status_code=301)
+    return await call_next(request)
+
 WEB_DIR = Path(__file__).resolve().parent.parent / "web"
 if WEB_DIR.exists():
     app.mount("/ui", StaticFiles(directory=WEB_DIR, html=True), name="ui")
