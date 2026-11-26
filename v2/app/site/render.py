@@ -156,19 +156,10 @@ def _rating_chip(ep: dict) -> str:
     return f'<span class="chip">MSCI <strong>{esc(msci["rating"])}</strong> · {esc(msci["date"])}</span>'
 
 
-def _episode_toc(ep: dict) -> str:
-    d = date.fromisoformat(ep["date"])
-    return f"""<a class="toc-item" href="#{esc(ep['slug'])}">
-  <span class="toc-date">{d.month} 月 {d.day:02d} 日</span>
-  <strong>{esc(ep['company'])}</strong>
-  <span class="toc-angle">{esc(ep['angle'])}</span>
-</a>"""
-
-
 def _episode_row(ep: dict) -> str:
-    """学习中心里的单期摘要行，统一指向单页里的锚点。"""
+    """单期摘要行，指向这一期的独立页面。"""
     d = date.fromisoformat(ep["date"])
-    return f"""<a class="daily-row" href="/daily#{esc(ep['slug'])}">
+    return f"""<a class="daily-row" href="/daily/{esc(ep['slug'])}">
   <div class="date-block"><span class="month">{d.month} 月</span><span class="day">{d.day:02d}</span><span class="year">{d.year}</span></div>
   <div class="row-main">
     <span class="row-kicker">{esc(ep['company'])} · {esc(ep.get('industry') or '港股')}</span>
@@ -370,7 +361,7 @@ def render_learn_detail(path: dict, base: str) -> str:
 
 
 def _social_section(ep: dict, base: str) -> str:
-    url = f"{base}/daily#{ep['slug']}"
+    url = f"{base}/daily/{ep['slug']}"
     cards = []
     for post in distribution.build_posts(ep, url):
         target = f"copy-{ep['slug']}-{post['key']}"
@@ -391,7 +382,7 @@ def _social_section(ep: dict, base: str) -> str:
 """
 
 
-def _daily_article_body(ep: dict, base: str) -> str:
+def _daily_article_body(ep: dict, base: str, heading: str = "h2") -> str:
     meta = ep["rating_meta"]
     report = ep["report"]
     map_rows = "".join(
@@ -427,7 +418,7 @@ def _daily_article_body(ep: dict, base: str) -> str:
     return f"""
   <header class="article-head">
     <p class="kicker">{esc(ep['date'])} · {esc(ep['industry'])} · 第 {esc(ep.get('issue', ''))} 期</p>
-    <h2>{esc(ep['company'])}｜{esc(ep['angle'])}</h2>
+    <{heading}>{esc(ep['company'])}｜{esc(ep['angle'])}</{heading}>
     <div class="meta-row">
       <span>公司代号 {esc(ep['code'])}</span>
       <span>报告：{_ext_link(report['url'], _short(report['title'], 64))}</span>
@@ -478,26 +469,128 @@ def _daily_article_body(ep: dict, base: str) -> str:
 """
 
 
+def _episode_seo(ep: dict) -> tuple[str, str]:
+    """单期标题与描述：优先用内容文件里的 seo 字段，缺省时按模板兜底。"""
+    seo = ep.get("seo") or {}
+    company = ep["company"]
+    code = ep["code"]
+    report_title = (ep.get("report") or {}).get("title") or "ESG 报告"
+    msci = (ep.get("rating_meta") or {}).get("msci")
+    rating = f"MSCI {msci['rating']}（{msci['date']}）" if msci else "公开评级快照"
+    title = seo.get("title") or f"{company}（{code}）ESG 报告拆解：{ep['angle']}"
+    description = seo.get("description") or (
+        f"{company}（{code}）《{report_title}》拆解：报告阅读地图、章节页码与{rating}，"
+        f"说明不同机构评级口径的差异。"
+    )
+    return title, _short(description, 158)
+
+
+_COPY_SCRIPT = """
+<script>
+document.addEventListener("click", async function (event) {
+  const button = event.target.closest("[data-copy]");
+  if (!button) return;
+  const node = document.getElementById(button.getAttribute("data-copy"));
+  if (!node) return;
+  const text = node.textContent;
+  button.textContent = "已复制";
+  setTimeout(function () { button.textContent = "复制"; }, 8000);
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch (error) {
+    const area = document.createElement("textarea");
+    area.value = text;
+    area.style.position = "fixed";
+    area.style.opacity = "0";
+    document.body.appendChild(area);
+    area.select();
+    document.execCommand("copy");
+    area.remove();
+  }
+});
+</script>
+"""
+
+
+def render_daily_detail(ep: dict, base: str) -> str:
+    """单期独立页：正文、阅读地图、评级表与分发文案都在这一页。"""
+    canonical = f"{base}/daily/{ep['slug']}"
+    title, description = _episode_seo(ep)
+    crumb, crumb_ld = _breadcrumb(
+        [
+            ("报告拆解", "/daily"),
+            (f"{ep['company']}（{ep['code']}）", canonical),
+        ]
+    )
+    pager = []
+    prev_ep = content.daily_episode(ep["prev"]) if ep.get("prev") else None
+    next_ep = content.daily_episode(ep["next"]) if ep.get("next") else None
+    if prev_ep:
+        pager.append(
+            f'<a class="btn ghost" href="/daily/{esc(prev_ep["slug"])}">'
+            f'← 第 {esc(prev_ep.get("issue", ""))} 期 · {esc(prev_ep["company"])}</a>'
+        )
+    if next_ep:
+        pager.append(
+            f'<a class="btn ghost" href="/daily/{esc(next_ep["slug"])}">'
+            f'第 {esc(next_ep.get("issue", ""))} 期 · {esc(next_ep["company"])} →</a>'
+        )
+    pager.append('<a class="btn primary" href="/daily">全部拆解</a>')
+
+    body = f"""{crumb}
+<article class="episode-page">
+{_daily_article_body(ep, base, heading="h1")}
+</article>
+<nav class="section" aria-label="期次导航"><div class="hero-actions">{''.join(pager)}</div></nav>
+{_COPY_SCRIPT}
+"""
+    published = f"{ep['date']}T09:00:00+08:00"
+    jsonld = [
+        {
+            "@context": "https://schema.org",
+            "@type": "Article",
+            "headline": title,
+            "description": description,
+            "datePublished": published,
+            "dateModified": published,
+            "inLanguage": "zh-Hans",
+            "mainEntityOfPage": canonical,
+            "about": {
+                "@type": "Corporation",
+                "name": ep["company"],
+                "tickerSymbol": ep["code"],
+            },
+            "author": {"@type": "Organization", "name": SITE_NAME},
+            "publisher": {"@type": "Organization", "name": SITE_NAME, "url": base},
+            "isPartOf": {
+                "@type": "CollectionPage",
+                "name": "上市公司 ESG 报告拆解",
+                "url": f"{base}/daily",
+            },
+        },
+        {"@context": "https://schema.org", **crumb_ld},
+    ]
+    return layout(
+        title=title,
+        description=description,
+        canonical=canonical,
+        body=body,
+        base=base,
+        active="daily",
+        jsonld=jsonld,
+        og_type="article",
+        published=published,
+    )
+
+
 def render_daily_index(base: str) -> str:
     series = content.series()
     episodes = content.daily_episodes()
     stats = content.site_stats()
     method = "".join(f"<li>{esc(x)}</li>" for x in series.get("method", []))
-    toc = "".join(_episode_toc(e) for e in episodes)
 
-    blocks = []
-    for index, ep in enumerate(episodes):
-        blocks.append(
-            f"""<details class="episode-block" id="{esc(ep['slug'])}" {"open" if index == 0 else ""}>
-  <summary>
-    <span class="ep-date">{esc(ep['date'])}</span>
-    <span class="ep-main"><strong>{esc(ep['company'])}</strong>｜{esc(ep['angle'])}</span>
-    <span class="ep-meta">{esc(ep['industry'])} · {esc(ep['code'])} · 第 {esc(ep.get('issue', ''))} 期</span>
-    {_rating_chip(ep)}
-  </summary>
-  <div class="episode-body">{_daily_article_body(ep, base)}</div>
-</details>"""
-        )
+    rows = "".join(_episode_row(e) for e in episodes)
+    slugs_js = json.dumps([e["slug"] for e in episodes], ensure_ascii=False)
 
     canonical = f"{base}/daily"
     body = f"""
@@ -520,12 +613,11 @@ def render_daily_index(base: str) -> str:
 
 <section class="section">
   <div class="section-head">
-    <h2>全部拆解</h2>
-    <p>每期的正文、阅读地图、评级表和分发文案都在这一个页面里；点开即可阅读和复制。</p>
+    <h2>全部拆解（{stats['episodes']} 期）</h2>
+    <p>每期独立成页，包含报告阅读地图、评级快照与可直接复制的分发文案。</p>
     <a class="more" href="/daily/feed.xml">RSS 订阅 →</a>
   </div>
-  <nav class="episode-toc" aria-label="往期目录">{toc}</nav>
-  <div class="episode-list">{''.join(blocks) or '<p class="muted">内容尚未生成，请先运行 python -m v2.scripts.daily_update。</p>'}</div>
+  <div class="daily-list">{rows or '<p class="muted">内容尚未生成，请先运行 python -m v2.scripts.daily_update。</p>'}</div>
 </section>
 
 <section class="callout">
@@ -534,35 +626,16 @@ def render_daily_index(base: str) -> str:
 </section>
 
 <script>
-function openHashEpisode() {{
-  if (!location.hash) return;
-  const node = document.getElementById(decodeURIComponent(location.hash.slice(1)));
-  if (node && node.tagName === "DETAILS") node.open = true;
-}}
-openHashEpisode();
-window.addEventListener("hashchange", openHashEpisode);
-
-document.addEventListener("click", async function (event) {{
-  const button = event.target.closest("[data-copy]");
-  if (!button) return;
-  const node = document.getElementById(button.getAttribute("data-copy"));
-  if (!node) return;
-  const text = node.textContent;
-  button.textContent = "已复制";
-  setTimeout(function () {{ button.textContent = "复制"; }}, 8000);
-  try {{
-    await navigator.clipboard.writeText(text);
-  }} catch (error) {{
-    const area = document.createElement("textarea");
-    area.value = text;
-    area.style.position = "fixed";
-    area.style.opacity = "0";
-    document.body.appendChild(area);
-    area.select();
-    document.execCommand("copy");
-    area.remove();
+// 旧链接形如 /daily#2026-11-26-01211：这类锚点服务器收不到，只能在浏览器侧
+// 转到对应的独立页面，避免旧分享链接变成死链。
+(function () {{
+  var slug = location.hash ? decodeURIComponent(location.hash.slice(1)) : "";
+  if (!slug) return;
+  var known = {slugs_js};
+  if (known.indexOf(slug) !== -1) {{
+    location.replace("/daily/" + encodeURIComponent(slug));
   }}
-}});
+}})();
 </script>
 """
     jsonld = [
@@ -580,7 +653,7 @@ document.addEventListener("click", async function (event) {{
                     {
                         "@type": "ListItem",
                         "position": i + 1,
-                        "url": f"{base}/daily#{e['slug']}",
+                        "url": f"{base}/daily/{e['slug']}",
                         "name": f"{e['company']}：{e['angle']}",
                     }
                     for i, e in enumerate(episodes)
@@ -633,6 +706,9 @@ def render_sitemap(base: str) -> str:
     ]
     for p in content.learn_paths():
         entries.append((f"/learn/{p['slug']}", latest, "monthly", "0.8"))
+    # 每期拆解独立成页，各自进 sitemap；lastmod 用该期发布日期
+    for ep in content.daily_episodes():
+        entries.append((f"/daily/{ep['slug']}", ep["date"], "monthly", "0.7"))
     urls = "\n".join(
         f"  <url><loc>{xml_escape(base + path)}</loc><lastmod>{lastmod}</lastmod>"
         f"<changefreq>{freq}</changefreq><priority>{priority}</priority></url>"
@@ -665,12 +741,12 @@ def render_feed(base: str) -> str:
             pub = dt.strftime("%a, %d %b %Y %H:%M:%S +0000")
         except ValueError:
             pub = ""
-        link = f"{base}/daily#{ep['slug']}"
+        link = f"{base}/daily/{ep['slug']}"
         items.append(
             f"""    <item>
       <title>{xml_escape(ep['company'] + '：' + ep['angle'])}</title>
       <link>{xml_escape(link)}</link>
-      <guid isPermaLink="false">{xml_escape(link)}</guid>
+      <guid isPermaLink="true">{xml_escape(link)}</guid>
       <pubDate>{pub}</pubDate>
       <category>{xml_escape(ep['industry'])}</category>
       <description>{xml_escape(_short(ep['hook'], 220))}</description>

@@ -144,11 +144,12 @@ def daily_home(request: Request):
 
 @app.get("/daily/{slug}", include_in_schema=False)
 def daily_detail(slug: str, request: Request):
-    """旧文章链接统一定位到单页里的对应一期。"""
+    """单期独立页；旧锚点 /daily#<slug> 由索引页脚本转到同一地址。"""
     base = _site_base(request)
-    if site_content.daily_episode(slug) is None:
+    ep = site_content.daily_episode(slug)
+    if ep is None:
         return HTMLResponse(site_render.render_not_found(base), status_code=404)
-    return RedirectResponse(url=f"/daily#{slug}", status_code=301)
+    return HTMLResponse(site_render.render_daily_detail(ep, base))
 
 
 @app.get("/api/daily/latest", tags=["site"])
@@ -167,7 +168,7 @@ def daily_latest(limit: int = Query(3, ge=1, le=20)):
                 "angle": ep["angle"],
                 "hook": ep["hook"],
                 "msci": ep.get("rating_meta", {}).get("msci"),
-                "url": f"/daily#{ep['slug']}",
+                "url": f"/daily/{ep['slug']}",
             }
             for ep in episodes
         ],

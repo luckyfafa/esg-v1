@@ -343,6 +343,15 @@ def build_episode(
             "pages": pages,
             "source": "港交所披露易",
         },
+        # 每期独立页的 title/description；后续可人工改写为更贴搜索词的版本
+        "seo": {
+            "title": f"{company}（{code}）ESG 报告拆解：{angle}",
+            "description": (
+                f"{company}（{code}）《{report['title']}》拆解：报告阅读地图、章节页码与公开评级快照"
+                + (f"，MSCI {msci['rating']}" if msci else "")
+                + "，并说明不同机构评级口径的差异。"
+            ),
+        },
         "ratings": ratings,
         "rating_meta": {
             "count": len(ratings),

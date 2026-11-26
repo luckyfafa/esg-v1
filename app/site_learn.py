@@ -6,8 +6,8 @@
     /learn              学习中心
     /learn/<slug>       单条学习路径
     /learn/site.css     学习页样式（主站 /ui 已被工具界面占用）
-    /daily              每日拆解
-    /daily/<slug>       301 到 /daily#<slug>
+    /daily              每日拆解索引（全部期次）
+    /daily/<slug>       单期独立页；旧锚点 /daily#<slug> 由索引页脚本转到该地址
     /daily/feed.xml     每日拆解 RSS
 """
 from __future__ import annotations
@@ -15,7 +15,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from fastapi import APIRouter, Request
-from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse, Response
+from fastapi.responses import FileResponse, HTMLResponse, Response
 
 from v2.app.site import content as site_content
 from v2.app.site import render as site_render
@@ -73,11 +73,12 @@ def daily_home(request: Request):
 
 @router.get("/daily/{slug}", include_in_schema=False)
 def daily_detail(slug: str, request: Request):
-    """旧的单期链接统一定位到单页里的对应一期。"""
+    """单期独立页；旧锚点 /daily#<slug> 由索引页脚本转到同一地址。"""
     base = _site_base(request)
-    if site_content.daily_episode(slug) is None:
+    ep = site_content.daily_episode(slug)
+    if ep is None:
         return HTMLResponse(site_render.render_not_found(base), status_code=404)
-    return RedirectResponse(url=f"/daily#{slug}", status_code=301)
+    return HTMLResponse(site_render.render_daily_detail(ep, base))
 
 
 def learn_paths() -> list[str]:
@@ -85,3 +86,8 @@ def learn_paths() -> list[str]:
     paths = ["/learn", "/daily"]
     paths += [f"/learn/{p['slug']}" for p in site_content.learn_paths()]
     return paths
+
+
+def daily_paths() -> list[str]:
+    """每期拆解独立成页，一并进 sitemap。"""
+    return [f"/daily/{ep['slug']}" for ep in site_content.daily_episodes()]

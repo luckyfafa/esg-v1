@@ -44,7 +44,7 @@ from .schemas import (
     MultiAgencyESG,
     SBTiTarget,
 )
-from .site_learn import learn_paths, router as learn_router
+from .site_learn import daily_paths, learn_paths, router as learn_router
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 app = FastAPI(
@@ -100,7 +100,7 @@ def ads_txt():
 @app.get("/sitemap.xml", include_in_schema=False)
 def sitemap_xml(request: Request):
     base = str(request.base_url).rstrip("/")
-    pages = ["/", "/tools/collection-template", "/tools/carbon-guide"] + learn_paths()
+    pages = ["/", "/tools/collection-template", "/tools/carbon-guide"] + learn_paths() + daily_paths()
     urls = "\n".join(
         f"  <url><loc>{base}{p}</loc><changefreq>weekly</changefreq>"
         f"<priority>{'1.0' if p == '/' else '0.8'}</priority></url>"
