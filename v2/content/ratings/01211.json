@@ -1,0 +1,84 @@
+{
+  "code": "01211",
+  "symbol": "hk01211",
+  "company": "比亚迪股份",
+  "fetched_at": "2026-11-26",
+  "source": "新浪财经 ESG 公开数据",
+  "source_url": "https://finance.sina.com.cn/",
+  "api": "https://global.finance.sina.com.cn/api/openapi.php/EsgService.getEsgStockInfo",
+  "note": "仅保留接口返回的机构与结果；未覆盖的机构不补值。不同机构口径不同，分数不可横向比较。",
+  "ratings": [
+    {
+      "agency": "MSCI",
+      "rating": "AA",
+      "rating_date": "2026-11-23",
+      "environmental": "8.22",
+      "social": "3.97",
+      "governance": "4.87"
+    },
+    {
+      "agency": "标普",
+      "rating": "50+",
+      "rating_date": "2026-08-20",
+      "environmental": null,
+      "social": null,
+      "governance": null
+    },
+    {
+      "agency": "商道融绿",
+      "rating": "A",
+      "rating_date": "2026Q2",
+      "environmental": null,
+      "social": null,
+      "governance": null
+    },
+    {
+      "agency": "联合赤道",
+      "rating": "AA+",
+      "rating_date": "2026Q4",
+      "environmental": null,
+      "social": null,
+      "governance": null
+    },
+    {
+      "agency": "中诚信",
+      "rating": "AA-",
+      "rating_date": "2026Q4",
+      "environmental": null,
+      "social": null,
+      "governance": null
+    },
+    {
+      "agency": "秩鼎",
+      "rating": "83.39(AAA)",
+      "rating_date": "2026Q4",
+      "environmental": "86.12(AAA)",
+      "social": "72.56(AA)",
+      "governance": "90.58(AAA)"
+    },
+    {
+      "agency": "华证",
+      "rating": "BBB",
+      "rating_date": "2026Q3",
+      "environmental": null,
+      "social": null,
+      "governance": null
+    },
+    {
+      "agency": "妙盈",
+      "rating": "A",
+      "rating_date": "2026Q3",
+      "environmental": null,
+      "social": null,
+      "governance": null
+    },
+    {
+      "agency": "中财绿金院",
+      "rating": "A+",
+      "rating_date": "2021Q4",
+      "environmental": null,
+      "social": null,
+      "governance": null
+    }
+  ]
+}
