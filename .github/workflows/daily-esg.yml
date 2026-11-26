@@ -9,6 +9,10 @@ on:
   schedule:
     - cron: "0 0 * * *"   # UTC 00:00 = 北京时间 08:00
   workflow_dispatch:
+  # 改动工作流本身时也跑一次，避免文件写坏了却要等到第二天才发现
+  push:
+    paths:
+      - ".github/workflows/daily-esg.yml"
 
 permissions:
   contents: write
