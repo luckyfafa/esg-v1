@@ -1,0 +1,76 @@
+{
+  "code": "02020",
+  "symbol": "hk02020",
+  "company": "安踏体育",
+  "fetched_at": "2026-11-27",
+  "source": "新浪财经 ESG 公开数据",
+  "source_url": "https://finance.sina.com.cn/",
+  "api": "https://global.finance.sina.com.cn/api/openapi.php/EsgService.getEsgStockInfo",
+  "note": "仅保留接口返回的机构与结果；未覆盖的机构不补值。不同机构口径不同，分数不可横向比较。",
+  "ratings": [
+    {
+      "agency": "MSCI",
+      "rating": "AA",
+      "rating_date": "2026-11-13",
+      "environmental": "7.59",
+      "social": "4.02",
+      "governance": "5.8"
+    },
+    {
+      "agency": "标普",
+      "rating": "70+",
+      "rating_date": "2026-09-25",
+      "environmental": null,
+      "social": null,
+      "governance": null
+    },
+    {
+      "agency": "商道融绿",
+      "rating": "A",
+      "rating_date": "2026Q3",
+      "environmental": null,
+      "social": null,
+      "governance": null
+    },
+    {
+      "agency": "联合赤道",
+      "rating": "AA-",
+      "rating_date": "2026Q4",
+      "environmental": null,
+      "social": null,
+      "governance": null
+    },
+    {
+      "agency": "中诚信",
+      "rating": "A-",
+      "rating_date": "2026Q4",
+      "environmental": null,
+      "social": null,
+      "governance": null
+    },
+    {
+      "agency": "秩鼎",
+      "rating": "81.01(AAA)",
+      "rating_date": "2026Q4",
+      "environmental": "90.09(AAA)",
+      "social": "69.91(A)",
+      "governance": "82.48(AAA)"
+    },
+    {
+      "agency": "华证",
+      "rating": "AA",
+      "rating_date": "2026Q3",
+      "environmental": null,
+      "social": null,
+      "governance": null
+    },
+    {
+      "agency": "妙盈",
+      "rating": "A",
+      "rating_date": "2026Q3",
+      "environmental": null,
+      "social": null,
+      "governance": null
+    }
+  ]
+}
