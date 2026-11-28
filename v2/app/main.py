@@ -9,6 +9,7 @@
 from __future__ import annotations
 
 import logging
+import os
 import uuid
 from pathlib import Path
 
@@ -268,8 +269,9 @@ def rules_applicable(
 
 @app.get("/api/template", tags=["dataset"])
 def download_template(code: str = Query("", description="采集表付费授权码")):
-    """下载 V2 采集表模板（含规则映射与碳活动表），需付费授权码。"""
-    if not payment_licenses.verify(code):
+    """下载 V2 采集表模板（含规则映射与碳活动表），仅「采集表」scope 或管理员可下。"""
+    admin = os.environ.get("ADMIN_TOKEN", "")
+    if payment_licenses.verify(code) != "template" and not (admin and code == admin):
         raise HTTPException(
             status_code=402,
             detail={
