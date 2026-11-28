@@ -21,6 +21,7 @@ from . import __version__
 from .config import settings
 from .payment import licenses as payment_licenses
 from .payment.routes import router as pay_router
+from .polish.routes import router as polish_router
 from .rules import applicable_rules, load_ruleset
 from .site import content as site_content
 from .site import render as site_render
@@ -64,6 +65,8 @@ if WEB_DIR.exists():
 
 # 采集表付费下载（与主站共用同一套商品表、授权码与微信商户参数）
 app.include_router(pay_router)
+# 报告润色版（同一套授权码，V1 也挂载此路由）
+app.include_router(polish_router)
 
 # V2 规划模块；skeleton 阶段如实标注状态，避免被误认为已可用
 MODULES = [
@@ -91,13 +94,7 @@ MEDIA_TYPES = {
 }
 
 
-def _polish_payload(result) -> dict:
-    """统一润色接口返回：元数据 + 下载地址。"""
-    data = result.as_dict(include_text=False)
-    data["downloads"] = {
-        k: f"/api/polish/file/{Path(v).name}" for k, v in result.files.items()
-    }
-    return data
+# 润色版接口见 v2/app/polish/routes.py。
 
 
 def _site_base(request: Request) -> str:
@@ -329,91 +326,5 @@ async def validate_dataset(file: UploadFile = File(..., description="填写后�
     }
 
 
-@app.get("/api/polish/samples", tags=["polish"])
-def polish_samples():
-    """已下载的港股 ESG 报告样本（用于写作风格对标）。"""
-    if not SAMPLE_INDEX.exists():
-        return {"samples": [], "note": "样本尚未下载，请运行 python -m v2.scripts.fetch_hkex_samples"}
-    import json
-
-    samples = json.loads(SAMPLE_INDEX.read_text(encoding="utf-8"))
-    return {
-        "count": len(samples),
-        "samples": [
-            {k: v for k, v in s.items() if k != "file"} | {"file": Path(s["file"]).name}
-            for s in samples.values()
-        ],
-    }
-
-
-@app.post("/api/polish/report", tags=["polish"])
-async def polish_report(
-    file: UploadFile = File(..., description="非上市企业 ESG 数据采集表（.xlsx）"),
-    industry: str | None = Query(None, description="行业覆盖：manufacturing/retail/technology/..." ),
-    code: str = Query("", description="报告润色版授权码（或管理员口令）"),
-):
-    """把采集表生成「底稿 + 上市公司风格润色版」（需「报告润色版」授权）。"""
-    import os
-
-    allowed = payment_licenses.verify(code) == "polish"
-    if not allowed and code:
-        allowed = bool(os.environ.get("ADMIN_TOKEN")) and code == os.environ.get("ADMIN_TOKEN")
-    if not allowed:
-        raise HTTPException(
-            status_code=402,
-            detail={
-                "code": "POLISH_LOCKED",
-                "message": "润色版需「报告润色版」授权码；采集表码与报告码不可通用。",
-                "unlock_url": "/#pricing",
-            },
-        )
-    suffix = Path(file.filename or "").suffix.lower()
-    if suffix not in (".xlsx", ".xlsm"):
-        raise HTTPException(status_code=400, detail="仅支持 .xlsx / .xlsm 格式")
-    content = await file.read()
-    if not content:
-        raise HTTPException(status_code=400, detail="上传文件为空")
-    if len(content) > MAX_UPLOAD_BYTES:
-        raise HTTPException(status_code=413, detail="文件超过 10MB 限制")
-
-    from .polish import polish_bytes
-
-    try:
-        result = polish_bytes(content, file.filename or "upload.xlsx", industry=industry)
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
-    except Exception as e:  # noqa: BLE001
-        logging.exception("润色版生成失败")
-        raise HTTPException(status_code=500, detail=f"生成失败：{e}")
-    return _polish_payload(result)
-
-
-@app.post("/api/polish/sample", tags=["polish"])
-def polish_demo(industry: str | None = Query(None)):
-    """用内置填写示例生成一套润色版，便于快速查看效果。"""
-    if not DEMO_WORKBOOK.exists():
-        raise HTTPException(status_code=404, detail="缺少示例采集表 docs/非上市企业ESG数据采集表-填写示例.xlsx")
-    from .polish import polish_excel
-
-    try:
-        result = polish_excel(DEMO_WORKBOOK, industry=industry)
-    except Exception as e:  # noqa: BLE001
-        logging.exception("示例润色版生成失败")
-        raise HTTPException(status_code=500, detail=f"生成失败：{e}")
-    return _polish_payload(result)
-
-
-@app.get("/api/polish/file/{name}", tags=["polish"])
-def polish_file(name: str):
-    """下载润色版产物（仅允许 polished 目录下的文件名）。"""
-    if Path(name).name != name:
-        raise HTTPException(status_code=400, detail="非法文件名")
-    target = POLISH_DIR / name
-    if not target.exists() or not target.is_file():
-        raise HTTPException(status_code=404, detail="文件不存在")
-    return FileResponse(
-        target,
-        filename=name,
-        media_type=MEDIA_TYPES.get(target.suffix, "application/octet-stream"),
-    )
+# 润色版接口统一在 v2/app/polish/routes.py，V1 与 V2 共用同一套路由与授权。
 

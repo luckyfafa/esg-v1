@@ -48,6 +48,7 @@ from .site_learn import router as learn_router, sitemap_entries
 from v2.app.indexnow import KEY as INDEXNOW_KEY
 from v2.app.payment.licenses import verify as verify_template_license
 from v2.app.payment.routes import router as pay_router
+from v2.app.polish.routes import router as polish_router
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 app = FastAPI(
@@ -71,6 +72,8 @@ if WEB_DIR.exists():
 app.include_router(learn_router)
 # 采集表付费下载（下单 / 查单 / 微信回调）：业务逻辑放 V2，主站只挂路由。
 app.include_router(pay_router)
+# 报告润色版：与 V2 共用同一套路由与授权码。
+app.include_router(polish_router)
 
 
 @app.get("/", include_in_schema=False)

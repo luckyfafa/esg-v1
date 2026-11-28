@@ -580,6 +580,8 @@
         </div>
         <div class="md" id="p-md"></div>
       </div>
+
+      <div id="p-polish" class="hide" style="margin-top:14px"></div>
     </div>
   </section>
 
@@ -2164,6 +2166,36 @@ async function unlockFullReport() {
   $("#p-run").click();
 }
 
+async function generatePolishFromApp() {
+  if (!pickedFile) return toast(matText("请先上传采集表", "Upload a workbook first"), true);
+  if (!window.ESGPay) return;
+  const code = await ESGPay.ensure({ productId: "esg-polish", source: "diagnose" });
+  if (!code) return;
+  const box = document.getElementById("p-polish");
+  box.classList.remove("hide");
+  box.innerHTML = `<div class="card flat">正在生成润色版（读取采集表、重组章节、校验数字）…</div>`;
+  const fd = new FormData();
+  fd.append("file", pickedFile);
+  try {
+    const res = await fetch("/api/polish/report?code=" + encodeURIComponent(code), { method: "POST", body: fd });
+    const d = await res.json();
+    if (!res.ok) throw new Error((d.detail && d.detail.message) || d.detail || ("HTTP " + res.status));
+    const labels = { draft: "底稿 Markdown", polished: "润色版 Markdown", html: "润色版 HTML（打印 PDF）", meta: "校验报告 JSON" };
+    const links = Object.keys(d.downloads || {})
+      .map(k => `<a class="btn ghost sm" href="${d.downloads[k]}" target="_blank" rel="noopener">${labels[k] || k}</a>`)
+      .join(" ");
+    const m = d.meta || {};
+    const sizes = (m.draft_chars && m.polished_chars)
+      ? `底稿 ${m.draft_chars} 字 → 润色版 ${m.polished_chars} 字`
+      : "已生成底稿与润色版";
+    box.innerHTML = `<div class="card flat"><b>润色版已生成</b>
+      <div class="muted" style="margin:6px 0 10px">${sizes}，下载后可用浏览器打印为 PDF。</div>
+      <div class="row">${links}</div></div>`;
+  } catch (e) {
+    box.innerHTML = `<div class="card flat" style="color:var(--bad)">生成失败：${esc(e.message)}</div>`;
+  }
+}
+
 async function buyProduct(id, source) {
   if (!window.ESGPay) return;
   const code = await ESGPay.ensure({ productId: id, source: source || "pricing" });
@@ -2176,7 +2208,7 @@ async function buyProduct(id, source) {
     toast(matText("已解锁完整报告，重新上传采集表即可查看全部章节", "Unlocked. Re-upload your workbook to view all chapters."));
     return;
   }
-  toast(matText("已解锁润色版，请在报告润色页面粘贴该授权码生成", "Polished report unlocked. Use this code on the polish page."));
+  toast(matText("已解锁润色版，请上传采集表后点击「生成润色版」", "Unlocked. Upload a workbook and click Generate polished report."));
 }
 
 function downloadTemplate(e) {
@@ -2816,6 +2848,7 @@ $("#p-run").addEventListener("click", async () => {
         <b>${lockedNow ? (currentLang === 'zh' ? '以上为第一章试读' : 'Chapter 1 preview only') : (currentLang === 'zh' ? '以上为完整诊断报告' : 'Full report unlocked')}.</b> ${t('private.cta_sub')}
       </div>
       ${lockedNow ? `<button class="btn" onclick="unlockFullReport()">${currentLang === 'zh' ? '解锁完整报告 ¥1,980' : 'Unlock full report'}</button>` : ""}
+      <button class="btn ghost" onclick="generatePolishFromApp()">${currentLang === 'zh' ? '生成润色版 ¥4,980' : 'Generate polished report'}</button>
       <button class="btn ghost" onclick="openLead('private-diagnose', {company:'${esc(d.company || "")}', industry:'${esc(d.industry || "")}'})">${t('private.cta')}</button>`;
     $("#p-out").classList.remove("hide");
     $("#p-out").prepend(cta);
