@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>非上市企业 ESG 数据采集表模板下载（E/S/G 三表）｜ESG 智能报告系统</title>
-<meta name="description" content="免费下载非上市企业 ESG 数据采集表模板：E-环境 24 项、S-社会 24 项、G-治理 16 项、行业特有 18 项，含编号、口径、优先级、数据来源与证据索引。填完可自动诊断完整度并做碳核算。">
+<title>非上市企业 ESG 数据采集表下载（免费精简版 20 项 + 完整版 82 项）｜ESG 智能报告系统</title>
+<meta name="description" content="免费下载非上市企业 ESG 采集表精简版（20 项核心指标，可直接上传诊断）；完整版 82 项含行业特有指标、证据索引与行业对标，付费获取。E-环境、S-社会、G-治理三表，附填写规则与碳核算字段。">
 <meta name="robots" content="index,follow">
 <link rel="canonical" href="https://esg-v1-0uyh.onrender.com/tools/collection-template">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="ESG 智能报告系统">
-<meta property="og:title" content="非上市企业 ESG 数据采集表模板下载（E/S/G 三表）">
-<meta property="og:description" content="一张采集表汇总多部门 ESG 数据，覆盖环境 24 项、社会 24 项、治理 16 项，含碳核算所需能耗字段。">
+<meta property="og:title" content="非上市企业 ESG 数据采集表下载（E/S/G 三表）">
+<meta property="og:description" content="一张采集表汇总多部门 ESG 数据，覆盖环境 24 项、社会 24 项、治理 16 项，含碳核算所需能耗字段。指标清单免费查看，完整 Excel 付费获取。">
 <meta property="og:url" content="https://esg-v1-0uyh.onrender.com/tools/collection-template">
 <meta property="og:image" content="https://esg-v1-0uyh.onrender.com/ui/og-cover.png">
 <meta name="twitter:card" content="summary_large_image">
@@ -66,7 +66,7 @@
   th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
   th{background:var(--soft);font-weight:700}
   .cta{display:flex;gap:12px;flex-wrap:wrap;margin:22px 0 8px}
-  .btn{display:inline-block;padding:11px 20px;border-radius:8px;background:var(--green);color:#fff;font-weight:700;font-size:14px}
+  .btn{display:inline-block;padding:11px 20px;border-radius:8px;background:var(--green);color:#fff;font-weight:700;font-size:14px;border:0;cursor:pointer;font-family:inherit}
   .btn:hover{background:var(--green-2);text-decoration:none}
   .btn.ghost{background:#fff;color:var(--green);border:1px solid var(--green)}
   .note{background:#FAF4F0;border-left:3px solid var(--warn);padding:12px 16px;border-radius:0 6px 6px 0;font-size:13.5px;color:#5c3a22;margin:16px 0}
@@ -91,17 +91,59 @@
   </div>
 </header>
 <main>
-  <span class="tag">免费模板 · 无需注册</span>
-  <h1>非上市企业 ESG 数据采集表模板下载</h1>
-  <p class="lead">一张表汇总多部门 ESG 数据，覆盖环境 24 项、社会 24 项、治理 16 项和行业特有 18 项。每项都标注口径说明、优先级、责任部门和证据文件，填完可直接生成诊断报告与碳核算结果。</p>
+  <span class="tag">免费精简版可直接下载 · 完整版付费</span>
+  <h1>非上市企业 ESG 数据采集表（E/S/G 三表）</h1>
+  <p class="lead">免费精简版含 20 项核心指标（E 9 / S 6 / G 5），下载后可直接上传诊断；完整版 82 项，增加全部必填项、行业特有指标、证据索引与行业对标分位，适合对外披露、客户审核与资助申请。</p>
 
   <div class="cta">
-    <a class="btn" href="/client/template">下载空白采集表（.xlsx）</a>
-    <a class="btn ghost" href="/api/carbon/template">下载碳核算活动数据模板（.csv）</a>
+    <a class="btn" href="/client/template-lite" id="get-lite">免费下载精简版（20 项）</a>
+    <button class="btn ghost" type="button" id="get-template">获取完整版（<span data-full-price>¥299</span>）</button>
+    <a class="btn ghost" href="/api/carbon/template">免费下载碳核算活动模板（.csv）</a>
+    <a class="btn ghost" href="#whats-inside">看指标清单</a>
+  </div>
+
+  <div class="card" id="unlock" style="border-color:#C9DCD2;background:var(--soft)">
+    <h3 style="margin-top:0">免费精简版与完整版怎么选</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:8px 0 12px">
+      <div style="background:#fff;border:1px solid var(--line);border-radius:8px;padding:12px 14px">
+        <div style="font-weight:700;color:var(--green)">免费精简版 · ¥0</div>
+        <ul style="margin:6px 0 10px 18px;font-size:13px">
+          <li>20 项核心指标（E9 / S6 / G5）</li>
+          <li>覆盖能耗、范围一/二、水、废弃物、员工结构、安全、董事会与反腐</li>
+          <li>可上传系统做诊断（缺口清单只按这 20 项计算）</li>
+          <li>不含行业特有指标、证据索引、行业对标</li>
+        </ul>
+        <a class="btn" href="/client/template-lite" id="get-lite-2" style="display:block;text-align:center">免费下载</a>
+      </div>
+      <div style="background:#fff;border:1px solid #9FBFAC;border-radius:8px;padding:12px 14px">
+        <div style="font-weight:700">完整版 · <span data-full-price>¥299</span>／企业</div>
+        <ul style="margin:6px 0 10px 18px;font-size:13px">
+          <li>82 项：E24 / S24 / G16 + 行业特有 18 项</li>
+          <li>含证据索引、行业对标分位、港府问卷 48 题</li>
+          <li>适合对外披露、客户供应链审核、资助申请</li>
+          <li>可上传诊断；含 1 年版本更新</li>
+        </ul>
+        <button class="btn" type="button" id="get-template-2" style="width:100%">微信扫码获取</button>
+      </div>
+    </div>
+    <p style="font-size:12.5px;color:var(--muted);margin:0 0 8px">两版结构一致、都能上传诊断；精简版的数据可直接迁移到完整版，无需重填。</p>
+    <div style="margin-top:12px">
+      <label for="license-input" style="font-weight:700;font-size:13.5px">已有完整版授权码</label>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <input id="license-input" placeholder="ESG-订单号-签名" autocomplete="off" style="flex:1;min-width:0;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font:inherit;background:#fff">
+        <button class="btn" type="button" id="license-ok">解锁下载</button>
+      </div>
+      <p id="license-msg" style="font-size:12.5px;color:var(--muted);margin:6px 0 0"></p>
+    </div>
+    <p style="font-size:12.5px;color:var(--muted);margin:10px 0 0">
+      已下载过旧版完整表或已填好表？上传诊断不受影响；
+      如需过渡授权码，<a href="mailto:webmarinda@gmail.com?subject=ESG%E9%87%87%E9%9B%86%E8%A1%A8%E8%BF%87%E6%B8%A1%E6%8E%88%E6%9D%83">邮件申请</a>。
+    </p>
   </div>
   <p style="font-size:12.5px;color:var(--muted)">空白表不含示例数据；如需看填写颗粒度，可在工具内参考示例文件，但请勿照抄。</p>
 
-  <h2>这张表包含什么</h2>
+  <h2 id="whats-inside">完整版包含什么</h2>
+  <p style="font-size:13px;color:var(--muted)">以下为完整版（¥299）结构；免费精简版仅保留其中 20 项核心指标，其余字段不提供。</p>
   <p>采集表按三个维度分页，另附行业特有指标、证据索引和行业对标：</p>
   <table>
     <thead><tr><th>分页</th><th>内容</th><th>数量</th></tr></thead>
@@ -181,7 +223,7 @@
   </div>
 
   <h2>获取填写示例与常见填错清单</h2>
-  <p>模板下载免费，不需要留资。如果想要一份已脱敏的填写示例、10 个常见填错点和后续模板更新提醒，留下公司名和邮箱，我们发给你。</p>
+  <p>完整模板为付费下载。留个公司名和邮箱，我们免费发你一份已脱敏的填写示例、10 个常见填错点和行业指标清单；已购买用户另附版本更新提醒。</p>
   <form id="lead-form" class="card" style="max-width:560px">
     <label>公司全称 <span style="color:#c00">*</span>
       <input name="company" required maxlength="100" placeholder="如 某某科技有限公司"></label>
@@ -219,9 +261,10 @@
   </div>
   模板仅供内部填报与底稿整理，不构成审计或鉴证意见。数值请对照原始单据复核。
 </footer>
+<script src="/ui/pay.js"></script>
 <script>
-/* 下载走 fetch + blob，兼容对内嵌浏览器附件下载的拦截；延后回收避免下载被中断 */
-document.querySelectorAll('a[href^="/client/template"], a[href^="/api/carbon/template"]').forEach(function (a) {
+/* 免费 CSV 模板：走 fetch + blob，兼容内嵌浏览器对附件下载的拦截 */
+document.querySelectorAll('a[href^="/api/carbon/template"]').forEach(function (a) {
   a.addEventListener('click', async function (ev) {
     if (!window.fetch) return;
     ev.preventDefault();
@@ -233,16 +276,117 @@ document.querySelectorAll('a[href^="/client/template"], a[href^="/api/carbon/tem
       var u = URL.createObjectURL(blob);
       var el = document.createElement('a');
       el.href = u;
-      el.download = href.indexOf('carbon') >= 0 ? 'ESG碳核算活动数据模板.csv' : 'ESG数据采集表模板.xlsx';
+      el.download = 'ESG碳核算活动数据模板.csv';
       document.body.appendChild(el);
       el.click();
       setTimeout(function () { el.remove(); URL.revokeObjectURL(u); }, 3000);
-      if (window.gtag) gtag('event', 'download_template', { source: 'landing-collection' });
+      if (window.gtag) gtag('event', 'download_template', { source: 'landing-carbon-csv' });
     } catch (e) {
       location.href = href;
     }
   });
 });
+
+/* 免费精简版：无需授权码，直接下载 */
+function downloadLite(ev) {
+  if (ev) ev.preventDefault();
+  fetch('/client/template-lite')
+    .then(function (res) {
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.blob();
+    })
+    .then(function (blob) {
+      var u = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = u;
+      a.download = 'ESG数据采集表-精简版.xlsx';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function () { a.remove(); URL.revokeObjectURL(u); }, 3000);
+      if (window.gtag) gtag('event', 'download_template', { source: 'landing-lite' });
+    })
+    .catch(function (e) {
+      var msg = document.getElementById('license-msg');
+      if (msg) msg.textContent = '精简版下载失败：' + e.message + '，请刷新后重试。';
+    });
+}
+['get-lite', 'get-lite-2'].forEach(function (id) {
+  var el = document.getElementById(id);
+  if (el) el.addEventListener('click', downloadLite);
+});
+
+/* 价格以后端商品表为准（改价无需改页面） */
+fetch('/api/pay/config', { cache: 'no-store' })
+  .then(function (r) { return r.json(); })
+  .then(function (cfg) {
+    var p = (cfg.products || [])[0];
+    if (!p) return;
+    document.querySelectorAll('[data-full-price]').forEach(function (el) {
+      el.textContent = '¥' + p.price;
+    });
+  })
+  .catch(function () {});
+
+/* 付费采集表：授权码 → 带 code 下载 */
+function downloadTemplateXlsx(code) {
+  if (!code) return;
+  fetch('/client/template?code=' + encodeURIComponent(code))
+    .then(function (res) {
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.blob();
+    })
+    .then(function (blob) {
+      var u = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = u;
+      a.download = 'ESG数据采集表模板.xlsx';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function () { a.remove(); URL.revokeObjectURL(u); }, 3000);
+      if (window.gtag) gtag('event', 'download_template', { source: 'landing-collection' });
+    })
+    .catch(function (e) {
+      var msg = document.getElementById('license-msg');
+      if (msg) msg.textContent = '下载失败：' + e.message + '。请确认授权码有效后重试。';
+    });
+}
+
+function buyTemplate() {
+  if (!window.ESGPay) { location.href = '/tools/collection-template#unlock'; return; }
+  ESGPay.ensure({ productId: 'esg-template', source: 'landing-collection' }).then(function (code) {
+    if (code) downloadTemplateXlsx(code);
+  });
+}
+var b1 = document.getElementById('get-template');
+var b2 = document.getElementById('get-template-2');
+if (b1) b1.addEventListener('click', buyTemplate);
+if (b2) b2.addEventListener('click', buyTemplate);
+
+var li = document.getElementById('license-input');
+var lok = document.getElementById('license-ok');
+if (lok) {
+  lok.addEventListener('click', function () {
+    var msg = document.getElementById('license-msg');
+    var code = (li.value || '').trim();
+    if (!code) { msg.textContent = '请先粘贴授权码'; return; }
+    lok.disabled = true;
+    msg.textContent = '校验中…';
+    (window.ESGPay ? ESGPay.verify(code) : Promise.resolve(false)).then(function (ok) {
+      lok.disabled = false;
+      if (!ok) { msg.textContent = '授权码无效，请核对后重试，或联系人工协助。'; return; }
+      try { localStorage.setItem('esg_license', code); } catch (_) {}
+      msg.textContent = '已解锁，正在下载…';
+      downloadTemplateXlsx(code);
+    });
+  });
+}
+if (li) li.addEventListener('keydown', function (e) { if (e.key === 'Enter') lok.click(); });
+
+/* /client/template 未授权会跳到 ?unlock=1，滚动到获取卡片 */
+if (new URLSearchParams(location.search).get('unlock')) {
+  var box = document.getElementById('unlock');
+  if (box) setTimeout(function () { box.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 60);
+}
 
 /* 邮箱留资：提交到 /api/leads，失败时给出去工具页的出路 */
 var lf = document.getElementById('lead-form');
@@ -260,9 +404,10 @@ if (lf) {
     try {
       var res = await fetch('/api/leads', { method: 'POST', body: fd });
       if (!res.ok) throw new Error('HTTP ' + res.status);
-      msg.innerHTML = '已收到，我们会在 24 小时内联系你。资料可先下载：' +
-        '<a href="/client/template">采集表模板</a> · ' +
-        '<a href="/tools/carbon-guide">碳核算指南</a>';
+      msg.innerHTML = '已收到，我们会在 24 小时内联系你。资料可先看：' +
+        '<a href="/tools/carbon-guide">碳核算指南</a> · ' +
+        '<a href="/api/carbon/template">免费活动数据模板</a>' +
+        '；需要完整采集表可<a href="#unlock">在此获取</a>。';
       lf.reset();
       if (window.gtag) gtag('event', 'lead_submit', { source: 'landing-collection' });
     } catch (e) {

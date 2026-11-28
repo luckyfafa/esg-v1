@@ -19,6 +19,8 @@ from fastapi.staticfiles import StaticFiles
 
 from . import __version__
 from .config import settings
+from .payment import licenses as payment_licenses
+from .payment.routes import router as pay_router
 from .rules import applicable_rules, load_ruleset
 from .site import content as site_content
 from .site import render as site_render
@@ -59,6 +61,9 @@ async def redirect_legacy_host(request: Request, call_next):
 WEB_DIR = Path(__file__).resolve().parent.parent / "web"
 if WEB_DIR.exists():
     app.mount("/ui", StaticFiles(directory=WEB_DIR, html=True), name="ui")
+
+# 采集表付费下载（与主站共用同一套商品表、授权码与微信商户参数）
+app.include_router(pay_router)
 
 # V2 规划模块；skeleton 阶段如实标注状态，避免被误认为已可用
 MODULES = [
@@ -265,8 +270,17 @@ def rules_applicable(
 
 
 @app.get("/api/template", tags=["dataset"])
-def download_template():
-    """下载 V2 采集表模板（含规则映射与碳活动表）。"""
+def download_template(code: str = Query("", description="采集表付费授权码")):
+    """下载 V2 采集表模板（含规则映射与碳活动表），需付费授权码。"""
+    if not payment_licenses.verify(code):
+        raise HTTPException(
+            status_code=402,
+            detail={
+                "code": "TEMPLATE_LOCKED",
+                "message": "V2 采集表模板为付费下载，请先获取授权码。",
+                "unlock_url": "/tools/collection-template?unlock=1#unlock",
+            },
+        )
     if not TEMPLATE_FILE.exists():
         raise HTTPException(status_code=404, detail="V2 模板未生成，请先运行 python -m v2.scripts.build_template")
     return FileResponse(

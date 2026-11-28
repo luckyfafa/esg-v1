@@ -24,3 +24,6 @@ pypdf>=4.8.0
 # LLM 抽取（OpenAI 兼容协议，可对接 DeepSeek/Ollama/Azure 等）
 openai>=1.40.0
 
+# 采集表付费下载：微信支付二维码（纯 Python，无需 Pillow）
+qrcode>=7.4
+

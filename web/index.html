@@ -492,7 +492,7 @@
       <div class="card">
         <div class="drop" id="drop">
           <b>点击或拖拽上传采集表</b>
-          <span>.xlsx / .xlsm，10MB 以内 · 没有模板？<a href="/client/template" download onclick="return downloadTemplate(event)">下载空白模板</a></span>
+          <span>.xlsx / .xlsm，10MB 以内 · 没有模板？<a href="/client/template-lite" onclick="return downloadLiteTemplate(event)">免费下载精简版</a> · <a href="/tools/collection-template" onclick="return downloadTemplate(event)">获取完整版（付费）</a></span>
           <input type="file" id="file" accept=".xlsx,.xlsm" class="hide">
         </div>
         <div id="fname" class="muted hide" style="margin-top:10px"></div>
@@ -761,7 +761,7 @@
           <li><b>上市公司：14 家机构评级 + 报告分析</b></li>
           <li>非上市：上传采集表即出诊断</li>
           <li>数据完整度 + 行业对标 + 差距</li>
-          <li>完整报告与导出需升级</li>
+          <li>采集表模板需单独购买（可抵扣升级）</li>
         </ul>
         <button class="btn ghost" data-trial>免费开始</button>
       </div>
@@ -774,7 +774,7 @@
           <li>完整《ESG 现状诊断报告》</li>
           <li>能源、废弃物、员工、供应链盘点</li>
           <li>行业对标 + 差距 + 路线图</li>
-          <li>PDF + Markdown 导出</li>
+          <li>含采集表模板授权 + PDF / Markdown 导出</li>
         </ul>
         <button class="btn" data-trial>预约演示</button>
       </div>
@@ -889,6 +889,7 @@
 
 <div class="toast" id="toast"></div>
 
+<script src="/ui/pay.js"></script>
 <script>
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
@@ -2128,23 +2129,38 @@ async function downloadUrl(url, filename, fallbackEvent) {
   }
 }
 
+function downloadLiteTemplate(e) {
+  if (e) e.preventDefault();
+  track("download_template", { source: "app-lite" });
+  downloadUrl("/client/template-lite", "ESG数据采集表-精简版.xlsx", e);
+  return false;
+}
+
 function downloadTemplate(e) {
   if (e) e.preventDefault();
   track("download_template", { source: "app" });
-  downloadUrl("/client/template", "ESG数据采集表模板.xlsx", e);
+  ESGPay.ensure({ productId: "esg-template", source: "app" }).then(code => {
+    if (!code) return;
+    downloadUrl("/client/template?code=" + encodeURIComponent(code), "ESG数据采集表模板.xlsx", e);
+  });
   return false;
 }
 
 async function exportCarbonCollection() {
   const d = window._lastCarbon;
   if (!d) return toast("请先计算排放量", true);
+  const code = await ESGPay.ensure({ productId: "esg-template", source: "carbon-export" });
+  if (!code) return;
   try {
-    const res = await fetch("/api/carbon/export", {
+    const res = await fetch("/api/carbon/export?code=" + encodeURIComponent(code), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(d),
     });
-    if (!res.ok) throw new Error(res.statusText);
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error((err.detail && err.detail.message) || res.statusText);
+    }
     const blob = await res.blob();
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");

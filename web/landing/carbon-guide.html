@@ -265,8 +265,8 @@ if (lf) {
     try {
       var res = await fetch('/api/leads', { method: 'POST', body: fd });
       if (!res.ok) throw new Error('HTTP ' + res.status);
-      msg.innerHTML = '已收到，我们会在 24 小时内联系你。资料可先下载：' +
-        '<a href="/client/template">采集表模板</a> · ' +
+      msg.innerHTML = '已收到，我们会在 24 小时内联系你。资料可先看：' +
+        '<a href="/tools/collection-template">采集表获取页</a> · ' +
         '<a href="/tools/carbon-guide">碳核算指南</a>';
       lf.reset();
       if (window.gtag) gtag('event', 'lead_submit', { source: 'landing-carbon' });

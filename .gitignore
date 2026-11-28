@@ -23,8 +23,12 @@ Thumbs.db
 .vscode/
 *.swp
 
-# === V2 (Render only runs V1) ===
-v2/
+# === V2 ===
+# V2 代码参与 V1 部署（V1 依赖 v2.app.site / indexnow / payment），只有运行产物不入库
+v2/data/reports/
+v2/data/uploads/
+v2/data/carbon/
+v2/data/compliance/
 
 # === LinkedIn artifacts & misc ===
 docs/linkedin/

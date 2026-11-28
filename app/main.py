@@ -15,7 +15,7 @@ from typing import Optional
 
 from fastapi import FastAPI, File, Form, HTTPException, Query, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, HTMLResponse, Response
+from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 from .collectors import (
@@ -46,6 +46,8 @@ from .schemas import (
 )
 from .site_learn import router as learn_router, sitemap_entries
 from v2.app.indexnow import KEY as INDEXNOW_KEY
+from v2.app.payment.licenses import verify as verify_template_license
+from v2.app.payment.routes import router as pay_router
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 app = FastAPI(
@@ -67,6 +69,8 @@ if WEB_DIR.exists():
 # 学习中心与每日拆解（/learn、/daily）：渲染复用 V2 的 site 模块，
 # 但路径挂在主站同域名下，权重在同一站点累积。
 app.include_router(learn_router)
+# 采集表付费下载（下单 / 查单 / 微信回调）：业务逻辑放 V2，主站只挂路由。
+app.include_router(pay_router)
 
 
 @app.get("/", include_in_schema=False)
@@ -750,9 +754,40 @@ def build_client_report_endpoint(
     return report
 
 
+@app.get("/client/template-lite", tags=["client"])
+def download_client_template_lite():
+    """免费下载精简版采集表（20 项核心指标）：无需授权码。
+
+    精简版只含 E 9 / S 6 / G 5 共 20 项，结构与完整版一致，可直接上传诊断；
+    完整版 82 项（行业特有、证据索引、行业对标）仍需付费授权。
+    """
+    tpl = Path(__file__).resolve().parent.parent / "docs" / "非上市企业ESG数据采集表-精简版.xlsx"
+    if not tpl.exists():
+        raise HTTPException(status_code=404, detail="精简版模板文件不存在")
+    return FileResponse(
+        tpl,
+        filename="esg_collection_template_lite.xlsx",
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
+
+
 @app.get("/client/template", tags=["client"])
-def download_client_template():
-    """下载空白数据采集表模板。"""
+def download_client_template(
+    request: Request,
+    code: str = Query("", description="付费授权码（管理员口令亦可）"),
+):
+    """下载空白数据采集表模板（付费）：需授权码，未授权跳转到获取页。"""
+    if not _license_plan(code):
+        if "text/html" in (request.headers.get("accept") or ""):
+            return RedirectResponse("/tools/collection-template?unlock=1#unlock", status_code=303)
+        raise HTTPException(
+            status_code=402,
+            detail={
+                "code": "TEMPLATE_LOCKED",
+                "message": "采集表模板已改为付费下载，付款后在获取页复制授权码即可解锁。",
+                "unlock_url": "/tools/collection-template?unlock=1#unlock",
+            },
+        )
     tpl = Path(__file__).resolve().parent.parent / "docs" / "非上市企业ESG数据采集表.xlsx"
     if not tpl.exists():
         raise HTTPException(status_code=404, detail="模板文件不存在")
@@ -892,15 +927,17 @@ def _send_lead_emails(lead: dict) -> None:
 <p>你好，{lead.get('contact') or lead.get('company')}：</p>
 <p>已收到你的信息。这是你需要的资料：</p>
 <ul>
-  <li><a href="{base}/client/template">非上市企业 ESG 数据采集表模板（.xlsx）</a></li>
+  <li><a href="{base}/tools/collection-template">非上市企业 ESG 数据采集表（付费获取，指标清单可免费查看）</a></li>
   <li><a href="{base}/tools/carbon-guide">碳核算指南：范围一/二/三怎么算</a></li>
   <li><a href="{base}/">在线试用：上传采集表自动诊断并出报告</a></li>
 </ul>
+<p>采集表模板已改为付费下载。如果你在这次调整前已下载过旧版，或已填好的表需要继续使用，
+直接回复本邮件即可获取过渡授权码，不影响已填数据的诊断。</p>
 <p>如果需要我帮你判断贵司该从哪里开始，直接回复这封邮件，或加 WhatsApp
 <a href="https://wa.me/85270135587">+852 7013 5587</a>。</p>
 <p style="color:#6B726C;font-size:12px">ESG 智能报告系统 · 本邮件由系统自动发送</p>
 </div>"""
-        _send_mail(to, "你的 ESG 采集表模板与碳核算指南", html)
+        _send_mail(to, "你的 ESG 资料与碳核算指南", html)
 
     if settings.notify_email:
         utm = lead.get("utm") or {}
@@ -987,10 +1024,23 @@ def _is_admin(token: str) -> bool:
     return bool(settings.admin_token) and token == settings.admin_token
 
 
+def _license_plan(code: str) -> str:
+    """返回授权等级：admin（万能钥匙）/ template（已购采集表）/ ''（无效）。"""
+    if _is_admin(code):
+        return "admin"
+    return verify_template_license(code)
+
+
 @app.get("/api/entitle/check", tags=["entitle"])
-def entitle_check(code: str = ""):
-    """校验授权码，用于解锁结果导出；未配置或错误一律返回 False。"""
-    return {"entitled": _is_admin(code)}
+def entitle_check(code: str = "", scope: str = "export"):
+    """校验授权码。
+
+    scope=export（默认）：报告与评估导出，仅管理员口令，保持原有行为；
+    scope=template：采集表下载与导出，购买授权码或管理员口令均可。
+    """
+    plan = _license_plan(code)
+    entitled = bool(plan) if scope == "template" else _is_admin(code)
+    return {"entitled": entitled, "plan": plan}
 
 
 def _parse_materiality(raw: str) -> dict | None:
@@ -1579,10 +1629,23 @@ async def carbon_calculate_batch(file: UploadFile = File(...), grid: str = "CN_A
 
 
 @app.post("/api/carbon/export", tags=["carbon"])
-def carbon_export(payload: dict):
-    """按碳核算结果生成已填好范围一/二/三的采集表（xlsx）供下载。"""
+def carbon_export(payload: dict, code: str = Query("", description="付费授权码（管理员口令亦可）")):
+    """按碳核算结果生成已填好范围一/二/三的采集表（xlsx）供下载。
+
+    碳核算计算与结果展示免费；导出物是采集表本体，与模板下载同属付费交付。
+    """
     from . import carbon
     from fastapi.responses import Response
+
+    if not _license_plan(code):
+        raise HTTPException(
+            status_code=402,
+            detail={
+                "code": "TEMPLATE_LOCKED",
+                "message": "采集表导出需授权码；计算结果仍可免费查看，付款后在获取页复制授权码解锁。",
+                "unlock_url": "/tools/collection-template?unlock=1#unlock",
+            },
+        )
 
     xlsx = carbon.build_filled_template(payload)
     return Response(

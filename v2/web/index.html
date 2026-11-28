@@ -129,7 +129,7 @@
       指标已自动标注关联规则，碳活动只填用量，排放量由后续核算引擎计算。
     </p>
     <div class="row">
-      <a class="btn-link" href="/api/template">下载 V2 采集表模板</a>
+      <button class="btn-link" type="button" id="btn-template">下载 V2 采集表模板</button>
       <div style="flex:1;min-width:220px">
         <label for="f-file">校验已填写的采集表</label>
         <input id="f-file" type="file" accept=".xlsx,.xlsm" style="width:100%">
@@ -246,6 +246,26 @@ async function query() {
 }
 
 document.getElementById("btn").addEventListener("click", query);
+
+document.getElementById("btn-template").addEventListener("click", () => {
+  const code = window.prompt("V2 采集表模板为付费下载，请输入授权码（主站购买的授权码通用）：");
+  if (!code) return;
+  fetch(`/api/template?code=${encodeURIComponent(code.trim())}`)
+    .then(res => {
+      if (!res.ok) throw new Error("授权码无效，或 V2 模板尚未生成");
+      return res.blob();
+    })
+    .then(blob => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "非上市企业ESG数据采集表-v2.xlsx";
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => { a.remove(); URL.revokeObjectURL(url); }, 3000);
+    })
+    .catch(e => alert("下载失败：" + e.message));
+});
 
 document.getElementById("btn-validate").addEventListener("click", async () => {
   const input = document.getElementById("f-file");
