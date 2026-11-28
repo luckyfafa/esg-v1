@@ -120,7 +120,7 @@
     price.innerHTML = '<b data-price>¥—</b><span>／企业 · 含 1 年版本更新</span>';
 
     var list = el("ul", { "class": "esgpay-list" });
-    ["82 项：E24 / S24 / G16 + 行业特有 18 项", "含证据索引、行业对标分位、港府问卷 48 题", "完整版可上传诊断；精简版数据可直接迁移", "同一授权码可在其它设备再次解锁"].forEach(function (t) {
+    ["82 项核心：E24 / S24 / G16 + 行业特有 18 项", "另含港府问卷 48 题、证据索引、行业对标分位", "完整版可上传诊断；精简版数据可直接迁移", "同一授权码可在其它设备再次解锁"].forEach(function (t) {
       list.appendChild(el("li", null, t));
     });
 
