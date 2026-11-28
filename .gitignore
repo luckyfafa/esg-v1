@@ -29,6 +29,9 @@ v2/data/reports/
 v2/data/uploads/
 v2/data/carbon/
 v2/data/compliance/
+v2/data/orders.db
+v2/data/orders.db-wal
+v2/data/orders.db-shm
 
 # === LinkedIn artifacts & misc ===
 docs/linkedin/

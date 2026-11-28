@@ -27,3 +27,6 @@ openai>=1.40.0
 # 采集表付费下载：微信支付二维码（纯 Python，无需 Pillow）
 qrcode>=7.4
 
+# 订单台账：生产用 Postgres（免费 Neon/Supabase）；未配置时回落到 SQLite
+psycopg[binary]>=3.2
+

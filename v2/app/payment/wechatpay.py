@@ -13,6 +13,7 @@ import io
 import logging
 import secrets
 import xml.etree.ElementTree as ET
+from decimal import Decimal, InvalidOperation
 from typing import Any
 
 import httpx
@@ -137,6 +138,22 @@ def _post(path: str, params: dict[str, Any], timeout: float = 10.0) -> dict[str,
         return {"return_code": "FAIL", "return_msg": f"请求微信支付失败: {type(e).__name__}"}
 
 
+def _post_raw(path: str, params: dict[str, Any], timeout: float = 30.0) -> tuple[bool, str]:
+    """下载账单等可能返回 CSV 的接口；成功返回 (True, 文本)，失败返回 (False, 错误)。"""
+    try:
+        with httpx.Client(timeout=timeout, follow_redirects=True) as client:
+            res = client.post(
+                f"{API_BASE}{path}",
+                content=to_xml(_signed(params)).encode("utf-8"),
+                headers={"Content-Type": "text/xml; charset=utf-8", "Accept": "*/*"},
+            )
+            res.raise_for_status()
+            return True, res.text
+    except Exception as e:  # noqa: BLE001
+        log.warning("微信支付接口 %s 调用失败: %s", path, e)
+        return False, f"请求微信支付失败: {type(e).__name__}"
+
+
 def unified_order(
     *,
     out_trade_no: str,
@@ -177,6 +194,61 @@ def order_query(out_trade_no: str) -> dict[str, str]:
 def close_order(out_trade_no: str) -> dict[str, str]:
     """关闭未支付订单（联调自检后清理测试单，避免留下悬空二维码）。"""
     return _post("/pay/closeorder", {"out_trade_no": out_trade_no})
+
+
+def yuan_to_fen(value: Any) -> int:
+    """账单金额是元字符串；用 Decimal 避免 0.29 * 100 的浮点误差。"""
+    try:
+        return int((Decimal(str(value).strip()) * 100).quantize(Decimal("1")))
+    except (InvalidOperation, ValueError, AttributeError):
+        return 0
+
+
+def parse_bill_csv(text: str) -> tuple[list[dict[str, str]], list[str]]:
+    """解析微信 V2 交易账单 CSV（含表头/汇总行的反引号前缀）。
+
+    返回 (数据行, 汇总行原文)。数据行以中文列名为键，金额仍为元字符串。
+    """
+    import csv
+
+    lines = [ln for ln in (text or "").replace("\r\n", "\n").replace("\r", "\n").split("\n") if ln.strip()]
+    if not lines:
+        return [], []
+    header = [h.strip().lstrip("\ufeff") for h in next(csv.reader([lines[0].lstrip("\ufeff`")]))]
+    rows: list[dict[str, str]] = []
+    summary: list[str] = []
+    for line in lines[1:]:
+        clean = line.lstrip("`").strip()
+        if clean.startswith("总"):
+            summary.append(clean)
+            continue
+        values = next(csv.reader([clean]))
+        if len(values) != len(header):
+            continue
+        rows.append({k: v.strip() for k, v in zip(header, values)})
+    return rows, summary
+
+
+def download_bill(bill_date: str, bill_type: str = "ALL") -> dict[str, Any]:
+    """下载微信交易账单（T+1，bill_date 格式 yyyyMMdd）。
+
+    成功返回 {ok: True, rows, summary, message}；
+    无账单/权限不足等返回 {ok: False, message, raw}。
+    """
+    ok, text = _post_raw("/pay/downloadbill", {"bill_date": bill_date, "bill_type": bill_type})
+    if not ok:
+        return {"ok": False, "rows": [], "summary": [], "message": text[:200], "raw": {}}
+    if text.lstrip().startswith("<"):
+        data = from_xml(text)
+        return {
+            "ok": False,
+            "rows": [],
+            "summary": [],
+            "message": data.get("err_code_des") or data.get("return_msg") or "账单下载失败",
+            "raw": data,
+        }
+    rows, summary = parse_bill_csv(text)
+    return {"ok": True, "rows": rows, "summary": summary, "message": "", "raw": {}}
 
 
 def verify_notify(params: dict[str, str]) -> tuple[bool, str]:

@@ -12,7 +12,7 @@ import time
 from fastapi import APIRouter, HTTPException, Request, Response
 from fastapi.responses import JSONResponse
 
-from . import catalog, licenses, wechatpay
+from . import catalog, ledger, licenses, wechatpay
 
 log = logging.getLogger(__name__)
 
@@ -123,6 +123,14 @@ def create_order(payload: dict, request: Request):
         )
 
     log.info("[pay] 创建订单 %s ¥%.2f", order_no, product["priceFen"] / 100)
+    # 旁路台账：写失败不影响下单（record_created 内部已吞异常）
+    ledger.record_created(
+        order_no,
+        product=product,
+        amount_fen=product["priceFen"],
+        source="create",
+        attach=f"{product['id']}|{product['priceFen']}",
+    )
     return _order_payload(
         order_no,
         product["priceFen"],
@@ -172,6 +180,16 @@ def order_status(order_no: str, request: Request):
             paid_fee = 0
         if expected and paid_fee != expected:
             log.warning("[pay] 金额不一致 %s 应付 %s 实付 %s", order_no, expected, paid_fee)
+            ledger.record_status(
+                order_no,
+                "AMOUNT_MISMATCH",
+                paid_fen=paid_fee,
+                transaction_id=raw.get("transaction_id") or "",
+                paid_at=raw.get("time_end") or "",
+                source="poll",
+                raw=raw,
+                product=product,
+            )
             return _order_payload(order_no, paid_fee, "AMOUNT_MISMATCH")
         code = licenses.issue(order_no)
         if not code:
@@ -180,6 +198,18 @@ def order_status(order_no: str, request: Request):
                 status_code=500,
                 detail={"code": "LICENSE_NOT_CONFIGURED", "message": "已收到付款，但授权签名未配置，请联系人工发码。"},
             )
+        ledger.record_status(
+            order_no,
+            "PAID",
+            paid_fen=paid_fee,
+            transaction_id=raw.get("transaction_id") or "",
+            paid_at=raw.get("time_end") or "",
+            license_code=code,
+            license_scope=product["scope"] if product else "",
+            source="poll",
+            raw=raw,
+            product=product,
+        )
         return _order_payload(
             order_no,
             paid_fee,
@@ -189,6 +219,10 @@ def order_status(order_no: str, request: Request):
             license=code,
         )
 
+    if status != "PENDING":
+        ledger.record_status(
+            order_no, status, source="poll", raw=raw, product=product
+        )
     return _order_payload(order_no, amount_fen, status)
 
 
@@ -231,9 +265,33 @@ async def wechat_notify(request: Request):
         paid_fee = 0
     if expected and paid_fee != expected:
         log.warning("[pay] 回调金额不一致 %s 应付 %s 实付 %s", order_no, expected, paid_fee)
+        if licenses.ORDER_RE.match(order_no):
+            ledger.record_status(
+                order_no,
+                "AMOUNT_MISMATCH",
+                paid_fen=paid_fee,
+                transaction_id=data.get("transaction_id") or "",
+                paid_at=data.get("time_end") or "",
+                source="notify",
+                raw=data,
+            )
         return ok_xml
 
     log.info("[pay] 回调确认支付成功 %s ¥%.2f", order_no, paid_fee / 100)
+    if licenses.ORDER_RE.match(order_no):
+        product = catalog.find_by_code(order_no[2:4])
+        ledger.record_status(
+            order_no,
+            "PAID",
+            paid_fen=paid_fee,
+            transaction_id=data.get("transaction_id") or "",
+            paid_at=data.get("time_end") or "",
+            license_code=licenses.issue(order_no),
+            license_scope=product["scope"] if product else "",
+            source="notify",
+            raw=data,
+            product=product,
+        )
     return ok_xml
 
 

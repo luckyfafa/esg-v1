@@ -48,6 +48,8 @@ from .site_learn import router as learn_router, sitemap_entries
 from v2.app.indexnow import KEY as INDEXNOW_KEY
 from v2.app.payment.licenses import verify as verify_template_license
 from v2.app.payment.routes import router as pay_router
+from v2.app.payment.ledger_routes import router as ledger_router
+from v2.app.payment.ledger_routes import status_router as ledger_status_router
 from v2.app.polish.routes import router as polish_router
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
@@ -72,6 +74,9 @@ if WEB_DIR.exists():
 app.include_router(learn_router)
 # 采集表付费下载（下单 / 查单 / 微信回调）：业务逻辑放 V2，主站只挂路由。
 app.include_router(pay_router)
+# 订单台账：查询、CSV 导出、微信账单补录与查单核对（ADMIN_TOKEN 保护）。
+app.include_router(ledger_router)
+app.include_router(ledger_status_router)
 # 报告润色版：与 V2 共用同一套路由与授权码。
 app.include_router(polish_router)
 

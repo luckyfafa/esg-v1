@@ -22,6 +22,8 @@ from . import __version__
 from .config import settings
 from .payment import licenses as payment_licenses
 from .payment.routes import router as pay_router
+from .payment.ledger_routes import router as ledger_router
+from .payment.ledger_routes import status_router as ledger_status_router
 from .polish.routes import router as polish_router
 from .rules import applicable_rules, load_ruleset
 from .site import content as site_content
@@ -66,6 +68,9 @@ if WEB_DIR.exists():
 
 # 采集表付费下载（与主站共用同一套商品表、授权码与微信商户参数）
 app.include_router(pay_router)
+# 订单台账（查询 / CSV / 微信账单补录 / 查单核对）
+app.include_router(ledger_router)
+app.include_router(ledger_status_router)
 # 报告润色版（同一套授权码，V1 也挂载此路由）
 app.include_router(polish_router)
 
