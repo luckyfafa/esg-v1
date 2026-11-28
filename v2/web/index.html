@@ -168,6 +168,9 @@
       <button id="btn-polish">生成润色版</button>
       <button id="btn-demo" class="btn-link">用内置示例生成</button>
     </div>
+    <p class="muted" style="font-size:12.5px;margin:8px 0 0">
+      润色版 ¥4,980／企业（单次授权，采集表码与报告码不可通用）；内置示例可免费查看效果。
+    </p>
     <div id="p-result" style="margin-top:14px"></div>
     <div id="p-samples" class="muted" style="margin-top:16px;font-size:12px">正在读取写作样本…</div>
   </div>
@@ -192,6 +195,7 @@
   </div>
 </div>
 
+<script src="/ui/pay.js"></script>
 <script>
 const OBLIGATION = {mandatory: "强制", comply_or_explain: "不遵守就解释", voluntary: "自愿"};
 
@@ -332,19 +336,24 @@ async function generatePolish(useDemo) {
   const box = document.getElementById("p-result");
   const btn = document.getElementById(useDemo ? "btn-demo" : "btn-polish");
   const industry = document.getElementById("p-industry").value;
-  const qs = industry ? `?industry=${encodeURIComponent(industry)}` : "";
+  const params = [];
+  if (industry) params.push("industry=" + encodeURIComponent(industry));
   btn.disabled = true;
   box.innerHTML = '<span class="muted">正在生成润色版（读取采集表、重组章节、校验数字）…</span>';
   try {
     let res;
     if (useDemo) {
-      res = await fetch(`/api/polish/sample${qs}`, {method: "POST"});
+      res = await fetch(`/api/polish/sample${params.length ? "?" + params.join("&") : ""}`, {method: "POST"});
     } else {
       const input = document.getElementById("p-file");
       if (!input.files.length) { alert("请先选择采集表文件"); return; }
+      if (!window.ESGPay) { alert("支付组件未加载，请刷新后重试"); return; }
+      const code = await ESGPay.ensure({productId: "esg-polish", source: "v2-polish"});
+      if (!code) { box.innerHTML = ""; return; }
+      params.push("code=" + encodeURIComponent(code));
       const fd = new FormData();
       fd.append("file", input.files[0]);
-      res = await fetch(`/api/polish/report${qs}`, {method: "POST", body: fd});
+      res = await fetch(`/api/polish/report${params.length ? "?" + params.join("&") : ""}`, {method: "POST", body: fd});
     }
     const data = await res.json();
     if (!res.ok) throw new Error(data.detail || ("HTTP " + res.status));

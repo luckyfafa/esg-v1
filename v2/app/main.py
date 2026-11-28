@@ -350,8 +350,23 @@ def polish_samples():
 async def polish_report(
     file: UploadFile = File(..., description="非上市企业 ESG 数据采集表（.xlsx）"),
     industry: str | None = Query(None, description="行业覆盖：manufacturing/retail/technology/..." ),
+    code: str = Query("", description="报告润色版授权码（或管理员口令）"),
 ):
-    """把采集表生成「底稿 + 上市公司风格润色版」。"""
+    """把采集表生成「底稿 + 上市公司风格润色版」（需「报告润色版」授权）。"""
+    import os
+
+    allowed = payment_licenses.verify(code) == "polish"
+    if not allowed and code:
+        allowed = bool(os.environ.get("ADMIN_TOKEN")) and code == os.environ.get("ADMIN_TOKEN")
+    if not allowed:
+        raise HTTPException(
+            status_code=402,
+            detail={
+                "code": "POLISH_LOCKED",
+                "message": "润色版需「报告润色版」授权码；采集表码与报告码不可通用。",
+                "unlock_url": "/#pricing",
+            },
+        )
     suffix = Path(file.filename or "").suffix.lower()
     if suffix not in (".xlsx", ".xlsm"):
         raise HTTPException(status_code=400, detail="仅支持 .xlsx / .xlsm 格式")

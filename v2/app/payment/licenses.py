@@ -22,6 +22,8 @@ import re
 import secrets
 from datetime import datetime
 
+from . import catalog
+
 PREFIX = "ESG-"
 ORDER_RE = re.compile(r"^ES[A-Z]{2}\d{10}[A-Z2-7]{6}$")
 CODE_RE = re.compile(r"^ESG-(ES[A-Z]{2}\d{10}[A-Z2-7]{6})-([A-Z2-7]{12})$")
@@ -51,26 +53,52 @@ def issue(order_no: str) -> str:
 
 
 def verify(code: str) -> str:
-    """校验授权码；通过返回 'template'，否则返回空串。"""
+    """校验授权码；通过返回商品 scope（template / report / polish），否则空串。
+
+    scope 由订单号里嵌入的商品码反查商品表决定，三种商品互不通用。
+    """
     code = (code or "").strip()
     if not code:
         return ""
-    if code.upper() in _override_codes():
+    upper = code.upper()
+
+    scoped = _scoped_codes()
+    if upper in scoped:
+        return scoped[upper]
+    if upper in _template_override_codes():
         return "template"
 
     secret = _secret()
     if not secret:
         return ""
-    m = CODE_RE.match(code.upper())
+    m = CODE_RE.match(upper)
     if not m:
         return ""
     order_no, sig = m.group(1), m.group(2)
     expected = base64.b32encode(
         hmac.new(secret.encode(), order_no.encode(), hashlib.sha256).digest()
     ).decode()[:12]
-    return "template" if hmac.compare_digest(sig, expected) else ""
+    if not hmac.compare_digest(sig, expected):
+        return ""
+    product = catalog.find_by_code(order_no[2:4])
+    return product["scope"] if product else ""
 
 
-def _override_codes() -> set[str]:
+def _template_override_codes() -> set[str]:
     raw = os.environ.get("TEMPLATE_LICENSE_CODES", "")
     return {c.strip().upper() for c in re.split(r"[,;\s]+", raw) if c.strip()}
+
+
+def _scoped_codes() -> dict[str, str]:
+    """手动码：SCOPED_LICENSE_CODES=report:CODE1,polish:CODE2,template:CODE3。"""
+    raw = os.environ.get("SCOPED_LICENSE_CODES", "")
+    out: dict[str, str] = {}
+    for part in re.split(r"[,;\s]+", raw):
+        if ":" not in part:
+            continue
+        scope, _, value = part.partition(":")
+        scope = scope.strip().lower()
+        value = value.strip().upper()
+        if value and scope in ("template", "report", "polish"):
+            out[value] = scope
+    return out

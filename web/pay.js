@@ -20,7 +20,7 @@
   var configPromise = null;
   var stylesReady = false;
   var overlay = null;
-  var state = { product: null, order: null, timer: null, polls: 0, resolve: null };
+  var state = { product: null, productId: null, scope: "template", order: null, timer: null, polls: 0, resolve: null };
 
   function track(name, params) {
     if (window.gtag) window.gtag("event", name, params || {});
@@ -37,21 +37,42 @@
 
   function yuan(v) { return "¥" + Number(v).toFixed(2); }
 
-  function verify(code) {
-    return fetch("/api/entitle/check?scope=template&code=" + encodeURIComponent(code), { cache: "no-store" })
+  function verify(code, scope) {
+    var sc = scope || "template";
+    return fetch("/api/entitle/check?scope=" + encodeURIComponent(sc) + "&code=" + encodeURIComponent(code), { cache: "no-store" })
       .then(function (r) { return r.json(); })
       .then(function (d) { return Boolean(d && d.entitled); })
       .catch(function () { return false; });
   }
 
-  function storedLicense() {
-    try { return localStorage.getItem(LS_KEY) || ""; } catch (_) { return ""; }
+  function itemKey(pid) { return "esg_license:" + (pid || DEFAULT_PRODUCT); }
+
+  function storedLicense(pid) {
+    try {
+      var v = localStorage.getItem(itemKey(pid));
+      if (!v && (pid || DEFAULT_PRODUCT) === DEFAULT_PRODUCT) v = localStorage.getItem(LS_KEY);
+      return v || "";
+    } catch (_) { return ""; }
   }
-  function setLicense(code) {
-    try { localStorage.setItem(LS_KEY, code); } catch (_) { /* 隐私模式忽略 */ }
+  function setLicense(code, pid) {
+    try {
+      localStorage.setItem(itemKey(pid), code);
+      if ((pid || DEFAULT_PRODUCT) === DEFAULT_PRODUCT) localStorage.setItem(LS_KEY, code);
+    } catch (_) { /* 隐私模式忽略 */ }
   }
-  function clearLicense() {
-    try { localStorage.removeItem(LS_KEY); } catch (_) { /* ignore */ }
+  function clearLicense(pid) {
+    try {
+      localStorage.removeItem(itemKey(pid));
+      if ((pid || DEFAULT_PRODUCT) === DEFAULT_PRODUCT) localStorage.removeItem(LS_KEY);
+    } catch (_) { /* ignore */ }
+  }
+
+  function findProduct(cfg, pid) {
+    var items = (cfg && cfg.products) || [];
+    for (var i = 0; i < items.length; i += 1) {
+      if (items[i].id === pid) return items[i];
+    }
+    return null;
   }
 
   function injectStyles() {
@@ -207,17 +228,23 @@
     }
 
     function applyProduct(cfg) {
-      var product = null;
       var items = (cfg && cfg.products) || [];
-      for (var i = 0; i < items.length; i += 1) {
-        if (items[i].id === (state.productId || DEFAULT_PRODUCT)) { product = items[i]; break; }
-      }
-      product = product || items[0] || null;
+      var product = findProduct(cfg, state.productId) || items[0] || null;
       state.product = product;
       var priceEl = box.querySelector("[data-price]");
       if (product) {
+        state.productId = product.id;
+        state.scope = product.scope || "template";
+        title.textContent = "获取" + (product.shortName || product.name);
+        sub.textContent = product.desc || "";
         priceEl.textContent = yuan(product.price);
-        priceEl.parentNode.querySelector("span").textContent = "／企业 · " + (product.desc || "含 1 年版本更新");
+        priceEl.parentNode.querySelector("span").textContent = "／企业 · 单次授权";
+        list.textContent = "";
+        (product.benefits || []).forEach(function (t) {
+          list.appendChild(el("li", null, t));
+        });
+        lite.hidden = product.id !== DEFAULT_PRODUCT;
+        dlBtn.textContent = product.scope === "template" ? "解锁并下载" : "解锁并使用";
       } else {
         priceEl.textContent = "—";
       }
@@ -266,7 +293,7 @@
           status.textContent = d.status === "PAID" ? "支付成功" : statusText(d.status);
           if (d.status === "PAID" && d.license) {
             stopPolling();
-            setLicense(d.license);
+            setLicense(d.license, state.productId);
             setCode(d.license);
           } else if (d.status === "AMOUNT_MISMATCH" || d.status === "CLOSED" || d.status === "FAILED") {
             stopPolling();
@@ -331,7 +358,7 @@
     dlBtn.addEventListener("click", function () {
       var code = codeEl.textContent;
       if (!code) return;
-      setLicense(code);
+      setLicense(code, state.productId);
       finish(code);
     });
 
@@ -355,10 +382,10 @@
       if (!code) { showError("请先粘贴授权码"); return; }
       ok.disabled = true;
       showError("");
-      verify(code).then(function (good) {
+      verify(code, state.scope).then(function (good) {
         ok.disabled = false;
         if (!good) { showError("授权码无效，请核对后重试，或联系人工协助。"); return; }
-        setLicense(code);
+        setLicense(code, state.productId);
         track("license_activate", { source: state.source });
         finish(code);
       });
@@ -386,28 +413,33 @@
 
   function ensure(options) {
     options = options || {};
-    var saved = storedLicense();
-    if (saved) {
-      return verify(saved).then(function (good) {
-        if (good) return saved;
-        clearLicense();
-        return fromUrlOrModal(options);
-      });
-    }
-    return fromUrlOrModal(options);
+    return getConfig().then(function (cfg) {
+      var product = findProduct(cfg, options.productId || DEFAULT_PRODUCT) || (cfg.products || [])[0] || null;
+      var pid = (product && product.id) || options.productId || DEFAULT_PRODUCT;
+      var scope = (product && product.scope) || "template";
+      var saved = storedLicense(pid);
+      if (saved) {
+        return verify(saved, scope).then(function (good) {
+          if (good) return saved;
+          clearLicense(pid);
+          return fromUrlOrModal(options, scope);
+        });
+      }
+      return fromUrlOrModal(options, scope);
+    });
   }
 
-  function fromUrlOrModal(options) {
+  function fromUrlOrModal(options, scope) {
     var qs = new URLSearchParams(location.search);
     var token = qs.get("token");
     if (token) {
       // 管理员口令：万能钥匙但不写入 localStorage
-      return verify(token).then(function (good) { return good ? token : open(options); });
+      return verify(token, scope).then(function (good) { return good ? token : open(options); });
     }
     var code = qs.get("code") || qs.get("license");
     if (code) {
-      return verify(code).then(function (good) {
-        if (good) { setLicense(code); return code; }
+      return verify(code, scope).then(function (good) {
+        if (good) { setLicense(code, options.productId || DEFAULT_PRODUCT); return code; }
         return open(options);
       });
     }

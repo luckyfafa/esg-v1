@@ -777,14 +777,14 @@ def download_client_template(
     code: str = Query("", description="付费授权码（管理员口令亦可）"),
 ):
     """下载空白数据采集表模板（付费）：需授权码，未授权跳转到获取页。"""
-    if not _license_plan(code):
+    if _license_plan(code) not in ("admin", "template"):
         if "text/html" in (request.headers.get("accept") or ""):
             return RedirectResponse("/tools/collection-template?unlock=1#unlock", status_code=303)
         raise HTTPException(
             status_code=402,
             detail={
                 "code": "TEMPLATE_LOCKED",
-                "message": "采集表模板已改为付费下载，付款后在获取页复制授权码即可解锁。",
+                "message": "采集表模板需「完整采集表」授权码，报告码与润色版码不可通用。",
                 "unlock_url": "/tools/collection-template?unlock=1#unlock",
             },
         )
@@ -809,13 +809,24 @@ async def build_client_report_upload(
     materiality_json: str = Form("", description="双重重要性评估 JSON，提供后第三章改为评估结果"),
     use_llm_narrative: bool = Form(True),
     save: bool = Form(True),
+    code: str = Query("", description="完整诊断报告授权码（或管理员口令）"),
 ):
-    """上传采集表 → 生成定制报告（演示界面使用）。"""
+    """上传采集表 → 生成完整报告（需「完整诊断报告」授权）。"""
     import uuid
 
     from .benchmark import analyze, normalize_industry
     from .client_data import derive_metrics, load_client_excel
     from .client_report import build_client_report, save_client_report
+
+    if _license_plan(code) not in ("admin", "report"):
+        raise HTTPException(
+            status_code=402,
+            detail={
+                "code": "REPORT_LOCKED",
+                "message": "完整报告需「完整诊断报告」授权码；采集表码与润色版码不可通用。",
+                "unlock_url": "/#pricing",
+            },
+        )
 
     suffix = Path(file.filename or "").suffix.lower()
     if suffix not in (".xlsx", ".xlsm"):
@@ -1033,13 +1044,19 @@ def _license_plan(code: str) -> str:
 
 @app.get("/api/entitle/check", tags=["entitle"])
 def entitle_check(code: str = "", scope: str = "export"):
-    """校验授权码。
+    """校验授权码与作用域。
 
-    scope=export（默认）：报告与评估导出，仅管理员口令，保持原有行为；
-    scope=template：采集表下载与导出，购买授权码或管理员口令均可。
+    template / report（export 同义）/ polish 三者互相独立，各码只能解锁自己的商品；
+    any 接受任一有效码；管理员口令始终直通。默认 export 供报告导出使用。
     """
     plan = _license_plan(code)
-    entitled = bool(plan) if scope == "template" else _is_admin(code)
+    scope = (scope or "export").strip().lower()
+    if scope == "export":
+        scope = "report"
+    if scope == "any":
+        entitled = bool(plan)
+    else:
+        entitled = plan in (scope, "admin")
     return {"entitled": entitled, "plan": plan}
 
 
@@ -1637,12 +1654,12 @@ def carbon_export(payload: dict, code: str = Query("", description="付费授权
     from . import carbon
     from fastapi.responses import Response
 
-    if not _license_plan(code):
+    if _license_plan(code) not in ("admin", "template"):
         raise HTTPException(
             status_code=402,
             detail={
                 "code": "TEMPLATE_LOCKED",
-                "message": "采集表导出需授权码；计算结果仍可免费查看，付款后在获取页复制授权码解锁。",
+                "message": "采集表导出需「完整采集表」授权码；计算结果仍可免费查看，报告码与润色版码不可通用。",
                 "unlock_url": "/tools/collection-template?unlock=1#unlock",
             },
         )
@@ -1760,6 +1777,7 @@ async def diagnose_uploaded_excel(
     file: UploadFile = File(..., description="填写完成的采集表（.xlsx）"),
     materiality_json: str = Form("", description="双重重要性评估 JSON"),
     token: str = Query("", description="管理口令；填对则返回完整报告"),
+    code: str = Query("", description="完整诊断报告授权码；有效则返回全部章节"),
 ):
     """非上市企业快速诊断（获客钩子）。
 
@@ -1826,9 +1844,11 @@ async def diagnose_uploaded_excel(
             report = build_client_report(
                 analysis, use_llm_narrative=False, materiality=materiality
             )
-            free_count = 10**6 if _is_admin(token) else 1
+            full_access = _license_plan(code) in ("admin", "report")
+            free_count = 10**6 if (full_access or _is_admin(token)) else 1
             parts = _section_payload(report.markdown, free_count)
             free_sections, locked_sections = parts
+            summary["full_access"] = bool(full_access or _is_admin(token))
             summary["report_title"] = report.title
             summary["data_quality"] = report.overall_data_quality
             summary["sections"] = free_sections

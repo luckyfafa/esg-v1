@@ -2,9 +2,49 @@
   {
     "id": "esg-template",
     "orderCode": "TP",
+    "scope": "template",
+    "shortName": "完整采集表",
     "name": "非上市企业ESG数据采集表（企业授权）",
-    "desc": "单企业授权 · 含指标清单、证据索引、行业对标与 1 年版本更新",
+    "desc": "82 项核心 + 48 题港府问卷 · 单企业授权 · 含 1 年更新",
     "priceFen": 29900,
+    "benefits": [
+      "82 项核心：E24 / S24 / G16 + 行业特有 18 项",
+      "另含港府问卷 48 题、证据索引、行业对标分位",
+      "可上传诊断；免费精简版数据可直接迁移",
+      "同一授权码可在其它设备再次解锁"
+    ],
+    "active": true
+  },
+  {
+    "id": "esg-report",
+    "orderCode": "RP",
+    "scope": "report",
+    "shortName": "完整诊断报告",
+    "name": "非上市企业ESG完整诊断报告（11章 + 导出）",
+    "desc": "单企业授权 · 11 章完整报告 + PDF/Markdown 导出",
+    "priceFen": 198000,
+    "benefits": [
+      "11 章完整诊断：差距分析、路线图、合规风险提示",
+      "PDF / Markdown 导出，可内部传阅与报销留档",
+      "整合碳核算与双重重要性评估结果",
+      "不包含采集表下载与润色版（各自独立授权）"
+    ],
+    "active": true
+  },
+  {
+    "id": "esg-polish",
+    "orderCode": "PL",
+    "scope": "polish",
+    "shortName": "报告润色版",
+    "name": "非上市企业ESG报告润色版（上市公司风格）",
+    "desc": "单企业授权 · 16 章上市公司风格 · 底稿 + 润色版双交付",
+    "priceFen": 498000,
+    "benefits": [
+      "16 章上市公司风格：封面、目录、管理层致辞、行业专章",
+      "按行业差异化章节与议题，不是换名模板",
+      "数字一致性校验，只用填报与底稿中已核实的数字",
+      "底稿 + 润色版 Markdown/HTML 双交付，可打印 PDF"
+    ],
     "active": true
   }
 ]

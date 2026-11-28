@@ -804,6 +804,26 @@
       </div>
     </div>
 
+    <div class="grid g3" style="margin-top:14px">
+      <div class="card flat">
+        <h3 style="margin-top:0">完整采集表 · ¥299</h3>
+        <p class="muted">82 项核心 + 48 题港府问卷，单企业授权，含 1 年更新。</p>
+        <button class="btn ghost" onclick="buyProduct('esg-template','pricing')">单独购买</button>
+      </div>
+      <div class="card flat">
+        <h3 style="margin-top:0">完整诊断报告 · ¥1,980</h3>
+        <p class="muted">11 章完整报告 + PDF/Markdown 导出。免费版仍可看第一章试读与碳核算。</p>
+        <button class="btn" onclick="buyProduct('esg-report','pricing')">解锁完整报告</button>
+      </div>
+      <div class="card flat">
+        <h3 style="margin-top:0">报告润色版 · ¥4,980</h3>
+        <p class="muted">16 章上市公司风格，行业差异化章节，底稿 + 润色版双交付。</p>
+        <button class="btn ghost" onclick="buyProduct('esg-polish','pricing')">单独购买</button>
+      </div>
+    </div>
+    <p style="font-size:12.5px;color:var(--muted);margin-top:10px">
+      三者授权互相独立：采集表码不能解锁报告或润色版，反之亦然。已购采集表的用户升级完整报告，可申请 ¥299 抵扣（人工核销，避免重复折扣）。
+    </p>
     <div class="notice" style="margin-top:18px">
       <div><b>港府 ESG 补助其实没那么难。</b> ESG Ready 最高 15 万、政府 1:1 配对，申请材料里最耗时的是诊断和碳核算底稿——这两块基础版和专业版就能完成。剩下的计划书、报价与递交，交给定制版。先诊断，再申请，不要为了申请而申请。</div>
     </div>
@@ -2136,6 +2156,29 @@ function downloadLiteTemplate(e) {
   return false;
 }
 
+async function unlockFullReport() {
+  if (!window.ESGPay) return;
+  const code = await ESGPay.ensure({ productId: "esg-report", source: "diagnose" });
+  if (!code) return;
+  toast(matText("已解锁，正在重新生成完整报告…", "Unlocked. Regenerating the full report…"));
+  $("#p-run").click();
+}
+
+async function buyProduct(id, source) {
+  if (!window.ESGPay) return;
+  const code = await ESGPay.ensure({ productId: id, source: source || "pricing" });
+  if (!code) return;
+  if (id === "esg-template") {
+    downloadUrl("/client/template?code=" + encodeURIComponent(code), "ESG数据采集表模板.xlsx");
+    return;
+  }
+  if (id === "esg-report") {
+    toast(matText("已解锁完整报告，重新上传采集表即可查看全部章节", "Unlocked. Re-upload your workbook to view all chapters."));
+    return;
+  }
+  toast(matText("已解锁润色版，请在报告润色页面粘贴该授权码生成", "Polished report unlocked. Use this code on the polish page."));
+}
+
 function downloadTemplate(e) {
   if (e) e.preventDefault();
   track("download_template", { source: "app" });
@@ -2711,7 +2754,13 @@ $("#p-run").addEventListener("click", async () => {
     if (matResult && matPayload) {
       fd.append("materiality_json", JSON.stringify({ ...matResult, input: matPayload }));
     }
-    const res = await fetch("/api/diagnose/upload" + (ADMIN_TOKEN ? "?token=" + encodeURIComponent(ADMIN_TOKEN) : ""), { method: "POST", body: fd });
+    const qs = [];
+    if (ADMIN_TOKEN) qs.push("token=" + encodeURIComponent(ADMIN_TOKEN));
+    if (window.ESGPay) {
+      const rc = ESGPay.license("esg-report");
+      if (rc) qs.push("code=" + encodeURIComponent(rc));
+    }
+    const res = await fetch("/api/diagnose/upload" + (qs.length ? "?" + qs.join("&") : ""), { method: "POST", body: fd });
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
       throw new Error(err.detail || res.status);
@@ -2755,14 +2804,19 @@ $("#p-run").addEventListener("click", async () => {
     renderReportDoc($("#r-md"), docData, "");
 
     $("#p-note")?.remove();
+    const oldCta = document.getElementById("p-cta");
+    if (oldCta) oldCta.remove();
+    const lockedNow = (d.locked_sections || []).length > 0 && !d.full_access;
     const cta = document.createElement("div");
+    cta.id = "p-cta";
     cta.className = "notice";
-    cta.style.cssText = "margin-top:18px;padding:16px 18px;display:flex;gap:14px;align-items:center;background:#EEF6F0;border-left:3px solid var(--green)";
+    cta.style.cssText = "margin-top:18px;padding:16px 18px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:#EEF6F0;border-left:3px solid var(--green)";
     cta.innerHTML = `
-      <div style="flex:1">
-        <b>${currentLang === 'zh' ? '以上为快速诊断摘要' : 'Above is a quick snapshot'}.</b> ${t('private.cta_sub')}
+      <div style="flex:1;min-width:200px">
+        <b>${lockedNow ? (currentLang === 'zh' ? '以上为第一章试读' : 'Chapter 1 preview only') : (currentLang === 'zh' ? '以上为完整诊断报告' : 'Full report unlocked')}.</b> ${t('private.cta_sub')}
       </div>
-      <button class="btn" onclick="openLead('private-diagnose', {company:'${esc(d.company || "")}', industry:'${esc(d.industry || "")}'})">${t('private.cta')}</button>`;
+      ${lockedNow ? `<button class="btn" onclick="unlockFullReport()">${currentLang === 'zh' ? '解锁完整报告 ¥1,980' : 'Unlock full report'}</button>` : ""}
+      <button class="btn ghost" onclick="openLead('private-diagnose', {company:'${esc(d.company || "")}', industry:'${esc(d.industry || "")}'})">${t('private.cta')}</button>`;
     $("#p-out").classList.remove("hide");
     $("#p-out").prepend(cta);
   } catch (e) {

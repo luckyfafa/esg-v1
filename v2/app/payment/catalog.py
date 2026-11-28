@@ -32,16 +32,22 @@ def _load() -> list[dict]:
         except (TypeError, ValueError):
             continue
         code = str(p.get("orderCode") or "").strip().upper()
+        scope = str(p.get("scope") or "template").strip().lower()
         if not p.get("id") or not p.get("name") or price <= 0:
             continue
         if len(code) != 2 or not code.isalpha():
+            continue
+        if scope not in ("template", "report", "polish"):
             continue
         items.append(
             {
                 "id": str(p["id"]),
                 "orderCode": code,
+                "scope": scope,
+                "shortName": str(p.get("shortName") or p["name"])[:30],
                 "name": str(p["name"])[:60],
                 "desc": str(p.get("desc") or ""),
+                "benefits": [str(x)[:120] for x in (p.get("benefits") or [])][:6],
                 "priceFen": price,
                 "active": p.get("active") is not False,
             }
@@ -74,8 +80,11 @@ def public_items() -> list[dict]:
     return [
         {
             "id": p["id"],
+            "scope": p["scope"],
+            "shortName": p["shortName"],
             "name": p["name"],
             "desc": p["desc"],
+            "benefits": p["benefits"],
             "price": f"{p['priceFen'] / 100:.2f}",
             "priceFen": p["priceFen"],
         }
